@@ -18,24 +18,37 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 public class AutoTest extends LinearOpMode {
      @Override
     public void runOpMode() {
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(40, -40, Math.PI / 2));
         Action Traj1 = drive.actionBuilder(drive.pose)
-                .strafeTo(new Vector2d(30, 30))
-                .turn(Math.PI / 2)
+                .splineTo(new Vector2d(30, 30), Math.PI / 3)
+                .turn(4 * Math.PI / 6)
+                .splineTo(new Vector2d(0, 0), 0)
                 .build();
+
+         Action Traj2 = drive.actionBuilder(drive.pose)
+                    .lineToY(40)
+                        .turn(Math.toRadians(90))
+                        .lineToX(-40)
+                        .turn(Math.toRadians(90))
+                        .lineToY(-40)
+                        .turn(Math.toRadians(90))
+                        .lineToX(40)
+                        .turn(Math.toRadians(90))
+                 .build();
 
         // Wait for the game to start (driver presses START)
         waitForStart();
 
         Actions.runBlocking(new SequentialAction(
-                new Action() {
-                    @Override
-                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                        telemetry.addLine("Running Traj1...");
-                        telemetry.update();
-                        return Traj1.run(telemetryPacket); // Ensure Traj1 is run properly
-                    }
-                }
+//                new Action() {
+//                    @Override
+//                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                        telemetry.addLine("Running Traj1...");
+//                        telemetry.update();
+//                        return Traj1.run(telemetryPacket); // Ensure Traj1 is run properly
+//                    }
+//                }
+                Traj2
         ));
 
         telemetry.addData("Path", "Execution complete");
