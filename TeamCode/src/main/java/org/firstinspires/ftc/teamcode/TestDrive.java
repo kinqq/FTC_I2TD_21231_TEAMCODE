@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 @Config
 public class TestDrive extends OpMode {
     public static double rotOva = 1.06;
+    public static double speed = 1;
 
     @Override
     public void init() {
@@ -34,6 +35,27 @@ public class TestDrive extends OpMode {
         double y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
         double x = -gamepad1.left_stick_x;
         double rx = -gamepad1.right_stick_x;
+        if (speed == 1) {
+            if (gamepad1.left_bumper) {
+                speed = 0.5;
+            } else if (gamepad1.right_bumper) {
+                speed = 0.25;
+            }
+        }
+        else if (speed == 0.5){
+            if (gamepad1.left_bumper) {
+                speed = 1;
+            } else if (gamepad1.right_bumper) {
+                speed = 0.25;
+            }
+        }
+        else if (speed == 0.25) {
+            if (gamepad1.left_bumper) {
+                speed = 0.5;
+            } else if (gamepad1.right_bumper) {
+                speed = 1;
+            }
+        }
 
         if (gamepad1.start) {
             imu.resetYaw();
@@ -51,10 +73,10 @@ public class TestDrive extends OpMode {
         // but only if at least one is out of the range [-1, 1]
         double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
 
-        double frontLeftPower = (rotY + rotX + rx) / denominator;
-        double backLeftPower = (rotY - rotX + rx) / denominator;
-        double frontRightPower = (rotY - rotX - rx) / denominator;
-        double backRightPower = (rotY + rotX - rx) / denominator;
+        double frontLeftPower = (rotY + rotX + rx) / denominator * speed;
+        double backLeftPower = (rotY - rotX + rx) / denominator * speed;
+        double frontRightPower = (rotY - rotX - rx) / denominator * speed;
+        double backRightPower = (rotY + rotX - rx) / denominator * speed;
 
 //        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
 //
