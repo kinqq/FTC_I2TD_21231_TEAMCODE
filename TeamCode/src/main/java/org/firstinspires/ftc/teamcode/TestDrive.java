@@ -34,6 +34,28 @@ public class TestDrive extends OpMode {
         double y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
         double x = -gamepad1.left_stick_x;
         double rx = -gamepad1.right_stick_x;
+        double speed = 1;
+        if (speed = 1) {
+            if (gamepad1.left_button = true) {
+                speed = 0.5;
+            } else if (gamepad1.right_button = true) {
+                speed = 0.25;
+            }
+        }
+        else if (speed = 0.5){
+            if (gamepad1.left_button = true) {
+                speed = 1;
+            } else if (gamepad1.right_button = true) {
+                speed = 0.25;
+            }
+        }
+        else if (speed = 0.25) {
+            if (gamepad1.left_button = true) {
+                speed = 0.5;
+            } else if (gamepad1.right_button = true) {
+                speed = 1;
+            }
+        }
 
         if (gamepad1.start) {
             imu.resetYaw();
