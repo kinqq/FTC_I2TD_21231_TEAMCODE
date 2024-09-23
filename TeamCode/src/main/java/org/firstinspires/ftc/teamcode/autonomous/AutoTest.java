@@ -48,7 +48,7 @@ public class AutoTest extends LinearOpMode {
 //                        return Traj1.run(telemetryPacket); // Ensure Traj1 is run properly
 //                    }
 //                }
-                Traj2
+                Traj1
         ));
 
         telemetry.addData("Path", "Execution complete");
