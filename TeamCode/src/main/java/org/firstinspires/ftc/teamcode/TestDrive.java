@@ -78,7 +78,7 @@ public class TestDrive extends OpMode {
         telemetry.addData("fr", frontRightPower);
         telemetry.addData("br", backRightPower);
 
-        telemetry.addLine("Updated for git!!");
+        telemetry.addLine("RENNIE!");
 
         telemetry.update();
 
