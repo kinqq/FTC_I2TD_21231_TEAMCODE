@@ -11,6 +11,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -19,6 +20,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 public class TestDrive extends OpMode {
     public static double rotOva = 1.06;
     public static double speed = 1;
+
+    public static double SAFE_MODE = 0.5;
+    public static double PRECISION_MODE = 0.25;
+    public static double NORMAL_MODE = 1.0;
+
+    Gamepad previousGamepad1 = new Gamepad();
+    Gamepad previousGamepad2 = new Gamepad();
 
     @Override
     public void init() {
@@ -35,26 +43,13 @@ public class TestDrive extends OpMode {
         double y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
         double x = -gamepad1.left_stick_x;
         double rx = -gamepad1.right_stick_x;
-        if (speed == 1) {
-            if (gamepad1.left_bumper) {
-                speed = 0.5;
-            } else if (gamepad1.right_bumper) {
-                speed = 0.25;
-            }
+
+        if (gamepad1.left_bumper && !previousGamepad1.left_bumper) {
+            speed = speed != SAFE_MODE ? SAFE_MODE : NORMAL_MODE;
         }
-        else if (speed == 0.5){
-            if (gamepad1.left_bumper) {
-                speed = 1;
-            } else if (gamepad1.right_bumper) {
-                speed = 0.25;
-            }
-        }
-        else if (speed == 0.25) {
-            if (gamepad1.left_bumper) {
-                speed = 0.5;
-            } else if (gamepad1.right_bumper) {
-                speed = 1;
-            }
+
+        if (gamepad1.right_bumper && !previousGamepad1.right_bumper) {
+            speed = speed != PRECISION_MODE ? PRECISION_MODE : NORMAL_MODE;
         }
 
         if (gamepad1.start) {
@@ -104,10 +99,8 @@ public class TestDrive extends OpMode {
 
         telemetry.update();
 
-//        telemetry.addData("rotY", rotY);
-//        telemetry.addData("rotX", rotX);
-//
-//        telemetry.addData("rx", rx);
+        gamepad1.copy(previousGamepad1);
+        gamepad2.copy(previousGamepad2);
 
     }
 
