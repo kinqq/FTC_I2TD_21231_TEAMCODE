@@ -18,11 +18,18 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 public class AutoTest extends LinearOpMode {
      @Override
     public void runOpMode() {
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(40, -40, Math.PI / 2));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(-30, -60, Math.toRadians(90)));
+
         Action Traj1 = drive.actionBuilder(drive.pose)
-                .splineTo(new Vector2d(30, 30), Math.PI / 3)
-                .turn(4 * Math.PI / 6)
-                .splineTo(new Vector2d(0, 0), 0)
+
+                .splineTo(new Vector2d(0, -35), Math.toRadians(90))
+                .waitSeconds(2)
+                .strafeTo(new Vector2d(0, -50))
+                .waitSeconds(0.01)
+                .splineTo(new Vector2d(30, -50), Math.toRadians(315))
+                .waitSeconds(1)
+                .splineTo(new Vector2d(0, -35), Math.toRadians(90))
+
                 .build();
 
          Action Traj2 = drive.actionBuilder(drive.pose)
@@ -48,7 +55,7 @@ public class AutoTest extends LinearOpMode {
 //                        return Traj1.run(telemetryPacket); // Ensure Traj1 is run properly
 //                    }
 //                }
-                Traj2
+                Traj1
         ));
 
         telemetry.addData("Path", "Execution complete");

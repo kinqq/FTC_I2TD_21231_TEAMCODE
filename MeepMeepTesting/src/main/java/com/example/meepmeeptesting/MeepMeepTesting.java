@@ -16,11 +16,31 @@ public class MeepMeepTesting {
                 .build();
 
         // weird...
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(30, -60, Math.toRadians(90)))
-                        .strafeTo(new Vector2d(0, -35))
-                        .splineTo(new Vector2d(30, -45), Math.toRadians(45))
-                        .splineTo(new Vector2d(40, 20), Math.toRadians(45))
-                .build());
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-30, -60, Math.toRadians(90)))
+
+                        .splineTo(new Vector2d(0, -35), Math.toRadians(90))
+                        .waitSeconds(2)
+                        .strafeTo(new Vector2d(0, -50))
+                        .waitSeconds(0.01)
+                        .splineTo(new Vector2d(30, -50), Math.toRadians(315))
+                        .waitSeconds(1)
+                        .splineTo(new Vector2d(0, -35), Math.toRadians(90))
+
+                        .waitSeconds(3.5)
+                        .strafeTo(new Vector2d(0, -50))
+                        .waitSeconds(0.01)
+                        .splineTo(new Vector2d(30, -50), Math.toRadians(315))
+                        .waitSeconds(1)
+                        .splineTo(new Vector2d(0, -35), Math.toRadians(90))
+
+                        .waitSeconds(3.5)
+                        .strafeTo(new Vector2d(0, -50))
+                        .waitSeconds(0.01)
+                        .splineTo(new Vector2d(30, -50), Math.toRadians(315))
+                        .waitSeconds(1)
+                        .splineTo(new Vector2d(0, -35), Math.toRadians(90))
+
+                        .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_JUICE_DARK)
                 .setDarkMode(true)
