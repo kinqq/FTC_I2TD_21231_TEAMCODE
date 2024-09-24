@@ -16,20 +16,18 @@ public class MeepMeepTesting {
                 .build();
 
         // weird...
-//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(30, -60, Math.toRadians(90)))
-//                        .strafeTo(new Vector2d(0, -35))
-//                        .waitSeconds(1.5)
-//                        .strafeTo(new Vector2d(30, -45))
-//                        .strafeToSplineHeading(new Vector2d(30, 20), Math.toRadians(35))
-//                        .waitSeconds(1.5)
-//                        .splineTo(new Vector2d(30, -45), Math.toRadians(180))
-//                        .splineTo(new Vector2d(-45, -50), Math.toRadians(225))
-//                .build());
-
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(40, -40, Math.toRadians(90)))
-                        .splineTo(new Vector2d(30, 30), Math.PI / 3)
-                .turn(4 * Math.PI / 6)
-                .splineTo(new Vector2d(0, 0), 0)
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(30, -60, Math.toRadians(90)))
+                        .strafeTo(new Vector2d(0, -45))
+                        .waitSeconds(1.5)
+                        .splineToSplineHeading(new Pose2d(new Vector2d(30, -35), Math.toRadians(0)), Math.toRadians(0))
+                // robot stops here.. why?
+                        .splineTo(new Vector2d(35, 15), Math.toRadians(35))
+                        .waitSeconds(1.5)
+                        .splineTo(new Vector2d(25, -50), Math.toRadians(180))
+                        .splineTo(new Vector2d(-45, -50), Math.toRadians(225))
+                        .waitSeconds(1.5)
+                        .strafeToLinearHeading(new Vector2d(60, -60), Math.toRadians(90))
+//                        .strafeTo(new Vector2d(60, -60))
                 .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_JUICE_DARK)
