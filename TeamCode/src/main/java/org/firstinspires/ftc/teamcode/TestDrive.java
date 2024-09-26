@@ -73,13 +73,6 @@ public class TestDrive extends OpMode {
         double frontRightPower = (rotY - rotX - rx) / denominator * speed;
         double backRightPower = (rotY + rotX - rx) / denominator * speed;
 
-//        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-//
-//         double frontLeftPower = (y + x + rx) / denominator;
-//        double backLeftPower = (y - x + rx) / denominator;
-//        double frontRightPower = (y - x - rx) / denominator;
-//        double backRightPower = (y + x - rx) / denominator;
-
         frontLeftMotor.setPower(frontLeftPower);
         backLeftMotor.setPower(backLeftPower);
         frontRightMotor.setPower(frontRightPower);
