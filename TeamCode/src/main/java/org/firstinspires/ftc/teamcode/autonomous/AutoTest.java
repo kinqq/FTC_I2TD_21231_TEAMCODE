@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 public class AutoTest extends LinearOpMode {
      @Override
     public void runOpMode() {
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(40, -40, Math.PI / 2));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(23, -65, Math.PI / 2));
         Action Traj1 = drive.actionBuilder(drive.pose)
                 .splineTo(new Vector2d(30, 30), Math.PI / 3)
                 .turn(4 * Math.PI / 6)
