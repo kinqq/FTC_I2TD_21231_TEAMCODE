@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.test;
 
-import static org.firstinspires.ftc.teamcode.TestMap.backLeftMotor;
-import static org.firstinspires.ftc.teamcode.TestMap.backRightMotor;
-import static org.firstinspires.ftc.teamcode.TestMap.frontLeftMotor;
-import static org.firstinspires.ftc.teamcode.TestMap.frontRightMotor;
-import static org.firstinspires.ftc.teamcode.TestMap.imu;
-import static org.firstinspires.ftc.teamcode.TestMap.initTestRobot;
+import static org.firstinspires.ftc.teamcode.test.TestMap.backLeftMotor;
+import static org.firstinspires.ftc.teamcode.test.TestMap.backRightMotor;
+import static org.firstinspires.ftc.teamcode.test.TestMap.frontLeftMotor;
+import static org.firstinspires.ftc.teamcode.test.TestMap.frontRightMotor;
+import static org.firstinspires.ftc.teamcode.test.TestMap.imu;
+import static org.firstinspires.ftc.teamcode.test.TestMap.initTestRobot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
