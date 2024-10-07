@@ -57,6 +57,5 @@ public class TestMotor extends LinearOpMode {
             motor.setPower(1);
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
-
     }
 }
