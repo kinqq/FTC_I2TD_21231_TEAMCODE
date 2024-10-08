@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.test;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
@@ -17,7 +19,7 @@ import java.util.List;
 public class TestSampleDetection extends LinearOpMode {
 
     OpenCvCamera webcam;
-    String selectedColor = "none"; // Red, Blue, or Yellow
+    String selectedColor = "red"; // Red, Blue, or Yellow
 
     @Override
     public void runOpMode() {
@@ -37,7 +39,10 @@ public class TestSampleDetection extends LinearOpMode {
             @Override
             public void onOpened() {
                 // Start streaming when the camera is opened
-                webcam.startStreaming(320, 240);
+                webcam.startStreaming(640, 480, OpenCvCameraRotation.SIDEWAYS_RIGHT);
+
+                FtcDashboard dashboard = FtcDashboard.getInstance();
+                dashboard.startCameraStream(webcam, 10);
             }
 
             @Override
@@ -53,11 +58,11 @@ public class TestSampleDetection extends LinearOpMode {
 
         // Gamepad input for color selection during initialization
         while (!opModeIsActive() && !isStopRequested()) {
-            if (gamepad1.a) {
+            if (gamepad1.b) {
                 selectedColor = "red";
-            } else if (gamepad1.b) {
-                selectedColor = "blue";
             } else if (gamepad1.x) {
+                selectedColor = "blue";
+            } else if (gamepad1.y) {
                 selectedColor = "yellow";
             }
 
@@ -75,11 +80,16 @@ public class TestSampleDetection extends LinearOpMode {
 
         // OpMode loop
         while (opModeIsActive()) {
-            telemetry.addData("Running", "Detecting blocks...");
-            telemetry.addData("Selected Color", selectedColor);
-            telemetry.update();
-
             // Keep streaming from the webcam
+            if (gamepad1.b) {
+                selectedColor = "red";
+            } else if (gamepad1.x) {
+                selectedColor = "blue";
+            } else if (gamepad1.y) {
+                selectedColor = "yellow";
+            }
+
+            pipeline.setSelectedColor(selectedColor);
             sleep(50); // Delay to allow proper frame processing
         }
 
@@ -90,94 +100,96 @@ public class TestSampleDetection extends LinearOpMode {
     // Pipeline for detecting blocks of selected color
     class BlockDetectionPipeline extends OpenCvPipeline {
 
-        private String selectedColor = "none"; // Color selected during initialization
+    private Mat hsv = new Mat();     // Declare Mat outside processFrame to avoid reallocation
+    private Mat mask = new Mat();
+    private Mat red1 = new Mat();    // For red color detection (two ranges)
+    private Mat red2 = new Mat();
 
-        public void setSelectedColor(String color) {
-            this.selectedColor = color;
-        }
+    private String selectedColor = "none"; // Color selected during initialization
 
-        @Override
-        public Mat processFrame(Mat input) {
-            Mat hsv = new Mat();
-            Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
-
-            Scalar lowerBound, upperBound;
-            switch (selectedColor) {
-                case "red":
-                    // Red has two HSV ranges due to hue wrapping around
-                    Mat red1 = new Mat();
-                    Mat red2 = new Mat();
-                    Core.inRange(hsv, new Scalar(0, 100, 100), new Scalar(10, 255, 255), red1);
-                    Core.inRange(hsv, new Scalar(170, 100, 100), new Scalar(180, 255, 255), red2);
-                    Core.addWeighted(red1, 1.0, red2, 1.0, 0.0, input);
-                    break;
-                case "blue":
-                    lowerBound = new Scalar(100, 150, 0);
-                    upperBound = new Scalar(140, 255, 255);
-                    Core.inRange(hsv, lowerBound, upperBound, input);
-                    break;
-                case "yellow":
-                    lowerBound = new Scalar(20, 100, 100);
-                    upperBound = new Scalar(30, 255, 255);
-                    Core.inRange(hsv, lowerBound, upperBound, input);
-                    break;
-                default:
-                    // If no color is selected, return input frame unchanged
-                    return input;
-            }
-
-            // Optional: Gaussian blur to reduce noise
-            Imgproc.GaussianBlur(input, input, new Size(5, 5), 0);
-
-            // Find contours in the processed image
-            List<MatOfPoint> contours = new ArrayList<>();
-            Mat hierarchy = new Mat();
-            Imgproc.findContours(input, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-
-            Point imageCenter = new Point(input.cols() / 2.0, input.rows() / 2.0);
-            double closestDistance = Double.MAX_VALUE;
-            RotatedRect closestBlock = null;
-
-            for (MatOfPoint contour : contours) {
-                MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray());
-                RotatedRect rect = Imgproc.minAreaRect(contour2f);
-
-                Point[] box = new Point[4];
-                rect.points(box);
-
-                // Draw all blocks with pink
-                for (int i = 0; i < 4; i++) {
-                    Imgproc.line(input, box[i], box[(i + 1) % 4], new Scalar(255, 0, 255), 2);  // Pink color
-                }
-
-                // Find the center of the block
-                Point blockCenter = rect.center;
-
-                // Calculate distance to the center of the frame
-                double distanceToCenter = Math.sqrt(Math.pow(blockCenter.x - imageCenter.x, 2) + Math.pow(blockCenter.y - imageCenter.y, 2));
-
-                if (distanceToCenter < closestDistance) {
-                    closestDistance = distanceToCenter;
-                    closestBlock = rect;
-                }
-            }
-
-            // Highlight the closest block with green
-            if (closestBlock != null) {
-                Point[] closestBox = new Point[4];
-                closestBlock.points(closestBox);
-
-                for (int i = 0; i < 4; i++) {
-                    Imgproc.line(input, closestBox[i], closestBox[(i + 1) % 4], new Scalar(0, 255, 0), 2);  // Green color
-                }
-
-                // Print position and angle of the closest block
-                telemetry.addData("Position of Closest Block", closestBlock.center);
-                telemetry.addData("Angle of Rotation", closestBlock.angle);
-                telemetry.update();
-            }
-
-            return input; // Return the processed frame to display it
-        }
+    public void setSelectedColor(String color) {
+        this.selectedColor = color;
     }
+
+    @Override
+    public Mat processFrame(Mat input) {
+        // Convert the frame to HSV (use pre-declared Mat to avoid memory leak)
+        Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
+
+        Scalar lowerBound, upperBound;
+        switch (selectedColor) {
+            case "red":
+                // Red has two HSV ranges due to hue wrapping around
+                Core.inRange(hsv, new Scalar(0, 100, 100), new Scalar(10, 255, 255), red1);
+                Core.inRange(hsv, new Scalar(170, 100, 100), new Scalar(180, 255, 255), red2);
+                Core.addWeighted(red1, 1.0, red2, 1.0, 0.0, mask);
+                break;
+            case "blue":
+                lowerBound = new Scalar(100, 150, 0);
+                upperBound = new Scalar(140, 255, 255);
+                Core.inRange(hsv, lowerBound, upperBound, mask);
+                break;
+            case "yellow":
+                lowerBound = new Scalar(20, 100, 100);
+                upperBound = new Scalar(30, 255, 255);
+                Core.inRange(hsv, lowerBound, upperBound, mask);
+                break;
+            default:
+                return input;  // Return unprocessed frame if no color selected
+        }
+
+        // Optional: Apply Gaussian blur to reduce noise
+        Imgproc.GaussianBlur(mask, mask, new Size(5, 5), 0);
+
+        // Find contours in the processed image
+        List<MatOfPoint> contours = new ArrayList<>();
+        Mat hierarchy = new Mat();
+        Imgproc.findContours(mask, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        Point imageCenter = new Point(input.cols() / 2.0, input.rows() / 2.0);
+        double closestDistance = Double.MAX_VALUE;
+        RotatedRect closestBlock = null;
+
+        for (MatOfPoint contour : contours) {
+            MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray());
+            RotatedRect rect = Imgproc.minAreaRect(contour2f);
+
+            Point[] box = new Point[4];
+            rect.points(box);
+
+            // Draw all blocks with pink
+            for (int i = 0; i < 4; i++) {
+                Imgproc.line(input, box[i], box[(i + 1) % 4], new Scalar(255, 0, 255), 2);  // Pink color
+            }
+
+            // Find the center of the block
+            Point blockCenter = rect.center;
+
+            // Calculate distance to the center of the frame
+            double distanceToCenter = Math.sqrt(Math.pow(blockCenter.x - imageCenter.x, 2) + Math.pow(blockCenter.y - imageCenter.y, 2));
+
+            if (distanceToCenter < closestDistance) {
+                closestDistance = distanceToCenter;
+                closestBlock = rect;
+            }
+        }
+
+        // Highlight the closest block with green
+        if (closestBlock != null) {
+            Point[] closestBox = new Point[4];
+            closestBlock.points(closestBox);
+
+            for (int i = 0; i < 4; i++) {
+                Imgproc.line(input, closestBox[i], closestBox[(i + 1) % 4], new Scalar(0, 255, 0), 2);  // Green color
+            }
+
+            // Print position and angle of the closest block
+            telemetry.addData("Position of Closest Block", closestBlock.center);
+            telemetry.addData("Angle of Rotation", closestBlock.angle);
+            telemetry.update();
+        }
+
+        return input; // Return the processed frame to display it
+    }
+}
 }

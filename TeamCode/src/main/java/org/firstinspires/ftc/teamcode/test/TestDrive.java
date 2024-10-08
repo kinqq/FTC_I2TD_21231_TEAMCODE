@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.test;
 
 import static org.firstinspires.ftc.teamcode.test.TestMap.backLeftMotor;
 import static org.firstinspires.ftc.teamcode.test.TestMap.backRightMotor;
+import static org.firstinspires.ftc.teamcode.test.TestMap.eleLeftMotor;
+import static org.firstinspires.ftc.teamcode.test.TestMap.eleRightMotor;
 import static org.firstinspires.ftc.teamcode.test.TestMap.frontLeftMotor;
 import static org.firstinspires.ftc.teamcode.test.TestMap.frontRightMotor;
 import static org.firstinspires.ftc.teamcode.test.TestMap.imu;
@@ -28,6 +30,9 @@ public class TestDrive extends OpMode {
     Gamepad previousGamepad1 = new Gamepad();
     Gamepad previousGamepad2 = new Gamepad();
 
+     int elePos = 0;
+    int eleTargetPos = 0;
+
     @Override
     public void init() {
         //init hardware
@@ -43,6 +48,25 @@ public class TestDrive extends OpMode {
         double y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
         double x = -gamepad1.left_stick_x;
         double rx = -gamepad1.right_stick_x;
+
+        if (gamepad2.a) {
+            elePos = 0;
+        }
+        if (gamepad2.b) elePos = 1200;
+        if (gamepad2.x) elePos = 2000;
+        if (gamepad2.y) elePos = 2600;
+
+        eleLeftMotor.setTargetPosition(elePos);
+        eleLeftMotor.setPower(1);
+        eleLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        eleRightMotor.setTargetPosition(elePos);
+        eleRightMotor.setPower(1);
+        eleRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+    if (gamepad2.start) {
+        eleLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        eleRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
 
         if (gamepad1.left_bumper && !previousGamepad1.left_bumper) {
             speed = speed != SAFE_MODE ? SAFE_MODE : NORMAL_MODE;
