@@ -27,7 +27,7 @@ public class MeepMeepTesting {
                 .build();
 
         Alliance alliance = Alliance.RED;
-        Position position = Position.LEFT;
+        Position position = Position.RIGHT;
         
 
         if (position == Position.RIGHT && alliance == Alliance.RED) {
