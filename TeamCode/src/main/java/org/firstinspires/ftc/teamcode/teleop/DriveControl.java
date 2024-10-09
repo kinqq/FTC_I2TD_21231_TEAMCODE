@@ -1,14 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import static org.firstinspires.ftc.teamcode.test.TestMap.backLeftMotor;
-import static org.firstinspires.ftc.teamcode.test.TestMap.backRightMotor;
-import static org.firstinspires.ftc.teamcode.test.TestMap.colorSensor;
-import static org.firstinspires.ftc.teamcode.test.TestMap.eleLeftMotor;
-import static org.firstinspires.ftc.teamcode.test.TestMap.eleRightMotor;
-import static org.firstinspires.ftc.teamcode.test.TestMap.frontLeftMotor;
-import static org.firstinspires.ftc.teamcode.test.TestMap.frontRightMotor;
-import static org.firstinspires.ftc.teamcode.test.TestMap.imu;
-import static org.firstinspires.ftc.teamcode.test.TestMap.initTestRobot;
+import static org.firstinspires.ftc.teamcode.teleop.RobotMap.*;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -37,7 +29,7 @@ public class DriveControl extends OpMode {
     @Override
     public void init() {
         //init hardware
-        initTestRobot(hardwareMap);
+        initRobot(hardwareMap);
 
         if (colorSensor instanceof SwitchableLight) {
           ((SwitchableLight)colorSensor).enableLight(false);
