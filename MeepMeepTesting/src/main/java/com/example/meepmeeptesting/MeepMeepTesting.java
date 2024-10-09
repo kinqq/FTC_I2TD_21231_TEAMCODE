@@ -26,7 +26,7 @@ public class MeepMeepTesting {
                 .setDimensions(16, 18)
                 .build();
 
-        Alliance alliance = Alliance.RED;
+        Alliance alliance = Alliance.BLUE;
         Position position = Position.RIGHT;
         
 
@@ -45,16 +45,24 @@ public class MeepMeepTesting {
         }
         if (position == Position.LEFT && alliance == Alliance.RED) {
             myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-25, -60, Math.toRadians(90)))
-                    .strafeTo(new Vector2d(-48,-48))
+                    .strafeTo(new Vector2d(-8,-37))
+                    .waitSeconds(2)
+                    .strafeTo(new Vector2d(-48,-39))
+                    .waitSeconds(1)
+                    .strafeToLinearHeading(new Vector2d(-52,-52), Math.toRadians(225))
                     .waitSeconds(.5)
-                    .turnTo(Math.toRadians(225))
+                    .strafeToLinearHeading(new Vector2d(-8,-33), Math.toRadians(90))
                     .build());
         }
         if (position == Position.RIGHT && alliance == Alliance.BLUE) {
             myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(25, 60, Math.toRadians(270)))
-                    .strafeTo(new Vector2d(48,48))
+                    .strafeTo(new Vector2d(8,37))
+                    .waitSeconds(2)
+                    .strafeTo(new Vector2d(48,39))
+                    .waitSeconds(1)
+                    .strafeToLinearHeading(new Vector2d(52,52), Math.toRadians(45))
                     .waitSeconds(.5)
-                    .turnTo(Math.toRadians(45))
+                    .strafeToLinearHeading(new Vector2d(8,33), Math.toRadians(270))
                     .build());
 
         }
