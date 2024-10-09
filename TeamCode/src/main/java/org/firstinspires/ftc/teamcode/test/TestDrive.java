@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.test;
 
 import static org.firstinspires.ftc.teamcode.test.TestMap.backLeftMotor;
 import static org.firstinspires.ftc.teamcode.test.TestMap.backRightMotor;
+import static org.firstinspires.ftc.teamcode.test.TestMap.colorSensor;
 import static org.firstinspires.ftc.teamcode.test.TestMap.eleLeftMotor;
 import static org.firstinspires.ftc.teamcode.test.TestMap.eleRightMotor;
 import static org.firstinspires.ftc.teamcode.test.TestMap.frontLeftMotor;
@@ -13,7 +14,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -37,6 +40,11 @@ public class TestDrive extends OpMode {
     public void init() {
         //init hardware
         initTestRobot(hardwareMap);
+
+        if (colorSensor instanceof SwitchableLight) {
+          ((SwitchableLight)colorSensor).enableLight(false);
+        }
+
         //update log
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -49,12 +57,10 @@ public class TestDrive extends OpMode {
         double x = -gamepad1.left_stick_x;
         double rx = -gamepad1.right_stick_x;
 
-        if (gamepad2.a) {
-            elePos = 0;
-        }
+        if (gamepad2.a) elePos = 0;
         if (gamepad2.b) elePos = 1200;
         if (gamepad2.x) elePos = 2000;
-        if (gamepad2.y) elePos = 2600;
+        if (gamepad2.y) elePos = 2300;
 
         eleLeftMotor.setTargetPosition(elePos);
         eleLeftMotor.setPower(1);
@@ -63,10 +69,18 @@ public class TestDrive extends OpMode {
         eleRightMotor.setPower(1);
         eleRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-    if (gamepad2.start) {
-        eleLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        eleRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
+        if (gamepad2.start) {
+            eleLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            eleRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
+
+        if (gamepad2.back) {
+            eleLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            eleRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            eleLeftMotor.setPower(-1);
+            eleRightMotor.setPower(-1);
+        }
 
         if (gamepad1.left_bumper && !previousGamepad1.left_bumper) {
             speed = speed != SAFE_MODE ? SAFE_MODE : NORMAL_MODE;
@@ -74,6 +88,10 @@ public class TestDrive extends OpMode {
 
         if (gamepad1.right_bumper && !previousGamepad1.right_bumper) {
             speed = speed != PRECISION_MODE ? PRECISION_MODE : NORMAL_MODE;
+        }
+
+        if (gamepad1.back && !previousGamepad1.back) {
+            ((SwitchableLight)colorSensor).enableLight(!((SwitchableLight) colorSensor).isLightOn());
         }
 
         if (gamepad1.start) {
@@ -112,13 +130,13 @@ public class TestDrive extends OpMode {
         telemetry.addData("fr", frontRightPower);
         telemetry.addData("br", backRightPower);
 
-        telemetry.addLine("RENNIE!");
+        telemetry.addLine("RENNIE IS THE BEST!");
+        telemetry.addLine("CHO IS THE WORST!");
 
         telemetry.update();
 
         gamepad1.copy(previousGamepad1);
         gamepad2.copy(previousGamepad2);
-
     }
 
     @Override

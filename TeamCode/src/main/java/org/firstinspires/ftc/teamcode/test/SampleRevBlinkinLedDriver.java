@@ -54,7 +54,7 @@ public class SampleRevBlinkinLedDriver extends OpMode {
     /*
      * Change the pattern every 10 seconds in AUTO mode.
      */
-    private final static int LED_PERIOD = 0;
+    private final static int LED_PERIOD = 10;
 
     /*
      * Rate limit gamepad button presses to every 500ms.
@@ -81,7 +81,7 @@ public class SampleRevBlinkinLedDriver extends OpMode {
         displayKind = DisplayKind.AUTO;
 
         blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "led");
-        pattern = RevBlinkinLedDriver.BlinkinPattern.CP1_2_TWINKLES;
+        pattern = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE;
         blinkinLedDriver.setPattern(pattern);
 
         display = telemetry.addData("Display Kind: ", displayKind.toString());

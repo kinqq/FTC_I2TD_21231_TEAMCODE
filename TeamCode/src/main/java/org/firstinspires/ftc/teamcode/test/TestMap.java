@@ -3,18 +3,18 @@ package org.firstinspires.ftc.teamcode.test;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 
 public class TestMap {
     static HardwareMap hwMap;
 
     static public DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, eleLeftMotor, eleRightMotor;
     static public IMU imu;
+    static public NormalizedColorSensor colorSensor;
 
-    public static void initTestRobot(HardwareMap map) {
-        hwMap = map;
+    public static void initTestRobot(HardwareMap hwMap) {
 
         frontLeftMotor = hwMap.get(DcMotorEx.class, "leftFront");
         frontRightMotor = hwMap.get(DcMotorEx.class, "rightFront");
@@ -23,6 +23,8 @@ public class TestMap {
 
         eleLeftMotor = hwMap.get(DcMotorEx.class, "eleLeft");
         eleRightMotor = hwMap.get(DcMotorEx.class, "eleRight");
+
+//        colorSensor = hwMap.get(NormalizedColorSensor.class, "racistSensor");
 
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -60,5 +62,7 @@ public class TestMap {
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
+
+
     }
 }
