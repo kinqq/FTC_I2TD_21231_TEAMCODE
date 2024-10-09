@@ -20,9 +20,16 @@ public class MeepMeepTesting {
         // weird...
         if (!left && red) {
             myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(25, -60, Math.toRadians(90)))
-                    .strafeTo(new Vector2d(48,-40))
-                    .strafeToLinearHeading(new Vector2d(-48,-48), Math.toRadians(225))
-                    .strafeToLinearHeading(new Vector2d(60,-60), Math.toRadians(0))
+                    .strafeTo(new Vector2d(0, -45))
+                    .waitSeconds(1.5)
+                    .splineToSplineHeading(new Pose2d(new Vector2d(30, -35), Math.toRadians(0)), Math.toRadians(0))
+                    // robot stops here.. why?
+                    .splineTo(new Vector2d(35, 15), Math.toRadians(35))
+                    .waitSeconds(1.5)
+                    .splineTo(new Vector2d(25, -50), Math.toRadians(180))
+                    .splineTo(new Vector2d(-45, -50), Math.toRadians(225))
+                    .waitSeconds(1.5)
+                    .strafeToLinearHeading(new Vector2d(60, -60), Math.toRadians(90))
 //                        .strafeTo(new Vector2d(60, -60))
                     .build());
         }
@@ -43,9 +50,16 @@ public class MeepMeepTesting {
         }
         if (!left && !red) {
             myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-25, 60, Math.toRadians(270)))
-                    .strafeTo(new Vector2d(-48,40))
-                    .strafeToLinearHeading(new Vector2d(48,48), Math.toRadians(45))
-                    .strafeToLinearHeading(new Vector2d(-60,60), Math.toRadians(180))
+                    .strafeTo(new Vector2d(0, 45))
+                    .waitSeconds(1.5)
+                    .splineToSplineHeading(new Pose2d(new Vector2d(-30, 35), Math.toRadians(180)), Math.toRadians(180))
+                    // robot stops here.. why?
+                    .splineTo(new Vector2d(-35, -15), Math.toRadians(215))
+                    .waitSeconds(1.5)
+                    .splineTo(new Vector2d(-25, 50), Math.toRadians(0))
+                    .splineTo(new Vector2d(45, 50), Math.toRadians(45))
+                    .waitSeconds(1.5)
+                    .strafeToLinearHeading(new Vector2d(-60, 60), Math.toRadians(270))
 //                        .strafeTo(new Vector2d(60, -60))
                     .build());
         }
