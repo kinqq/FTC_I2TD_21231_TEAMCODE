@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
@@ -14,35 +15,35 @@ import com.qualcomm.robotcore.hardware.SwitchableLight;
 import org.firstinspires.ftc.teamcode.util.HSV;
 import org.firstinspires.ftc.teamcode.util.LED;
 
-@TeleOp(name = "Color Sensor Test", group = "Test")
+@TeleOp(name = "Test Color Sensor", group = "Test")
 @Config
 public class TestColorSensor extends LinearOpMode {
     NormalizedColorSensor colorSensor;
     LED led;
 
     final float[] hsvValues = new float[3];
-    float GAIN = 1;
+    float GAIN = 10.0F;
     boolean isBragging = false;
 
     @Override
     public void runOpMode() {
-        waitForStart();
-        Gamepad prevGamepad1 = new Gamepad();
+        boolean prevAButtonState = false;
 
         led = new LED(hardwareMap.get(RevBlinkinLedDriver.class, "led"));
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "racistSensor");
+
+        waitForStart();
 
         while (opModeIsActive()) {
-            if (gamepad1.back && !prevGamepad1.back) {
-                switchLight();
+            if (gamepad1.a && !prevAButtonState) {
+                isBragging = !isBragging;
             }
 
-            if (gamepad1.start && !prevGamepad1.start) {
-                isBragging ^= true;
-            }
+            prevAButtonState = gamepad1.a;
 
             GAIN += (float) (gamepad1.dpad_up ? 0.01 : (gamepad1.dpad_down ? -0.01 : 0));
 
-            colorSensor.setGain(GAIN);
+            if (colorSensor != null) colorSensor.setGain(GAIN);
             NormalizedRGBA colors = colorSensor.getNormalizedColors();
 
             Color.colorToHSV(colors.toColor(), hsvValues);
@@ -69,13 +70,12 @@ public class TestColorSensor extends LinearOpMode {
                     .addData("Saturation", "%.3f", hsv.getSaturation())
                     .addData("Value", "%.3f", hsv.getValue());
             telemetry.addData("Alpha", "%.3f", colors.alpha);
+            telemetry.addData("Bragging Mode", isBragging);
+            telemetry.addData("Curr A", gamepad1.a);
+            telemetry.addData("Last A", prevAButtonState);
 
-            gamepad1.copy(prevGamepad1);
+
+            telemetry.update();
         }
-    }
-
-    public void switchLight() {
-        SwitchableLight light = (SwitchableLight) colorSensor;
-        light.enableLight(!light.isLightOn());
     }
 }

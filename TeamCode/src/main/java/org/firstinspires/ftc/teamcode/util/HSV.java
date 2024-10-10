@@ -36,11 +36,12 @@ public class HSV {
 
     // Method to determine if the color is red, yellow, or blue
     public String getColorCategory() {
-        if (isInRange(hue, 20, 20))
+        if (hue == 0) return "N/A";
+        if (isInRange(hue, 20, 45))
             return "Red";
-        else if (isInRange(hue, 70, 20))
+        else if (isInRange(hue, 80, 10))
             return "Yellow";
-        else if (isInRange(hue, 220, 20))
+        else if (isInRange(hue, 220, 45))
             return "Blue";
         else
             return "N/A";
