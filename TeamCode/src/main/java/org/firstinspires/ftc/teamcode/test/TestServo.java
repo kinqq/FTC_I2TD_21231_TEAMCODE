@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name="Test", group = "Test")
+@TeleOp(name="TestServo", group = "Test")
 @Config
 public class TestServo extends LinearOpMode {
     @Override

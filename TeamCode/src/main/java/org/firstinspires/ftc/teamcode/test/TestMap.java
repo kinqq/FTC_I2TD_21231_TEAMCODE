@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.test;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
@@ -10,7 +11,8 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 public class TestMap {
     static HardwareMap hwMap;
 
-    static public DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, eleLeftMotor, eleRightMotor;
+    static public DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
+    static public DcMotorEx eleLeftMotor, eleRightMotor, rotLeftMotor, rotRightMotor;
     static public IMU imu;
     static public NormalizedColorSensor colorSensor;
 
@@ -21,8 +23,11 @@ public class TestMap {
         backLeftMotor = hwMap.get(DcMotorEx.class, "leftBack");
         backRightMotor = hwMap.get(DcMotorEx.class, "rightBack");
 
-        eleLeftMotor = hwMap.get(DcMotorEx.class, "eleLeft");
-        eleRightMotor = hwMap.get(DcMotorEx.class, "eleRight");
+        eleLeftMotor = hwMap.get(DcMotorEx.class, "leftEle");
+        eleRightMotor = hwMap.get(DcMotorEx.class, "rightEle");
+
+        rotLeftMotor = hwMap.get(DcMotorEx.class, "leftRot");
+        rotRightMotor = hwMap.get(DcMotorEx.class, "rightRot");
 
 //        colorSensor = hwMap.get(NormalizedColorSensor.class, "racistSensor");
 
@@ -40,13 +45,8 @@ public class TestMap {
         eleLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         eleRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        eleLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        eleRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rotLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rotRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -55,6 +55,10 @@ public class TestMap {
 
         eleLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         eleRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        eleLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        eleRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         imu = hwMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(

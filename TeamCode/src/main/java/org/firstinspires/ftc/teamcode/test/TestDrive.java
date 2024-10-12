@@ -1,14 +1,6 @@
 package org.firstinspires.ftc.teamcode.test;
 
-import static org.firstinspires.ftc.teamcode.test.TestMap.backLeftMotor;
-import static org.firstinspires.ftc.teamcode.test.TestMap.backRightMotor;
-import static org.firstinspires.ftc.teamcode.test.TestMap.colorSensor;
-import static org.firstinspires.ftc.teamcode.test.TestMap.eleLeftMotor;
-import static org.firstinspires.ftc.teamcode.test.TestMap.eleRightMotor;
-import static org.firstinspires.ftc.teamcode.test.TestMap.frontLeftMotor;
-import static org.firstinspires.ftc.teamcode.test.TestMap.frontRightMotor;
-import static org.firstinspires.ftc.teamcode.test.TestMap.imu;
-import static org.firstinspires.ftc.teamcode.test.TestMap.initTestRobot;
+import static org.firstinspires.ftc.teamcode.test.TestMap.*;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -33,8 +25,8 @@ public class TestDrive extends OpMode {
     Gamepad previousGamepad1 = new Gamepad();
     Gamepad previousGamepad2 = new Gamepad();
 
-     int elePos = 0;
-    int eleTargetPos = 0;
+    int elePos = 0;
+    int rotPos = 0;
 
     @Override
     public void init() {
@@ -63,24 +55,21 @@ public class TestDrive extends OpMode {
         if (gamepad2.y) elePos = 2300;
 
         eleLeftMotor.setTargetPosition(elePos);
-        eleLeftMotor.setPower(1);
+        eleLeftMotor.setPower(0.5);
         eleLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         eleRightMotor.setTargetPosition(elePos);
-        eleRightMotor.setPower(1);
+        eleRightMotor.setPower(0.5);
         eleRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        if (gamepad2.start) {
-            eleLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            eleRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
+        if (gamepad2.dpad_up) rotPos += 1;
+        if (gamepad2.dpad_down) rotPos -= 1;
 
-        if (gamepad2.back) {
-            eleLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            eleRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-            eleLeftMotor.setPower(-1);
-            eleRightMotor.setPower(-1);
-        }
+        rotLeftMotor.setTargetPosition(rotPos);
+        rotLeftMotor.setPower(0.8);
+        rotLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rotRightMotor.setTargetPosition(-rotPos);
+        rotRightMotor.setPower(0.8);
+        rotRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         if (gamepad1.left_bumper && !previousGamepad1.left_bumper) {
             speed = speed != SAFE_MODE ? SAFE_MODE : NORMAL_MODE;
@@ -130,8 +119,11 @@ public class TestDrive extends OpMode {
         telemetry.addData("fr", frontRightPower);
         telemetry.addData("br", backRightPower);
 
-        telemetry.addLine("RENNIE IS THE BEST!");
-        telemetry.addLine("CHO IS THE WORST!");
+        telemetry.addData("elePos", elePos);
+        telemetry.addData("rotPos", rotPos);
+
+        telemetry.addData("rotPoss", rotLeftMotor.getCurrentPosition());
+
 
         telemetry.update();
 
