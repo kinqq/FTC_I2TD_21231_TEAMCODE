@@ -73,21 +73,6 @@ public class DriveControl extends OpMode {
         eleRightMotor.setPower(1);
         eleRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-
-
-        // manual elevator control
-        // entire robot stops while doing this
-        while (gamepad2.left_bumper) {
-            if (gamepad2.dpad_up) {
-                eleLeftMotor.setPower(0.1);
-                eleRightMotor.setPower(0.1);
-            }
-            if (gamepad2.dpad_down) {
-                eleLeftMotor.setPower(-0.1);
-                eleRightMotor.setPower(-0.1);
-            }
-        }
-
         if (gamepad2.back) {
             eleLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             eleRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -102,10 +87,6 @@ public class DriveControl extends OpMode {
 
         if (gamepad1.right_bumper && !previousGamepad1.right_bumper) {
             speed = speed != PRECISION_MODE ? PRECISION_MODE : NORMAL_MODE;
-        }
-
-        if (gamepad1.back && !previousGamepad1.back) {
-            ((SwitchableLight)colorSensor).enableLight(!((SwitchableLight) colorSensor).isLightOn());
         }
 
         if (gamepad1.start) {

@@ -36,8 +36,9 @@ public class RobotMap {
         backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        eleLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        eleRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        // Not resetting encoder in case the elevator malfunctioned and didn't stopped at rest position.
+//        eleLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        eleRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -55,12 +56,11 @@ public class RobotMap {
         eleLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         eleRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        imu = hwMap.get(IMU.class, "imu");
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
-                RevHubOrientationOnRobot.UsbFacingDirection.UP));
-        // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
-        imu.initialize(parameters);
+//        imu = hwMap.get(IMU.class, "imu");
+//        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+//                RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
+//                RevHubOrientationOnRobot.UsbFacingDirection.UP));
+//        imu.initialize(parameters);
 
         odo = hwMap.get(GoBildaPinpointDriverRR.class, "odo");
     }

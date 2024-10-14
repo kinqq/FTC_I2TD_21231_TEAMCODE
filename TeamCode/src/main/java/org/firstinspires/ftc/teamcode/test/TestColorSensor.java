@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.hardware.SwitchableLight;
 import org.firstinspires.ftc.teamcode.util.HSV;
 import org.firstinspires.ftc.teamcode.util.LED;
 
-@TeleOp(name = "Test Color Sensor", group = "Test")
+@TeleOp(name = "TestColorSensor", group = "Test")
 @Config
 public class TestColorSensor extends LinearOpMode {
     NormalizedColorSensor colorSensor;
@@ -42,8 +42,9 @@ public class TestColorSensor extends LinearOpMode {
             prevAButtonState = gamepad1.a;
 
             GAIN += (float) (gamepad1.dpad_up ? 0.01 : (gamepad1.dpad_down ? -0.01 : 0));
+            assert colorSensor != null;
 
-            if (colorSensor != null) colorSensor.setGain(GAIN);
+            colorSensor.setGain(GAIN);
             NormalizedRGBA colors = colorSensor.getNormalizedColors();
 
             Color.colorToHSV(colors.toColor(), hsvValues);
@@ -71,9 +72,6 @@ public class TestColorSensor extends LinearOpMode {
                     .addData("Value", "%.3f", hsv.getValue());
             telemetry.addData("Alpha", "%.3f", colors.alpha);
             telemetry.addData("Bragging Mode", isBragging);
-            telemetry.addData("Curr A", gamepad1.a);
-            telemetry.addData("Last A", prevAButtonState);
-
 
             telemetry.update();
         }

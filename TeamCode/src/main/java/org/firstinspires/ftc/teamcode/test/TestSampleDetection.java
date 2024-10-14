@@ -15,7 +15,7 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 import java.util.List;
 
-@TeleOp(name = "FTC EasyOpenCV Block Detection")
+@TeleOp(name = "TestSampleDetection", group = "Test")
 public class TestSampleDetection extends LinearOpMode {
 
     OpenCvCamera webcam;

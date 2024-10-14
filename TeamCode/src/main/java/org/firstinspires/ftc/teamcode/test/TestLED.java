@@ -30,7 +30,6 @@
 package org.firstinspires.ftc.teamcode.test;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -48,8 +47,8 @@ import java.util.concurrent.TimeUnit;
  *
  * Displays the first pattern upon init.
  */
-@TeleOp(name="BlinkinExample", group = "test")
-public class SampleRevBlinkinLedDriver extends OpMode {
+@TeleOp(name="TestLED", group = "Test")
+public class TestLED extends OpMode {
 
     /*
      * Change the pattern every 10 seconds in AUTO mode.

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.test;
 
 import static org.firstinspires.ftc.teamcode.test.TestMap.*;
+import static org.firstinspires.ftc.teamcode.util.Constants.*;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -15,12 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 @TeleOp(name = "TestDrive", group = "Test")
 @Config
 public class TestDrive extends OpMode {
-    public static double rotOva = 1.06;
     public static double speed = 1;
-
-    public static double SAFE_MODE = 0.5;
-    public static double PRECISION_MODE = 0.25;
-    public static double NORMAL_MODE = 1.0;
 
     Gamepad previousGamepad1 = new Gamepad();
     Gamepad previousGamepad2 = new Gamepad();
@@ -32,10 +28,6 @@ public class TestDrive extends OpMode {
     public void init() {
         //init hardware
         initTestRobot(hardwareMap);
-
-        if (colorSensor instanceof SwitchableLight) {
-          ((SwitchableLight)colorSensor).enableLight(false);
-        }
 
         //update log
         telemetry.addData("Status", "Initialized");
@@ -49,10 +41,10 @@ public class TestDrive extends OpMode {
         double x = -gamepad1.left_stick_x;
         double rx = -gamepad1.right_stick_x;
 
-        if (gamepad2.a) elePos = 0;
-        if (gamepad2.b) elePos = 1200;
-        if (gamepad2.x) elePos = 2000;
-        if (gamepad2.y) elePos = 2300;
+        if (gamepad2.a) elePos = ELE_BOT;
+        if (gamepad2.b) elePos = ELE_LOW;
+        if (gamepad2.x) elePos = ELE_MID;
+        if (gamepad2.y) elePos = ELE_HIGH;
 
         eleLeftMotor.setTargetPosition(elePos);
         eleLeftMotor.setPower(0.5);
@@ -65,10 +57,10 @@ public class TestDrive extends OpMode {
         if (gamepad2.dpad_down) rotPos -= 1;
 
         rotLeftMotor.setTargetPosition(rotPos);
-        rotLeftMotor.setPower(0.8);
+        rotLeftMotor.setPower(1);
         rotLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rotRightMotor.setTargetPosition(-rotPos);
-        rotRightMotor.setPower(0.8);
+        rotRightMotor.setPower(1);
         rotRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         if (gamepad1.left_bumper && !previousGamepad1.left_bumper) {
@@ -79,30 +71,15 @@ public class TestDrive extends OpMode {
             speed = speed != PRECISION_MODE ? PRECISION_MODE : NORMAL_MODE;
         }
 
-        if (gamepad1.back && !previousGamepad1.back) {
-            ((SwitchableLight)colorSensor).enableLight(!((SwitchableLight) colorSensor).isLightOn());
-        }
-
-        if (gamepad1.start) {
-            imu.resetYaw();
-        }
-
-        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-
-        double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-        double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-
-        rotX = rotX * rotOva;  // Counteract imperfect strafing
-
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio,
         // but only if at least one is out of the range [-1, 1]
-        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
 
-        double frontLeftPower = (rotY + rotX + rx) / denominator * speed;
-        double backLeftPower = (rotY - rotX + rx) / denominator * speed;
-        double frontRightPower = (rotY - rotX - rx) / denominator * speed;
-        double backRightPower = (rotY + rotX - rx) / denominator * speed;
+        double frontLeftPower = (y + x + rx) / denominator * speed;
+        double backLeftPower = (y - x + rx) / denominator * speed;
+        double frontRightPower = (y - x - rx) / denominator * speed;
+        double backRightPower = (y + x - rx) / denominator * speed;
 
         frontLeftMotor.setPower(frontLeftPower);
         backLeftMotor.setPower(backLeftPower);

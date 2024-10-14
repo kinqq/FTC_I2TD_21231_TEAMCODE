@@ -13,8 +13,6 @@ public class TestMap {
 
     static public DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
     static public DcMotorEx eleLeftMotor, eleRightMotor, rotLeftMotor, rotRightMotor;
-    static public IMU imu;
-    static public NormalizedColorSensor colorSensor;
 
     public static void initTestRobot(HardwareMap hwMap) {
 
@@ -29,13 +27,8 @@ public class TestMap {
         rotLeftMotor = hwMap.get(DcMotorEx.class, "leftRot");
         rotRightMotor = hwMap.get(DcMotorEx.class, "rightRot");
 
-//        colorSensor = hwMap.get(NormalizedColorSensor.class, "racistSensor");
-
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
-
-//        eleLeftMotor.setDirection(DcMotor.Direction.REVERSE);
-//        eleRightMotor.setDirection(DcMotor.Direction.REVERSE);
 
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -55,18 +48,5 @@ public class TestMap {
 
         eleLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         eleRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        eleLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        eleRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
-        imu = hwMap.get(IMU.class, "imu");
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
-                RevHubOrientationOnRobot.UsbFacingDirection.UP));
-        // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
-        imu.initialize(parameters);
-
-
     }
 }
