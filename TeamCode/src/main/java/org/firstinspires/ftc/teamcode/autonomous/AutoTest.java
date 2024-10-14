@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
@@ -28,12 +26,8 @@ public class AutoTest extends LinearOpMode {
         RIGHT
     }
 
-    public static class Params {
-        public Alliance alliance = Alliance.BLUE;
-        public Position position = Position.LEFT;
-    }
-
-    public static Params PARAMS = new Params();
+    public Alliance alliance = Alliance.BLUE;
+    public Position position = Position.LEFT;
 
     @Override
     public void runOpMode() {
@@ -44,44 +38,36 @@ public class AutoTest extends LinearOpMode {
                 .splineTo(new Vector2d(0, 0), 0)
                 .build();
 
-         Action Traj2 = drive.actionBuilder(drive.pose)
-                    .lineToY(40)
-                        .turn(Math.toRadians(90))
-                        .lineToX(-40)
-                        .turn(Math.toRadians(90))
-                        .lineToY(-40)
-                        .turn(Math.toRadians(90))
-                        .lineToX(40)
-                        .turn(Math.toRadians(90))
-                 .build();
+//         Action Traj2 = drive.actionBuilder(drive.pose)
+//                    .lineToY(40)
+//                        .turn(Math.toRadians(90))
+//                        .lineToX(-40)
+//                        .turn(Math.toRadians(90))
+//                        .lineToY(-40)
+//                        .turn(Math.toRadians(90))
+//                        .lineToX(40)
+//                        .turn(Math.toRadians(90))
+//                 .build();
 
          // Wait until start and set up parameters
-         while (!opModeIsActive() && !isStopRequested()) {
+        while (!opModeIsActive() && !isStopRequested()) {
              if (gamepad1.left_bumper) {
-                 PARAMS.alliance = Alliance.BLUE;
+                 alliance = Alliance.BLUE;
              }
              if (gamepad1.right_bumper) {
-                 PARAMS.alliance = Alliance.RED;
+                 alliance = Alliance.RED;
              }
              if (gamepad1.left_trigger > 0.25) {
-                 PARAMS.position = Position.LEFT;
+                 position = Position.LEFT;
              }
              if (gamepad1.right_trigger > 0.25) {
-                 PARAMS.position = Position.RIGHT;
+                 position = Position.RIGHT;
              }
-             telemetry.addData("Alliance", PARAMS.alliance);
-             telemetry.addData("Position", PARAMS.position);
-         }
+             telemetry.addData("Alliance", alliance);
+             telemetry.addData("Position", position);
+        }
 
         Actions.runBlocking(new SequentialAction(
-//                new Action() {
-//                    @Override
-//                    public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//                        telemetry.addLine("Running Traj1...");
-//                        telemetry.update();
-//                        return Traj1.run(telemetryPacket); // Ensure Traj1 is run properly
-//                    }
-//                }
                 Traj1
         ));
 

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import static org.firstinspires.ftc.teamcode.teleop.RobotMap.*;
+import static org.firstinspires.ftc.teamcode.util.Constants.*;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriver;
@@ -26,15 +27,13 @@ public class DriveControl extends OpMode {
     Gamepad previousGamepad2 = new Gamepad();
 
     int elePos = 0;
+    int eleCorrection = 0;
 
     @Override
     public void init() {
         //init hardware
         initRobot(hardwareMap);
 
-//        if (colorSensor instanceof SwitchableLight) {
-//          ((SwitchableLight)colorSensor).enableLight(false);
-//        }
         odo.setOffsets(-84.0, -168.0);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
@@ -52,23 +51,29 @@ public class DriveControl extends OpMode {
         double x = -gamepad1.left_stick_x;
         double rx = -gamepad1.right_stick_x;
 
-        if (gamepad2.a) elePos = 0;
-        if (gamepad2.b) elePos = 1200;
-        if (gamepad2.x) elePos = 2000;
-        if (gamepad2.y) elePos = 2300;
+        if (gamepad2.a) elePos = ELE_BOT;
+        if (gamepad2.b) elePos = ELE_LOW;
+        if (gamepad2.x) elePos = ELE_MID;
+        if (gamepad2.y) elePos = ELE_HIGH;
 
-        eleLeftMotor.setTargetPosition(elePos);
+        // reset elevator position
+        if (gamepad2.back) {
+            if (gamepad2.a) {
+                eleCorrection += 1;
+            }
+            if (gamepad2.b) {
+                eleCorrection -= 1;
+            }
+        }
+
+        eleLeftMotor.setTargetPosition(elePos + eleCorrection);
         eleLeftMotor.setPower(1);
         eleLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        eleRightMotor.setTargetPosition(elePos);
+        eleRightMotor.setTargetPosition(elePos + eleCorrection);
         eleRightMotor.setPower(1);
         eleRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        // reset elevator position
-        if (gamepad2.start) {
-            eleLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            eleRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        }
+
 
         // manual elevator control
         // entire robot stops while doing this

@@ -17,7 +17,7 @@ public class TestPIDF extends OpMode {
     public static double p2 = 0, i2 = 0, d2 = 0, f2 = 0;
 
 
-    public static int target = 100;
+    public static int target = -100;
 
     private final double ticks_in_degree = 537.7 / 360.0;
 
@@ -26,7 +26,7 @@ public class TestPIDF extends OpMode {
     @Override
     public void init() {
         controller = new PIDController(p, i, d);
-        controller2 = new PIDController(p2, i2, d2);
+        controller2 = new PIDController(p, i, d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         arm_motor1 = hardwareMap.get(DcMotorEx.class, "leftRot");
