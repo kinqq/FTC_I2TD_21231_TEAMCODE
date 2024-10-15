@@ -7,14 +7,17 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class TestMap {
     static HardwareMap hwMap;
 
     static public DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
     static public DcMotorEx eleLeftMotor, eleRightMotor, rotLeftMotor, rotRightMotor;
+    static public Servo grabber;
 
     public static void initTestRobot(HardwareMap hwMap) {
+        grabber = hwMap.get(Servo.class, "grabber");
 
         frontLeftMotor = hwMap.get(DcMotorEx.class, "leftFront");
         frontRightMotor = hwMap.get(DcMotorEx.class, "rightFront");

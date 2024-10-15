@@ -8,19 +8,18 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Config
 @TeleOp(name = "TestPIDF", group = "Test")
 public class TestPIDF extends OpMode {
     private PIDController controller, controller2;
-    public static double p = 0, i = 0, d = 0, f = 0;
-    public static double p2 = 0, i2 = 0, d2 = 0, f2 = 0;
-
+    public static double p = 0.002, i = 0, d = 0, f = 0.06;
+//    public static double p2 = 0, i2 = 0, d2 = 0, f2 = 0;
 
     public static int target = -100;
 
     private final double ticks_in_degree = 537.7 / 360.0;
-
     private DcMotorEx arm_motor1, arm_motor2;
 
     @Override
@@ -31,6 +30,9 @@ public class TestPIDF extends OpMode {
 
         arm_motor1 = hardwareMap.get(DcMotorEx.class, "leftRot");
         arm_motor2 = hardwareMap.get(DcMotorEx.class, "rightRot");
+
+        arm_motor1.setDirection(DcMotorSimple.Direction.REVERSE);
+        arm_motor2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         if (gamepad1.start) {
             arm_motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -50,12 +52,14 @@ public class TestPIDF extends OpMode {
         double power = pid + ff;
         arm_motor1.setPower(power);
 
-        controller2.setPID(p, i, d);
-        int arm_pos2 = -arm_motor1.getCurrentPosition();
-        double pid2 = controller2.calculate(arm_pos2, -target);
-        double ff2 = Math.cos(Math.toRadians(-target / ticks_in_degree)) * f;
-        double power2 = pid2 + ff2;
-        arm_motor2.setPower(power2);
+//        controller2.setPID(p, i, d);
+//        int arm_pos2 = -arm_motor1.getCurrentPosition();
+//        double pid2 = controller2.calculate(arm_pos2, -target);
+//        double ff2 = Math.cos(Math.toRadians(-target / ticks_in_degree)) * f;
+//        double power2 = pid2 + ff2;
+//        arm_motor2.setPower(power2);
+
+        arm_motor2.setPower(power);
 
         telemetry.addData("pos1", arm_pos);
         telemetry.addData("pos2", arm_motor2.getCurrentPosition());

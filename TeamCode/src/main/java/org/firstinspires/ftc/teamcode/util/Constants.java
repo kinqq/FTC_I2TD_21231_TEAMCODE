@@ -9,7 +9,7 @@ public class Constants {
         public static int ELE_BOT  = 0;
         public static int ELE_LOW  = 1000;
         public static int ELE_MID  = 1600;
-        public static int ELE_HIGH = 2200;
+        public static int ELE_HIGH = 2500;
 
         // Drivetrain motor speed
         public static double SAFE_MODE = 0.5;
