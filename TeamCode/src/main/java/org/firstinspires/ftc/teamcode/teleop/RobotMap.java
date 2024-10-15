@@ -1,23 +1,25 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriver;
 import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriverRR;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.hardware.*;
+
+import org.firstinspires.ftc.teamcode.util.LED;
 
 public class RobotMap {
-    static HardwareMap hwMap;
-
-    static public DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, eleLeftMotor, eleRightMotor;
-    static public IMU imu;
+    static public DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
+    static public DcMotorEx eleLeftMotor, eleRightMotor, rotLeftMotor, rotRightMotor;
+    static public Servo grabber;
     static public GoBildaPinpointDriverRR odo;
+    static public LED led;
     static public NormalizedColorSensor colorSensor;
 
     public static void initRobot(HardwareMap hwMap) {
+        grabber = hwMap.get(Servo.class, "grabber");
+        colorSensor = hwMap.get(NormalizedColorSensor.class, "racistSensor");
+        odo = hwMap.get(GoBildaPinpointDriverRR.class, "odo");
+        led = new LED(hwMap.get(RevBlinkinLedDriver.class, "led"));
+
         frontLeftMotor = hwMap.get(DcMotorEx.class, "leftFront");
         frontRightMotor = hwMap.get(DcMotorEx.class, "rightFront");
         backLeftMotor = hwMap.get(DcMotorEx.class, "leftBack");
@@ -25,8 +27,8 @@ public class RobotMap {
 
         eleLeftMotor = hwMap.get(DcMotorEx.class, "leftEle");
         eleRightMotor = hwMap.get(DcMotorEx.class, "rightEle");
-
-//        colorSensor = hwMap.get(NormalizedColorSensor.class, "racistSensor");
+        rotLeftMotor = hwMap.get(DcMotorEx.class, "leftRot");
+        rotRightMotor = hwMap.get(DcMotorEx.class, "rightRot");
 
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -36,9 +38,9 @@ public class RobotMap {
         backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        // Not resetting encoder in case the elevator malfunctioned and didn't stopped at rest position.
-//        eleLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        eleRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//      Not resetting encoder in case the elevator malfunctioned and didn't stopped at rest position.
+//      eleLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//      eleRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -55,13 +57,5 @@ public class RobotMap {
 
         eleLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         eleRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-//        imu = hwMap.get(IMU.class, "imu");
-//        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-//                RevHubOrientationOnRobot.LogoFacingDirection.FORWARD,
-//                RevHubOrientationOnRobot.UsbFacingDirection.UP));
-//        imu.initialize(parameters);
-
-        odo = hwMap.get(GoBildaPinpointDriverRR.class, "odo");
     }
 }
