@@ -5,8 +5,9 @@ import static org.firstinspires.ftc.teamcode.util.Constants.*;
 
 import android.graphics.Color;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriver;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -15,7 +16,9 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.util.Constants;
+import org.firstinspires.ftc.teamcode.util.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.util.HSV;
 
 @TeleOp(name = "DriveControl", group = "TeleOp")
@@ -34,10 +37,10 @@ public class DriveControl extends OpMode {
     public static double SAFE_MODE = 0.5;
     public static double PRECISION_MODE = 0.25;
     public static double NORMAL_MODE = 1.0;
-    private final double ticks_in_degree = 537.7 / 360.0;
+    private final double ticks_in_degree = 537.7 * 5 / 360.0;
     final float[] hsvValues = new float[3];
 
-    public static double p = 0.002, i = 0, d = 0, f = -0.06;
+    public static double p = 0.0015, i = 0, d = 0.00001, f = -0.10;
 
     private PIDController controller;
 
@@ -46,21 +49,29 @@ public class DriveControl extends OpMode {
 
     int elePos = 0;
     int eleCorrection = 0;
-    int rotPos = 0;
+    int rotPos = ROT_UP;
+    double rotPow = 0;
 
     boolean isDroppingSpecimen = false;
+    ElapsedTime time = new ElapsedTime();
 
     @Override
     public void init() {
         //init hardware
         initRobot(hardwareMap);
 
-        odo.setOffsets(-84.0, -168.0);
-        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        odo.setOffsets(0, 0);
+        odo.setEncoderResolution(org.firstinspires.ftc.teamcode.util.GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        odo.setEncoderDirections(org.firstinspires.ftc.teamcode.util.GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+
+        odo.recalibrateIMU();
         odo.resetPosAndIMU();
 
         controller = new PIDController(p, i, d);
+
+        time.reset();
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         //update log
         telemetry.addData("Status", "Initialized");
@@ -69,6 +80,8 @@ public class DriveControl extends OpMode {
 
     @Override
     public void loop() {
+        odo.update();
+
         // Elevator
         if (gamepad2.a) elePos = ELE_BOT;
         if (gamepad2.b) elePos = ELE_LOW;
@@ -83,6 +96,11 @@ public class DriveControl extends OpMode {
             if (gamepad2.b) {
                 eleCorrection -= 1;
             }
+        }
+
+        if (gamepad2.start) {
+            eleLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            eleRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
 
         eleLeftMotor.setTargetPosition(elePos + eleCorrection);
@@ -102,36 +120,46 @@ public class DriveControl extends OpMode {
         }
 
 //      Elevator rotation
-        if (gamepad2.dpad_up && !previousGamepad2.dpad_up) {
+        if (gamepad2.dpad_up && time.seconds() > 0.5) {
             if (rotStatus == RotStatus.ROT_GRAB) {
                 rotStatus = RotStatus.ROT_DOWN;
                 rotPos = Constants.ROT_DOWN;
+                rotPow = 0.4;
             }
-            if (rotStatus == RotStatus.ROT_DOWN) {
+            else if (rotStatus == RotStatus.ROT_DOWN) {
                 rotStatus = RotStatus.ROT_UP;
                 rotPos = Constants.ROT_UP;
-                elePos = ELE_MID;
+                rotPow = 0.4;
             }
+            time.reset();
         }
-        if (gamepad2.dpad_down && !previousGamepad2.dpad_down) {
+        if (gamepad2.dpad_down && time.seconds() > 0.5) {
             if (rotStatus == RotStatus.ROT_UP) {
                 rotStatus = RotStatus.ROT_DOWN;
                 rotPos = Constants.ROT_DOWN;
+                rotPow = 0.2;
             }
-            if (rotStatus == RotStatus.ROT_DOWN) {
+            else if (rotStatus == RotStatus.ROT_DOWN) {
                 rotStatus = RotStatus.ROT_GRAB;
                 rotPos = Constants.ROT_GRAB;
+                rotPow = 0.1;
             }
+            time.reset();
         }
 
-        controller.setPID(p, i, d);
-        int arm_pos = rotLeftMotor.getCurrentPosition();
-        double pid = controller.calculate(arm_pos, rotPos);
-        double ff = Math.cos(Math.toRadians(rotPos / ticks_in_degree)) * f;
-        double power = pid + ff;
+//        controller.setPID(p, i, d);
+//        int arm_pos = rotLeftMotor.getCurrentPosition();
+//        double pid = controller.calculate(arm_pos, rotPos);
+//        double ff = Math.sin(Math.toRadians((300 + arm_pos) / ticks_in_degree)) * f;
+//        double power = pid + ff;
+        rotLeftMotor.setTargetPosition(rotPos);
+        rotRightMotor.setTargetPosition(rotPos);
 
-        rotLeftMotor.setPower(power);
-        rotRightMotor.setPower(power);
+        rotLeftMotor.setPower(rotPow);
+        rotRightMotor.setPower(rotPow);
+
+        rotLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rotRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 //      Grabber servo
         if (gamepad2.left_bumper) {
@@ -143,7 +171,8 @@ public class DriveControl extends OpMode {
         }
 
 //      Specimen hang process
-        if (gamepad2.left_stick_y < -0.9 && !isDroppingSpecimen && !(previousGamepad2.left_stick_y < -0.9)) {
+//      When press left stick "DOWN"
+        if (gamepad2.left_stick_y > 0.9 && !isDroppingSpecimen && !(previousGamepad2.left_stick_y > 0.9)) {
             isDroppingSpecimen = true;
             elePos = ELE_DROP_SPECIMEN;
         }
@@ -190,8 +219,7 @@ public class DriveControl extends OpMode {
         double x = -gamepad1.left_stick_x;
         double rx = -gamepad1.right_stick_x;
 
-        odo.update();
-        double botHeading = odo.getPositionRR().heading.toDouble();
+        double botHeading = odo.getPosition().getHeading(AngleUnit.RADIANS);
 
         double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
         double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
@@ -224,6 +252,8 @@ public class DriveControl extends OpMode {
         telemetry.addData("br", backRightPower);
 
         telemetry.addData("botHeading", botHeading);
+
+        telemetry.addData("rot", rotStatus);
 
         telemetry.update();
 
