@@ -14,12 +14,12 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @TeleOp(name = "TestPIDF", group = "Test")
 public class TestPIDF extends OpMode {
     private PIDController controller, controller2;
-    public static double p = 0.002, i = 0, d = 0, f = 0.06;
+    public static double p = 0.0015, i = 0, d = 0.00001, f = -0.10;
 //    public static double p2 = 0, i2 = 0, d2 = 0, f2 = 0;
 
     public static int target = -100;
 
-    private final double ticks_in_degree = 537.7 / 360.0;
+    private final double ticks_in_degree = 537.7 * 5 / 360.0;
     private DcMotorEx arm_motor1, arm_motor2;
 
     @Override
@@ -34,13 +34,11 @@ public class TestPIDF extends OpMode {
         arm_motor1.setDirection(DcMotorSimple.Direction.REVERSE);
         arm_motor2.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        if (gamepad1.start) {
-            arm_motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            arm_motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm_motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm_motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            arm_motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            arm_motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
+        arm_motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        arm_motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     @Override
@@ -48,7 +46,7 @@ public class TestPIDF extends OpMode {
         controller.setPID(p, i, d);
         int arm_pos = arm_motor1.getCurrentPosition();
         double pid = controller.calculate(arm_pos, target);
-        double ff = Math.cos(Math.toRadians(target / ticks_in_degree)) * f;
+        double ff = Math.sin(Math.toRadians((300 + arm_pos) / ticks_in_degree)) * f;
         double power = pid + ff;
         arm_motor1.setPower(power);
 

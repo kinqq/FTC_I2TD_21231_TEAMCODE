@@ -1,23 +1,23 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriverRR;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.*;
 
+import org.firstinspires.ftc.teamcode.util.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.util.LED;
 
 public class RobotMap {
     static public DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
     static public DcMotorEx eleLeftMotor, eleRightMotor, rotLeftMotor, rotRightMotor;
     static public Servo grabber;
-    static public GoBildaPinpointDriverRR odo;
+    static public GoBildaPinpointDriver odo;
     static public LED led;
     static public NormalizedColorSensor colorSensor;
 
     public static void initRobot(HardwareMap hwMap) {
         grabber = hwMap.get(Servo.class, "grabber");
         colorSensor = hwMap.get(NormalizedColorSensor.class, "racistSensor");
-        odo = hwMap.get(GoBildaPinpointDriverRR.class, "odo");
+        odo = hwMap.get(GoBildaPinpointDriver.class, "odo");
         led = new LED(hwMap.get(RevBlinkinLedDriver.class, "led"));
 
         frontLeftMotor = hwMap.get(DcMotorEx.class, "leftFront");
@@ -32,6 +32,14 @@ public class RobotMap {
 
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.REVERSE);
+
+        rotLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rotRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rotLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rotRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        rotLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+        rotRightMotor.setDirection(DcMotor.Direction.REVERSE);
 
         frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
