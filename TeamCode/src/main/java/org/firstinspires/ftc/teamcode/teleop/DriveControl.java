@@ -79,6 +79,14 @@ public class DriveControl extends OpMode {
     }
 
     @Override
+    public void init_loop() {
+        if (gamepad2.start) {
+            eleLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            eleRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
+    }
+
+    @Override
     public void loop() {
         odo.update();
 
@@ -88,15 +96,14 @@ public class DriveControl extends OpMode {
         if (gamepad2.x) elePos = ELE_MID;
         if (gamepad2.y) elePos = ELE_HIGH;
 
+
         // reset elevator position
-        if (gamepad2.back) {
-            if (gamepad2.a) {
-                eleCorrection += 1;
+            if (gamepad2.left_trigger > 0.5) {
+                eleCorrection += 3;
             }
-            if (gamepad2.b) {
-                eleCorrection -= 1;
+            if (gamepad2.right_trigger > 0.5) {
+                eleCorrection -= 3;
             }
-        }
 
         if (gamepad2.start) {
             eleLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -104,17 +111,22 @@ public class DriveControl extends OpMode {
         }
 
         eleLeftMotor.setTargetPosition(elePos + eleCorrection);
-        eleLeftMotor.setPower(1);
+        eleLeftMotor.setPower(0.8);
         eleLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         eleRightMotor.setTargetPosition(elePos + eleCorrection);
-        eleRightMotor.setPower(1);
+        eleRightMotor.setPower(0.8);
         eleRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        eleLeftMotor.setTargetPositionTolerance(20);
+        eleRightMotor.setTargetPositionTolerance(20);
 
 //      TODO: Check if power direction is correct.
         if (gamepad1.left_bumper && gamepad1.dpad_down) {
+            rotLeftMotor.setPower(0);
+            rotRightMotor.setPower(0);
+
             eleLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             eleRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
             eleLeftMotor.setPower(-1);
             eleRightMotor.setPower(-1);
         }
@@ -152,14 +164,29 @@ public class DriveControl extends OpMode {
 //        double pid = controller.calculate(arm_pos, rotPos);
 //        double ff = Math.sin(Math.toRadians((300 + arm_pos) / ticks_in_degree)) * f;
 //        double power = pid + ff;
-        rotLeftMotor.setTargetPosition(rotPos);
-        rotRightMotor.setTargetPosition(rotPos);
 
-        rotLeftMotor.setPower(rotPow);
-        rotRightMotor.setPower(rotPow);
+            if (rotStatus == RotStatus.ROT_UP && Math.abs(rotLeftMotor.getCurrentPosition() - rotPos) < 50) {
+                rotLeftMotor.setPower(0);
+                rotRightMotor.setPower(0);
+            }
 
-        rotLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rotRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+         else if (rotStatus == RotStatus.ROT_GRAB && Math.abs(rotLeftMotor.getCurrentPosition() - rotPos) < 50) {
+             rotLeftMotor.setPower(0);
+                rotRightMotor.setPower(0);
+            }
+            else {
+                rotLeftMotor.setTargetPosition(rotPos);
+                rotRightMotor.setTargetPosition(rotPos);
+
+                rotLeftMotor.setPower(rotPow);
+                rotRightMotor.setPower(rotPow);
+
+                rotLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                rotRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                telemetry.addData("rotation", "I'm working...");
+            }
+
+
 
 //      Grabber servo
         if (gamepad2.left_bumper) {
@@ -173,14 +200,14 @@ public class DriveControl extends OpMode {
 //      Specimen hang process
 //      When press left stick "DOWN"
         if (gamepad2.left_stick_y > 0.9 && !isDroppingSpecimen && !(previousGamepad2.left_stick_y > 0.9)) {
-            isDroppingSpecimen = true;
+//            isDroppingSpecimen = true;
             elePos = ELE_DROP_SPECIMEN;
         }
 
-        if (isDroppingSpecimen && Math.abs(eleLeftMotor.getCurrentPosition() - (elePos + eleCorrection)) < 10) {
-            grabber.setPosition(GRABBER_OPEN);
-            isDroppingSpecimen = false;
-        }
+//        if (isDroppingSpecimen && Math.abs(eleLeftMotor.getCurrentPosition() - (elePos + eleCorrection)) < 10) {
+//            grabber.setPosition(GRABBER_OPEN);
+//            isDroppingSpecimen = false;
+//        }
 
 //      Color sensor and LED
         assert colorSensor != null;
@@ -188,17 +215,18 @@ public class DriveControl extends OpMode {
         colorSensor.setGain(10.0F);
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
 
-        Color.colorToHSV(colors.toColor(), hsvValues);
-        HSV hsv = new HSV(hsvValues[0], hsvValues[1], hsvValues[2]);
-
-        if (hsv.getColorCategory().equals("Red"))
-            led.setRed();
-        if (hsv.getColorCategory().equals("Blue"))
-            led.setBlue();
-        if (hsv.getColorCategory().equals("Yellow"))
-            led.setYellow();
-        if (hsv.getColorCategory().equals("N/A"))
-            led.turnOff();
+//        Color.colorToHSV(colors.toColor(), hsvValues);
+//        HSV hsv = new HSV(hsvValues[0], hsvValues[1], hsvValues[2]);
+//
+//        if (hsv.getColorCategory().equals("Red"))
+//            led.setRed();
+//        if (hsv.getColorCategory().equals("Blue"))
+//            led.setBlue();
+//        if (hsv.getColorCategory().equals("Yellow"))
+//            led.setYellow();
+//        if (hsv.getColorCategory().equals("N/A"))
+//            led.turnOff();
+        led.setRainbow();
 
 //      Drivetrain speed
         if (gamepad1.left_bumper && !previousGamepad1.left_bumper) {
@@ -219,7 +247,8 @@ public class DriveControl extends OpMode {
         double x = -gamepad1.left_stick_x;
         double rx = -gamepad1.right_stick_x;
 
-        double botHeading = odo.getPosition().getHeading(AngleUnit.RADIANS);
+//        double botHeading = odo.getPosition().getHeading(AngleUnit.RADIANS);
+        double botHeading = 0;
 
         double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
         double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
@@ -245,6 +274,10 @@ public class DriveControl extends OpMode {
         frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        telemetry.addData("elePos", elePos + eleCorrection);
+        telemetry.addData("actualElePos", eleLeftMotor.getCurrentPosition());
+        telemetry.addData("eleTol", eleLeftMotor.getTargetPositionTolerance());
 
         telemetry.addData("fr", frontLeftPower);
         telemetry.addData("bl", backLeftPower);
