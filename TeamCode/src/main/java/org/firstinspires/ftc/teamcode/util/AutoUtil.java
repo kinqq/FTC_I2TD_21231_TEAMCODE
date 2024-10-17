@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import static org.firstinspires.ftc.teamcode.teleop.RobotMap.*;
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriverRR;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -42,6 +44,51 @@ public class AutoUtil {
         this.odo = linearOpMode.hardwareMap.get(GoBildaPinpointDriverRR.class, "odo");
     }
 
+    /**
+     *
+     * @param position This is for the elevator position, use stuff like ELE_HIGH not just numbers
+     * @param power This is how fast the elevator will move
+     * @param timeout The maximum that the elevator will move, I don't think this will be a problem but just in case
+     */
+    public void elevator(int position, double power, double timeout){
+        runtime.reset();
+        while ((opMode.opModeIsActive()) && runtime.seconds() < timeout) {
+            eleLeftMotor.setTargetPosition(position);
+            eleLeftMotor.setPower(power);
+            eleLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            eleRightMotor.setTargetPosition(position);
+            eleRightMotor.setPower(power);
+            eleRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+    }
+
+    /**
+     *
+     * @param position This is for the rotater position, use stuff like ROT_UP not just numbers
+     * @param power This is how fast the rotation will move
+     * @param timeout The maximum that it will rotate, I don't think this will be a problem but just in case
+     */
+    public void rotate(int position, double power, double timeout){
+        runtime.reset();
+        while ((opMode.opModeIsActive()) && runtime.seconds() < timeout) {
+            rotLeftMotor.setTargetPosition(position);
+            rotLeftMotor.setPower(power);
+            rotLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rotRightMotor.setTargetPosition(position);
+            rotRightMotor.setPower(power);
+            rotRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+    }
+
+    /**
+     *
+     * @param position Set to the position given, use GRABBER_OPEN and GRABBER_CLOSE
+     */
+    public void grabber(double position){
+        while (opMode.opModeIsActive()){
+            grabber.setPosition(position);
+        }
+    }
     /**
      * Strafes the robot in a specified direction for a given distance while maintaining its heading using odometry.
      *
@@ -123,7 +170,6 @@ public class AutoUtil {
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-
     /**
      * Strafes the robot in a specified direction for a given distance while rotating to a target heading.
      *
