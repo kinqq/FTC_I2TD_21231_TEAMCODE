@@ -24,8 +24,11 @@ package org.firstinspires.ftc.teamcode.test;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.ImuOrientationOnRobot;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -66,7 +69,7 @@ For support, contact tech@gobilda.com
 public class TestPinpoint extends LinearOpMode {
 
     GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
-
+    IMU imu;
     double oldTime = 0;
 
 
@@ -77,7 +80,7 @@ public class TestPinpoint extends LinearOpMode {
         // to the names assigned during the robot configuration step on the DS or RC devices.
 
         odo = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
-
+        imu = hardwareMap.get(IMU.class, "imu");
         /*
         Set the odometry pod positions relative to the point that the odometry computer tracks around.
         The X pod offset refers to how far sideways from the tracking point the
@@ -129,6 +132,8 @@ public class TestPinpoint extends LinearOpMode {
         waitForStart();
         resetRuntime();
 
+        IMU.Parameters param = new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.FORWARD, RevHubOrientationOnRobot.UsbFacingDirection.UP));
+        imu.initialize(param);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -143,7 +148,7 @@ public class TestPinpoint extends LinearOpMode {
             Optionally, you can update only the heading of the device. This takes less time to read, but will not
             pull any other data. Only the heading (which you can pull with getHeading() or in getPosition().
              */
-            //odo.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
+            odo.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
 
 
             if (gamepad1.a){
@@ -152,6 +157,10 @@ public class TestPinpoint extends LinearOpMode {
 
             if (gamepad1.b){
                 odo.recalibrateIMU(); //recalibrates the IMU without resetting position
+            }
+
+            if (gamepad1.x) {
+                imu.resetYaw();
             }
 
             /*
@@ -179,6 +188,8 @@ public class TestPinpoint extends LinearOpMode {
             Pose2D vel = odo.getVelocity();
             String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", vel.getX(DistanceUnit.MM), vel.getY(DistanceUnit.MM), vel.getHeading(AngleUnit.DEGREES));
             telemetry.addData("Velocity", velocity);
+
+            telemetry.addData("IMU heading", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
 
 
             /*
