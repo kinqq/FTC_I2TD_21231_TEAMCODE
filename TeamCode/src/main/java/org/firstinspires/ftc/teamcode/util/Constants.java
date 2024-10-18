@@ -12,8 +12,8 @@ public class Constants {
         public static int ELE_MID  = 1600;
         public static int ELE_HIGH = 2300;
 
-        public static int ROT_UP = -20;
-        public static int ROT_DOWN = -680;
+        public static int ROT_UP = 0;
+        public static int ROT_DOWN = -720;
         public static int ROT_GRAB = -1000;
 
 

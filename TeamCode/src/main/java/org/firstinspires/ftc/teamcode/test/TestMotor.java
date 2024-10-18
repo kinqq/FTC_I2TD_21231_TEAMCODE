@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.test;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -16,18 +18,19 @@ public class TestMotor extends LinearOpMode {
         waitForStart();
 
         DcMotor motor = hardwareMap.get(DcMotor.class, deviceName);
-        motor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         int pos = 0;
         double pow = 0.5;
 
         while (opModeIsActive()) {
             if (gamepad1.dpad_up) {
-                pos += 1;
+                pos += 5;
             }
 
             if (gamepad1.dpad_down) {
-                pos -= 1;
+                pos -= 5;
             }
 
             if (gamepad1.a) {
@@ -43,6 +46,12 @@ public class TestMotor extends LinearOpMode {
                 motor.setPower(pow);
                 motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
+
+            telemetry.addData("motorName", deviceName);
+            telemetry.addData("targetPos", pos);
+            telemetry.addData("currPos", motor.getCurrentPosition());
+            telemetry.addData("targetPow", pow);
+            telemetry.update();
         }
     }
 }
