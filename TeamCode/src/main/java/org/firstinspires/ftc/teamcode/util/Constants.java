@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import com.acmerobotics.dashboard.config.Config;
+
+@Config
 public class Constants {
         // Grabber servo position
         public static double GRABBER_CLOSE = 0.006;
@@ -7,10 +10,11 @@ public class Constants {
 
         // Elevator position
         public static int ELE_BOT  = 0;
-        public static int ELE_LOW  = 1000;
-        public static int ELE_DROP_SPECIMEN = 680;
+        public static int ELE_LOW = 300;
+        public static int ELE_HIGH_RUNG = 1060;
+        public static int ELE_DROP_SPECIMEN = 525;
         public static int ELE_MID  = 1600;
-        public static int ELE_HIGH = 2300;
+        public static int ELE_HIGH = 2020;
 
         public static int ROT_UP = 0;
         public static int ROT_DOWN = -720;

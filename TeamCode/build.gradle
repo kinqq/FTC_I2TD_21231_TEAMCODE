@@ -35,7 +35,7 @@ repositories {
         url = 'https://jitpack.io'
     }
     maven {
-        url = 'https://www.matthewo.tech/maven'
+        url = 'https://www.matthewo.tech/maven/'
     }
 }
 
@@ -47,6 +47,6 @@ dependencies {
     implementation "com.acmerobotics.dashboard:dashboard:0.4.16"
     implementation "com.github.jdhs-ftc:road-runner-ftc-otos:8e83c17ff7"
 
-    implementation "org.team11260:fast-load:0.1.2"
+    implementation 'org.team11260:fast-load:0.1.2'
     implementation 'org.ftclib.ftclib:core:2.1.1'
 }

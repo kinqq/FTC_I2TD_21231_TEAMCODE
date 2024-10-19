@@ -7,11 +7,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.SwitchableLight;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp(name = "TestDrive", group = "Test")
 @Config
@@ -42,7 +38,7 @@ public class TestDrive extends OpMode {
         double rx = -gamepad1.right_stick_x;
 
         if (gamepad2.a) elePos = ELE_BOT;
-        if (gamepad2.b) elePos = ELE_LOW;
+        if (gamepad2.b) elePos = ELE_HIGH_RUNG;
         if (gamepad2.x) elePos = ELE_MID;
         if (gamepad2.y) elePos = ELE_HIGH;
 
