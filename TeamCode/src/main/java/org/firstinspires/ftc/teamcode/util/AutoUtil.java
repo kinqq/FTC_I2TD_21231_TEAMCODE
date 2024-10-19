@@ -126,8 +126,12 @@ public class AutoUtil {
         grabber.setPosition(position);
     }
 
+
+    // For some reason, distance is not really accurate
     /**
      * Strafes the robot in a specified direction for a given distance.
+     * For some reason, distance is not really accurate. Enter 4/3 of actual distance you want to travel
+     * TODO: this needs to be fixed
      *
      * @param distance The distance in millimeters the robot should strafe.
      * @param angle The angle in degrees at which to strafe relative to the robot's front.

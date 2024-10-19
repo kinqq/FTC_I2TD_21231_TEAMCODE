@@ -4,7 +4,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.util.AutoUtil;
 import org.firstinspires.ftc.teamcode.util.Constants;
 
@@ -46,13 +45,33 @@ public class Auto extends LinearOpMode {
             telemetry.update();
         }
 
-        auto.strafe(400, -120, 0.4, 5);
-        auto.elevator(Constants.ELE_LOW, 1, 5);
-        auto.strafe(-30, 90, 0.2, 2);
-        auto.elevator(Constants.ELE_DROP_SPECIMEN, 1, 5);
-        sleep(1000);
-        auto.grabber(Constants.GRABBER_OPEN);
-        auto.strafe(200, 90, 0.4, 5);
+        if (position == Position.LEFT) {
+            auto.strafe(1150, -140, 0.4, 5);
+            auto.elevator(Constants.ELE_HIGH_RUNG, 1, 5);
+            auto.strafe(-150, 90, 0.2, 2);
+            auto.elevator(Constants.ELE_DROP_SPECIMEN, 1, 1.5);
+            sleep(500);
+            auto.grabber(Constants.GRABBER_OPEN);
+            sleep(500);
+            auto.elevator(Constants.ELE_BOT, 1, 2.5);
+            auto.strafe(-2000, 0, 0.5, 7); //TODO: change this distance
+            auto.strafe(300, 90, 0.5, 5);
+        }
+        //TODO: Not tested
+        else if (position == Position.RIGHT) {
+            auto.strafe(650, -80, 0.4, 5);
+            auto.elevator(Constants.ELE_HIGH_RUNG, 1, 5);
+            auto.strafe(-150, 90, 0.2, 2);
+            auto.elevator(Constants.ELE_DROP_SPECIMEN, 1, 1.5);
+            sleep(500);
+            auto.grabber(Constants.GRABBER_OPEN);
+            sleep(500);
+            auto.elevator(Constants.ELE_BOT, 1, 2.5);
+            auto.strafe(-1600, 0, 0.5, 7); //TODO: change this distance
+            auto.strafe(300, 90, 0.5, 5);
+        }
+
+
 
         telemetry.addData("Path", "Execution complete");
         telemetry.update();

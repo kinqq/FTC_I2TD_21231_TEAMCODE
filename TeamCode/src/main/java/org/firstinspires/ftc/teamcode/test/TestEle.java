@@ -11,11 +11,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.util.Constants;
-import org.firstinspires.ftc.teamcode.util.GoBildaPinpointDriver;
 
 @TeleOp(name = "TestEle", group = "Test")
 @Config
@@ -50,7 +45,7 @@ public class TestEle extends OpMode {
     public void loop() {
         // Elevator
         if (gamepad2.a) elePos = ELE_BOT;
-        if (gamepad2.b) elePos = ELE_LOW;
+        if (gamepad2.b) elePos = ELE_HIGH_RUNG;
         if (gamepad2.x) elePos = ELE_MID;
         if (gamepad2.y) elePos = ELE_HIGH;
 

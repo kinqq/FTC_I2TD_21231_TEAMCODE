@@ -89,7 +89,7 @@ public class DriveControl extends OpMode {
     public void loop() {
         // Elevator
         if (gamepad2.a) elePos = ELE_BOT;
-        if (gamepad2.b) elePos = ELE_LOW;
+        if (gamepad2.b) elePos = ELE_HIGH_RUNG;
         if (gamepad2.x) elePos = ELE_MID;
         if (gamepad2.y) elePos = ELE_HIGH;
 
@@ -263,18 +263,13 @@ public class DriveControl extends OpMode {
         telemetry.addData("actualElePos", eleLeftMotor.getCurrentPosition());
         telemetry.addData("eleTol", eleLeftMotor.getTargetPositionTolerance());
 
-        telemetry.addData("ltrig", gamepad2.left_trigger);
-        telemetry.addData("rtrig", gamepad2.right_trigger);
-
         telemetry.addData("fr", frontLeftPower);
         telemetry.addData("bl", backLeftPower);
         telemetry.addData("fr", frontRightPower);
         telemetry.addData("br", backRightPower);
 
         telemetry.addData("botHeading", botHeading);
-
         telemetry.addData("rot", rotStatus);
-
         telemetry.addData("eleStalling", isEleStalling);
 
         telemetry.update();
