@@ -106,8 +106,8 @@ public class DriveControl extends OpMode {
             eleRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
 
-        eleLeftMotor.setPower(1);
-        eleRightMotor.setPower(1);
+            eleLeftMotor.setPower(0.8);
+            eleRightMotor.setPower(0.8);
 
         eleLeftMotor.setTargetPosition(elePos + eleCorrection);
         eleLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -115,6 +115,7 @@ public class DriveControl extends OpMode {
         eleRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 //      TODO: Check if power direction is correct.
+//      Rigging
         if (gamepad1.left_bumper && gamepad1.dpad_down) {
             rotLeftMotor.setPower(0);
             rotRightMotor.setPower(0);
@@ -130,11 +131,11 @@ public class DriveControl extends OpMode {
             if (rotStatus == RotStatus.ROT_GRAB) {
                 rotStatus = RotStatus.ROT_DOWN;
                 rotPos = Constants.ROT_DOWN;
-                rotPow = 0.5;
+                rotPow = 0.4;
             } else if (rotStatus == RotStatus.ROT_DOWN) {
                 rotStatus = RotStatus.ROT_UP;
                 rotPos = Constants.ROT_UP;
-                rotPow = 0.5;
+                rotPow = 0.4;
             }
             rotTimer.reset();
         }
@@ -142,7 +143,7 @@ public class DriveControl extends OpMode {
             if (rotStatus == RotStatus.ROT_UP) {
                 rotStatus = RotStatus.ROT_DOWN;
                 rotPos = Constants.ROT_DOWN;
-                rotPow = 0.3;
+                rotPow = 0.4;
             } else if (rotStatus == RotStatus.ROT_DOWN) {
                 rotStatus = RotStatus.ROT_GRAB;
                 rotPos = Constants.ROT_GRAB;
@@ -260,13 +261,8 @@ public class DriveControl extends OpMode {
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         telemetry.addData("elePos", elePos + eleCorrection);
-        telemetry.addData("actualElePos", eleLeftMotor.getCurrentPosition());
-        telemetry.addData("eleTol", eleLeftMotor.getTargetPositionTolerance());
-
-        telemetry.addData("fr", frontLeftPower);
-        telemetry.addData("bl", backLeftPower);
-        telemetry.addData("fr", frontRightPower);
-        telemetry.addData("br", backRightPower);
+        telemetry.addData("actualPosL", eleLeftMotor.getCurrentPosition());
+        telemetry.addData("actualPosR", eleRightMotor.getCurrentPosition());
 
         telemetry.addData("botHeading", botHeading);
         telemetry.addData("rot", rotStatus);

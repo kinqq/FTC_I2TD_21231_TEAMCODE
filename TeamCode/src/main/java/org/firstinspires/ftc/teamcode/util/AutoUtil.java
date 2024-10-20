@@ -57,6 +57,9 @@ public class AutoUtil {
 
         this.grabber = linearOpMode.hardwareMap.get(Servo.class, "grabber");
 
+        eleLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        eleRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         eleLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         eleRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -88,7 +91,7 @@ public class AutoUtil {
             int eleLeftDiff = Math.abs(eleLeft.getTargetPosition() - eleLeft.getCurrentPosition());
             int eleRightDiff = Math.abs(eleRight.getTargetPosition() - eleRight.getCurrentPosition());
 
-            if (eleLeftDiff < 5 || eleRightDiff < 5) {
+            if (eleLeftDiff < 3 || eleRightDiff < 3) {
                 break;
             }
             opMode.telemetry.addData("leftDiff", eleLeftDiff);
