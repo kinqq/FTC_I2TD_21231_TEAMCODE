@@ -40,13 +40,19 @@ public class Auto extends LinearOpMode {
             if (gamepad1.right_trigger > 0.25) {
                 position = Position.RIGHT;
             }
+            if (gamepad2.left_bumper) {
+                auto.grabber(Constants.GRABBER_CLOSE);
+            }
+            if (gamepad2.right_bumper) {
+                auto.grabber(Constants.GRABBER_OPEN);
+            }
             telemetry.addData("Alliance", alliance);
             telemetry.addData("Position", position);
             telemetry.update();
         }
 
         if (position == Position.LEFT) {
-            auto.strafe(1150, -140, 0.4, 5);
+            auto.strafe(1350, -140, 0.4, 5);
             auto.elevator(Constants.ELE_HIGH_RUNG, 1, 5);
             auto.strafe(-150, 90, 0.2, 2);
             auto.elevator(Constants.ELE_DROP_SPECIMEN, 1, 1.5);
@@ -55,11 +61,11 @@ public class Auto extends LinearOpMode {
             sleep(500);
             auto.elevator(Constants.ELE_BOT, 1, 2.5);
             auto.strafe(-2000, 0, 0.5, 7); //TODO: change this distance
-            auto.strafe(300, 90, 0.5, 5);
+            auto.strafe(600, 90, 0.5, 5);
         }
         //TODO: Not tested
         else if (position == Position.RIGHT) {
-            auto.strafe(650, -80, 0.4, 5);
+            auto.strafe(700, -80, 0.4, 5);
             auto.elevator(Constants.ELE_HIGH_RUNG, 1, 5);
             auto.strafe(-150, 90, 0.2, 2);
             auto.elevator(Constants.ELE_DROP_SPECIMEN, 1, 1.5);
@@ -67,8 +73,8 @@ public class Auto extends LinearOpMode {
             auto.grabber(Constants.GRABBER_OPEN);
             sleep(500);
             auto.elevator(Constants.ELE_BOT, 1, 2.5);
-            auto.strafe(-1600, 0, 0.5, 7); //TODO: change this distance
-            auto.strafe(300, 90, 0.5, 5);
+            auto.strafe(-1400, 0, 0.5, 7); //TODO: change this distance
+            auto.strafe(600, 90, 0.5, 5);
         }
 
 
