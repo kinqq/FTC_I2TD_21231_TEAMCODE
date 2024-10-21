@@ -20,6 +20,21 @@ public class Constants {
         public static int ROT_DOWN = -720;
         public static int ROT_GRAB = -1000;
 
+        public static double ARM_KP = 0.01;
+        public static double ELE_KP = 0.01;
+
+//        public static double aS = 0;
+//        public static double aCos = 0;
+//        public static double aV = 0;
+//        public static double aA = 0;
+//
+//        public static double eS = 0;
+//        public static double eG = 0;
+//        public static double eV = 0;
+//        public static double eA = 0;
+
+
+
 
         // Drivetrain motor speed
         public static double SAFE_MODE = 0.5;
