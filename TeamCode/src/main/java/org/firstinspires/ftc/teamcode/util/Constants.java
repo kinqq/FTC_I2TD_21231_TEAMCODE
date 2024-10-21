@@ -11,7 +11,7 @@ public class Constants {
         // Elevator position
         public static int ELE_BOT  = 0;
         public static int ELE_LOW = 300;
-        public static int ELE_HIGH_RUNG = 1150;
+        public static int ELE_HIGH_CHAMBER = 1150;
         public static int ELE_DROP_SPECIMEN = 500;
         public static int ELE_MID  = 1600;
         public static int ELE_HIGH = 2020;
