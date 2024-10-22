@@ -51,8 +51,20 @@ public class Auto extends LinearOpMode {
             telemetry.update();
         }
 
+//        if (position == Position.LEFT) {
+//            auto.strafe(1350, -140, 0.4, 5);
+//            auto.elevator(Constants.ELE_HIGH_RUNG, 1, 5);
+//            auto.strafe(-150, 90, 0.2, 2);
+//            auto.elevator(Constants.ELE_DROP_SPECIMEN, 1, 1.5);
+//            sleep(500);
+//            auto.grabber(Constants.GRABBER_OPEN);
+//            sleep(500);
+//            auto.elevator(Constants.ELE_BOT, 1, 2.5);
+//            auto.strafe(-2000, 0, 0.5, 7); //TODO: change this distance
+//            auto.strafe(600, 90, 0.5, 5);
+//        }
         if (position == Position.LEFT) {
-            auto.strafe(1350, -140, 0.4, 5);
+            auto.strafeUsingOdo(1350, -140);
             auto.elevator(Constants.ELE_HIGH_CHAMBER, 1, 5);
             auto.strafe(-150, 90, 0.2, 2);
             auto.elevator(Constants.ELE_DROP_SPECIMEN, 1, 1.5);
