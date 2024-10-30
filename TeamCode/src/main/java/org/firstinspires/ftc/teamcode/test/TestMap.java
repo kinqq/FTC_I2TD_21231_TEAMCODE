@@ -13,6 +13,8 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 // replace ;(semi-colon) with ;(greek question mark)
 
+import org.firstinspires.ftc.teamcode.util.GoBildaPinpointDriver;
+
 import java.util.List;
 
 public class TestMap {
@@ -22,6 +24,7 @@ public class TestMap {
     static public MotorGroup eleMotors, rotMotors;
     static public ServoEx grabber;
     static public MecanumDrive drive;
+    static public GoBildaPinpointDriver odo;
 
     public static void initTestRobot(HardwareMap hardwareMap) {
         hwMap = hardwareMap;
@@ -44,22 +47,10 @@ public class TestMap {
         backLeftMotor = initMotor("leftBack", GoBILDA.RPM_312);
         backRightMotor = initMotor("rightBack", GoBILDA.RPM_312);
 
-        frontLeftMotor.setInverted(false);
-        frontRightMotor.setInverted(true);
-        backLeftMotor.setInverted(false);
-        backRightMotor.setInverted(true);
-
-        frontLeftMotor.stopAndResetEncoder();
-        frontRightMotor.stopAndResetEncoder();
-        backLeftMotor.stopAndResetEncoder();
-        backRightMotor.stopAndResetEncoder();
-
-        frontLeftMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        frontRightMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        backLeftMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        backRightMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        odo = hwMap.get(GoBildaPinpointDriver.class, "odo");
 
         drive = new MecanumDrive(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor);
+        drive.setRightSideInverted(true);
     }
 
     static void initElevator() {
@@ -80,16 +71,24 @@ public class TestMap {
         rotMotors.stopAndResetEncoder();
     }
 
-    static void initServos() { grabber = new SimpleServo(hwMap, "grabber", 0, 360 * 5); }
-    static Motor initMotor(String id) { return new Motor(hwMap, id); }
-    static Motor initMotor(String id, GoBILDA type) { return new Motor(hwMap, id, type); }
+    static void initServos() {
+        grabber = new SimpleServo(hwMap, "grabber", 0, 360 * 5);
+    }
+
+    static Motor initMotor(String id) {
+        return new Motor(hwMap, id);
+    }
+
+    static Motor initMotor(String id, GoBILDA type) {
+        return new Motor(hwMap, id, type);
+    }
 
     public static void rotate(int pos, double pow) {
         rotMotors.setRunMode(Motor.RunMode.PositionControl);
         rotMotors.setPositionCoefficient(ARM_KP);
         rotMotors.setTargetPosition(pos);
         rotMotors.setPositionTolerance(10);
-        while(!rotMotors.atTargetPosition()) {
+        while (!rotMotors.atTargetPosition()) {
             rotMotors.set(pow);
         }
         rotMotors.stopMotor();
@@ -100,7 +99,7 @@ public class TestMap {
         eleMotors.setPositionCoefficient(ELE_KP);
         eleMotors.setTargetPosition(pos);
         eleMotors.setPositionTolerance(10);
-        while(!eleMotors.atTargetPosition()) {
+        while (!eleMotors.atTargetPosition()) {
             eleMotors.set(0.8);
         }
         eleMotors.stopMotor();
