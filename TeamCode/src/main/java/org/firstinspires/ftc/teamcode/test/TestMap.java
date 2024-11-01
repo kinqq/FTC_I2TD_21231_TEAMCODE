@@ -47,6 +47,11 @@ public class TestMap {
         backLeftMotor = initMotor("leftBack", GoBILDA.RPM_312);
         backRightMotor = initMotor("rightBack", GoBILDA.RPM_312);
 
+        frontLeftMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        frontRightMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        backLeftMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        backRightMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+
         odo = hwMap.get(GoBildaPinpointDriver.class, "odo");
 
         drive = new MecanumDrive(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor);
@@ -88,10 +93,14 @@ public class TestMap {
         rotMotors.setPositionCoefficient(ARM_KP);
         rotMotors.setTargetPosition(pos);
         rotMotors.setPositionTolerance(10);
-        while (!rotMotors.atTargetPosition()) {
-            rotMotors.set(pow);
-        }
-        rotMotors.stopMotor();
+
+        rotMotors.set(pow);
+
+//        while (!rotLeftMotor.atTargetPosition()) {
+//            rotMotors.set(pow);
+//        }
+//        rotMotors.stopMotor();
+        rotMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
     }
 
     public static void elevate(int pos) {

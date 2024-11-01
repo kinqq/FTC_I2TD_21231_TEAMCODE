@@ -4,11 +4,17 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class Constants {
+        public enum EleControlMode {
+                CHAMBER,
+                BASKET
+        }
+
         // Grabber servo position
         public static double GRABBER_CLOSE = 0.006;
         public static double GRABBER_OPEN  = 0.325;
 
         // Elevator position
+        //TODO: ELE_CHAMBER_POS and ELE_BASKET_POS
         public static int ELE_BOT  = 0;
         public static int ELE_LOW = 300;
         public static int ELE_HIGH_CHAMBER = 1150;
@@ -17,24 +23,11 @@ public class Constants {
         public static int ELE_HIGH = 2020;
 
         public static int ROT_UP = 0;
-        public static int ROT_DOWN = -720;
-        public static int ROT_GRAB = -1000;
+        public static int ROT_DOWN = 680;
+        public static int ROT_GRAB = 840;
 
         public static double ARM_KP = 0.01;
         public static double ELE_KP = 0.01;
-
-//        public static double aS = 0;
-//        public static double aCos = 0;
-//        public static double aV = 0;
-//        public static double aA = 0;
-//
-//        public static double eS = 0;
-//        public static double eG = 0;
-//        public static double eV = 0;
-//        public static double eA = 0;
-
-
-
 
         // Drivetrain motor speed
         public static double SAFE_MODE = 0.5;

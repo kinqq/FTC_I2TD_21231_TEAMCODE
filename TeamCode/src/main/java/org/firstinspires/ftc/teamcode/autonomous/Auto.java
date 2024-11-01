@@ -64,7 +64,7 @@ public class Auto extends LinearOpMode {
 //            auto.strafe(600, 90, 0.5, 5);
 //        }
         if (position == Position.LEFT) {
-            auto.strafeUsingOdo(1350, -140);
+            auto.strafe(1350, -140, 0.4, 5);
             auto.elevator(Constants.ELE_HIGH_CHAMBER, 1, 5);
             auto.strafe(-150, 90, 0.2, 2);
             auto.elevator(Constants.ELE_DROP_SPECIMEN, 1, 1.5);

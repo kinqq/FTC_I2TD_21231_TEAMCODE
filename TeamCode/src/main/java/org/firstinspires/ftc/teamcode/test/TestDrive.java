@@ -7,18 +7,21 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.wpilibcontroller.ArmFeedforward;
 import com.arcrobotics.ftclib.controller.wpilibcontroller.ElevatorFeedforward;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys.Button;
+import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 @TeleOp(name = "TestDrive", group = "Test")
 @Config
 public class TestDrive extends OpMode {
     private GamepadEx driver1, driver2;
-    //    private ArmFeedforward armff;
-//    private ElevatorFeedforward eleff;
-    private int armPos = 0;
+    private int armPos = ROT_UP;
+    private double armPow;
     private int elePos = 0;
+    private EleControlMode eleControlMode = EleControlMode.BASKET;
     private double maxSpeed = 1.0;
     private boolean isOdoDrivingEnabled = false;
 
@@ -38,23 +41,56 @@ public class TestDrive extends OpMode {
     @Override
     public void loop() {
         odo.update();
+        driver1.readButtons();
+        driver2.readButtons();
 
-        if (driver1.wasJustPressed(Button.A)) isOdoDrivingEnabled ^= true;
+        if (driver1.wasJustPressed(Button.A)) isOdoDrivingEnabled = !isOdoDrivingEnabled;
         if (driver1.wasJustPressed(Button.LEFT_BUMPER)) maxSpeed = maxSpeed != 0.6 ? 0.6 : 1;
         if (driver1.wasJustPressed(Button.RIGHT_BUMPER)) maxSpeed = maxSpeed != 0.3 ? 0.3 : 1;
+
+        if (driver1.wasJustPressed(Button.START)) odo.resetPosAndIMU();
+
+        double heading = isOdoDrivingEnabled ? odo.getHeading() * 180 / Math.PI : 0;
         drive.setMaxSpeed(maxSpeed);
-        drive.driveFieldCentric(-driver1.getLeftX(), -driver1.getLeftY(), -driver1.getRightY(), isOdoDrivingEnabled ? odo.getHeading() : 0);
+        drive.driveFieldCentric(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, heading);
 
-        if (driver1.wasJustPressed(Button.DPAD_DOWN)) armPos -= 1;
-        if (driver1.wasJustPressed(Button.DPAD_UP)) armPos += 1;
-        rotate(armPos, 0.5);
+        if (driver2.wasJustPressed(Button.DPAD_DOWN)) {
+            armPos = armPos == ROT_UP ? ROT_DOWN : ROT_GRAB;
+            armPow = armPos == ROT_UP ? 0.2 : 0.1;
+        }
+        if (driver2.wasJustPressed(Button.DPAD_UP)) {
+            armPos = armPos == ROT_GRAB ? ROT_DOWN : ROT_UP;
+            armPow = armPos == ROT_GRAB ? 0.3 : 0.25;
+        }
+        rotate(armPos, armPow);
 
-        if (driver2.wasJustPressed(Button.A)) elePos = ELE_LOW;
+        if (driver2.wasJustPressed(Button.A)) elePos = ELE_BOT;
         if (driver2.wasJustPressed(Button.B)) elePos = ELE_HIGH_CHAMBER;
         if (driver2.wasJustPressed(Button.X)) elePos = ELE_MID;
         if (driver2.wasJustPressed(Button.Y)) elePos = ELE_HIGH;
-        if (driver2.getLeftY() > 0.8) elePos = ELE_DROP_SPECIMEN;
+        if (driver2.getLeftY() < -0.5) elePos = ELE_DROP_SPECIMEN;
         elevate(elePos);
+
+        if (driver2.wasJustPressed(Button.Y)) {
+            toggleEleControlMode();
+            if (eleControlMode == EleControlMode.CHAMBER) gamepad2.rumbleBlips(1);
+            if (eleControlMode == EleControlMode.BASKET) gamepad2.rumbleBlips(2);
+        }
+
+        //TODO: change to ELE_CHAMBER_POS, ELE_BASKET_POS
+        if (eleControlMode == EleControlMode.CHAMBER) {
+            if (driver2.wasJustPressed(Button.A)) elePos = ELE_BOT;
+            if (driver2.wasJustPressed(Button.B)) {
+                if (elePos == ELE_HIGH_CHAMBER) elePos = ELE_DROP_SPECIMEN;
+                else elePos = ELE_HIGH_CHAMBER;
+            }
+            if (driver2.wasJustPressed(Button.X)) elePos = ELE_MID;
+        }
+        else {
+            if (driver2.wasJustPressed(Button.A)) elePos = ELE_BOT;
+            if (driver2.wasJustPressed(Button.B)) elePos = ELE_HIGH_CHAMBER;
+            if (driver2.wasJustPressed(Button.X)) elePos = ELE_MID;
+        }
 
         if (driver2.wasJustPressed(Button.LEFT_BUMPER)) grabber.turnToAngle(10.8);
         if (driver2.wasJustPressed(Button.RIGHT_BUMPER)) grabber.turnToAngle(585);
@@ -62,10 +98,19 @@ public class TestDrive extends OpMode {
         telemetry.addData("armPos", armPos);
         telemetry.addData("elePos", elePos);
         telemetry.addData("maxSpd", maxSpeed);
+        telemetry.addData("odoDri", isOdoDrivingEnabled);
+        telemetry.addData("odoDeg", odo.getHeading());
+        telemetry.addData("eleMod", eleControlMode);
+
+        telemetry.update();
     }
 
     @Override
     public void stop() {
         super.stop();
+    }
+
+    public void toggleEleControlMode() {
+        eleControlMode = eleControlMode == EleControlMode.CHAMBER ? EleControlMode.BASKET : EleControlMode.CHAMBER;
     }
 }
