@@ -228,23 +228,13 @@ public class AutoUtil {
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    /**
-     * Strafes the robot in a specified direction for a given distance while rotating to a target heading.
-     *
-     * @param distance The distance in millimeters the robot should strafe.
-     * @param angle The angle in degrees at which to strafe relative to the robot's front.
-     *              0 degrees means strafing directly to the right, 90 degrees means forward.
-     * @param power The speed at which the robot should move (range 0.0 to 1.0).
-     * @param timeout The maximum time in seconds to complete the strafe.
-     * @param targetHeading The target heading in radians that the robot should rotate to by the end of the trajectory.
-     */
-    public void strafeWithHeading(double distance, double angle, double power, double timeout, double targetHeading) {
-        // Convert distance in mm to target encoder counts
-        final double TICKS_PER_MM = TICKS_PER_REV / WHEEL_CIRCUMFERENCE_MM;
-        int targetPosition = (int)(distance * TICKS_PER_MM);
+    public void strafeUsingOdo(double distance, double angle) {
+        // Convert angle from degrees to radians for calculations
+        double radians = Math.toRadians(angle);
 
-        // Convert angle to radians for calculations
-        double robotAngle = Math.toRadians(angle);
+        // Calculate the x and y components of the strafe movement
+        double xMovement = distance * Math.cos(radians);
+        double yMovement = distance * Math.sin(radians);
 
         // Get the initial position and heading of the robot using the odometry pods
         odo.update();
@@ -253,31 +243,34 @@ public class AutoUtil {
         double initialX = initialPose.getX(DistanceUnit.MM);  // X position in mm
         double initialY = initialPose.getY(DistanceUnit.MM);  // Y position in mm
 
-        // Calculate motor powers for strafing at the specified angle
-        double v1 = Math.sin(robotAngle) - Math.cos(robotAngle); // frontLeft
-        double v2 = Math.sin(robotAngle) + Math.cos(robotAngle); // frontRight
-        double v3 = Math.sin(robotAngle) + Math.cos(robotAngle); // backLeft
-        double v4 = Math.sin(robotAngle) - Math.cos(robotAngle); // backRight
+        // Calculate motor powers based on the desired strafe direction
+        double leftFrontPower = xMovement - yMovement;
+        double leftBackPower = xMovement + yMovement;
+        double rightFrontPower = -xMovement - yMovement;
+        double rightBackPower = -xMovement + yMovement;
 
-        // Set target positions for the motors using the encoder
-        frontLeft.setTargetPosition(frontLeft.getCurrentPosition() + targetPosition);
-        frontRight.setTargetPosition(frontRight.getCurrentPosition() - targetPosition);
-        backLeft.setTargetPosition(backLeft.getCurrentPosition() - targetPosition);
-        backRight.setTargetPosition(backRight.getCurrentPosition() + targetPosition);
+        // Normalize motor powers
+        double maxPower = Math.max(Math.abs(leftFrontPower), Math.max(Math.abs(leftBackPower),
+                Math.max(Math.abs(rightFrontPower), Math.abs(rightBackPower))));
 
-        // Set motors to run to the target positions
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        if (maxPower > 1.0) {
+            leftFrontPower /= maxPower;
+            leftBackPower /= maxPower;
+            rightFrontPower /= maxPower;
+            rightBackPower /= maxPower;
+        }
 
-        // Reset the runtime to track timeout
-        runtime.reset();
+        // Set motor powers
+        frontLeft.setPower(leftFrontPower);
+        backLeft.setPower(leftBackPower);
+        frontRight.setPower(rightFrontPower);
+        backRight.setPower(rightBackPower);
 
-        // Run the motors until the target position is reached or timeout occurs
+        // Move until the robot reaches the target position
         while (opMode.opModeIsActive() &&
-                (runtime.seconds() < timeout) &&
-                (frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy())) {
+                (Math.abs(odo.getPosition().getX(DistanceUnit.MM) - targetX) > 1.0 ||
+                        Math.abs(odo.getPosition().getY(DistanceUnit.MM) - targetY) > 1.0)) {
+            odo.update(); // Update odometry data
 
             // Update odometry data
             odo.update();
@@ -305,16 +298,10 @@ public class AutoUtil {
             opMode.telemetry.update();
         }
 
-        // Stop all motors when done
+        // Stop the motors
         frontLeft.setPower(0);
-        frontRight.setPower(0);
         backLeft.setPower(0);
+        frontRight.setPower(0);
         backRight.setPower(0);
-
-        // Reset the motors to run using encoders
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }

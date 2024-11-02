@@ -45,7 +45,7 @@ public class TestEle extends OpMode {
     public void loop() {
         // Elevator
         if (gamepad2.a) elePos = ELE_BOT;
-        if (gamepad2.b) elePos = ELE_HIGH_RUNG;
+        if (gamepad2.b) elePos = ELE_HIGH_CHAMBER;
         if (gamepad2.x) elePos = ELE_MID;
         if (gamepad2.y) elePos = ELE_HIGH;
 

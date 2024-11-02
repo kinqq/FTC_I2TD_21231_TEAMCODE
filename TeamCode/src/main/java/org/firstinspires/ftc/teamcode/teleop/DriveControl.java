@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.GoBildaPinpointDriver;
 
@@ -87,9 +88,11 @@ public class DriveControl extends OpMode {
 
     @Override
     public void loop() {
+        odo.update();
+
         // Elevator
         if (gamepad2.a) elePos = ELE_BOT;
-        if (gamepad2.b) elePos = ELE_HIGH_RUNG;
+        if (gamepad2.b) elePos = ELE_HIGH_CHAMBER;
         if (gamepad2.x) elePos = ELE_MID;
         if (gamepad2.y) elePos = ELE_HIGH;
 
@@ -232,8 +235,7 @@ public class DriveControl extends OpMode {
         double x = -gamepad1.left_stick_x;
         double rx = -gamepad1.right_stick_x;
 
-//      double botHeading = odo.getPosition().getHeading(AngleUnit.RADIANS);
-        double botHeading = 0;
+      double botHeading = odo.getPosition().getHeading(AngleUnit.RADIANS);
 
         double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
         double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);

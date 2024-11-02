@@ -4,26 +4,34 @@ import static org.firstinspires.ftc.teamcode.test.TestMap.*;
 import static org.firstinspires.ftc.teamcode.util.Constants.*;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.controller.wpilibcontroller.ArmFeedforward;
+import com.arcrobotics.ftclib.controller.wpilibcontroller.ElevatorFeedforward;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys.Button;
+import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 @TeleOp(name = "TestDrive", group = "Test")
 @Config
 public class TestDrive extends OpMode {
-    public static double speed = 1;
-
-    Gamepad previousGamepad1 = new Gamepad();
-    Gamepad previousGamepad2 = new Gamepad();
-
-    int elePos = 0;
-    int rotPos = 0;
+    private GamepadEx driver1, driver2;
+    private int armPos = ROT_UP;
+    private double armPow;
+    private int elePos = 0;
+    private EleControlMode eleControlMode = EleControlMode.BASKET;
+    private double maxSpeed = 1.0;
+    private boolean isOdoDrivingEnabled = false;
 
     @Override
     public void init() {
         //init hardware
         initTestRobot(hardwareMap);
+
+        driver1 = new GamepadEx(gamepad1);
+        driver2 = new GamepadEx(gamepad2);
 
         //update log
         telemetry.addData("Status", "Initialized");
@@ -32,88 +40,77 @@ public class TestDrive extends OpMode {
 
     @Override
     public void loop() {
-        //main
-        double y = gamepad1.left_stick_y; // Remember, Y stick value is reversed
-        double x = -gamepad1.left_stick_x;
-        double rx = -gamepad1.right_stick_x;
+        odo.update();
+        driver1.readButtons();
+        driver2.readButtons();
 
-        if (gamepad2.a) elePos = ELE_BOT;
-        if (gamepad2.b) elePos = ELE_HIGH_RUNG;
-        if (gamepad2.x) elePos = ELE_MID;
-        if (gamepad2.y) elePos = ELE_HIGH;
+        if (driver1.wasJustPressed(Button.A)) isOdoDrivingEnabled = !isOdoDrivingEnabled;
+        if (driver1.wasJustPressed(Button.LEFT_BUMPER)) maxSpeed = maxSpeed != 0.6 ? 0.6 : 1;
+        if (driver1.wasJustPressed(Button.RIGHT_BUMPER)) maxSpeed = maxSpeed != 0.3 ? 0.3 : 1;
 
-        eleLeftMotor.setTargetPosition(elePos);
-        eleLeftMotor.setPower(0.5);
-        eleLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        eleRightMotor.setTargetPosition(elePos);
-        eleRightMotor.setPower(0.5);
-        eleRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        if (driver1.wasJustPressed(Button.START)) odo.resetPosAndIMU();
 
-        if (gamepad2.dpad_up) rotPos = 40;
-        if (gamepad2.dpad_down) rotPos = 945; //오바해서 내려가지 않게
+        double heading = isOdoDrivingEnabled ? odo.getHeading() * 180 / Math.PI : 0;
+        drive.setMaxSpeed(maxSpeed);
+        drive.driveFieldCentric(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, heading);
 
-        rotLeftMotor.setTargetPosition(rotPos);
-        rotLeftMotor.setPower(0.5);
-        rotLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rotRightMotor.setTargetPosition(rotPos);
-        rotRightMotor.setPower(0.5);
-        rotRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        if (driver2.wasJustPressed(Button.DPAD_DOWN)) {
+            armPos = armPos == ROT_UP ? ROT_DOWN : ROT_GRAB;
+            armPow = armPos == ROT_UP ? 0.2 : 0.1;
+        }
+        if (driver2.wasJustPressed(Button.DPAD_UP)) {
+            armPos = armPos == ROT_GRAB ? ROT_DOWN : ROT_UP;
+            armPow = armPos == ROT_GRAB ? 0.3 : 0.25;
+        }
+        rotate(armPos, armPow);
 
-        if (gamepad1.left_bumper && !previousGamepad1.left_bumper) {
-            speed = speed != SAFE_MODE ? SAFE_MODE : NORMAL_MODE;
+        if (driver2.wasJustPressed(Button.A)) elePos = ELE_BOT;
+        if (driver2.wasJustPressed(Button.B)) elePos = ELE_HIGH_CHAMBER;
+        if (driver2.wasJustPressed(Button.X)) elePos = ELE_MID;
+        if (driver2.wasJustPressed(Button.Y)) elePos = ELE_HIGH;
+        if (driver2.getLeftY() < -0.5) elePos = ELE_DROP_SPECIMEN;
+        elevate(elePos);
+
+        if (driver2.wasJustPressed(Button.Y)) {
+            toggleEleControlMode();
+            if (eleControlMode == EleControlMode.CHAMBER) gamepad2.rumbleBlips(1);
+            if (eleControlMode == EleControlMode.BASKET) gamepad2.rumbleBlips(2);
         }
 
-        if (gamepad1.right_bumper && !previousGamepad1.right_bumper) {
-            speed = speed != PRECISION_MODE ? PRECISION_MODE : NORMAL_MODE;
+        //TODO: change to ELE_CHAMBER_POS, ELE_BASKET_POS
+        if (eleControlMode == EleControlMode.CHAMBER) {
+            if (driver2.wasJustPressed(Button.A)) elePos = ELE_BOT;
+            if (driver2.wasJustPressed(Button.B)) {
+                if (elePos == ELE_HIGH_CHAMBER) elePos = ELE_DROP_SPECIMEN;
+                else elePos = ELE_HIGH_CHAMBER;
+            }
+            if (driver2.wasJustPressed(Button.X)) elePos = ELE_MID;
+        }
+        else {
+            if (driver2.wasJustPressed(Button.A)) elePos = ELE_BOT;
+            if (driver2.wasJustPressed(Button.B)) elePos = ELE_HIGH_CHAMBER;
+            if (driver2.wasJustPressed(Button.X)) elePos = ELE_MID;
         }
 
-        if (gamepad2.left_bumper) {
-            grabber.setPosition(0.006);
-        }
+        if (driver2.wasJustPressed(Button.LEFT_BUMPER)) grabber.turnToAngle(10.8);
+        if (driver2.wasJustPressed(Button.RIGHT_BUMPER)) grabber.turnToAngle(585);
 
-        if (gamepad2.right_bumper) {
-            grabber.setPosition(0.285);
-        }
-
-        // Denominator is the largest motor power (absolute value) or 1
-        // This ensures all the powers maintain the same ratio,
-        // but only if at least one is out of the range [-1, 1]
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-
-        double frontLeftPower = (y + x + rx) / denominator * speed;
-        double backLeftPower = (y - x + rx) / denominator * speed;
-        double frontRightPower = (y - x - rx) / denominator * speed;
-        double backRightPower = (y + x - rx) / denominator * speed;
-
-        frontLeftMotor.setPower(frontLeftPower);
-        backLeftMotor.setPower(backLeftPower);
-        frontRightMotor.setPower(frontRightPower);
-        backRightMotor.setPower(backRightPower);
-
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        telemetry.addData("fr", frontLeftPower);
-        telemetry.addData("bl", backLeftPower);
-        telemetry.addData("fr", frontRightPower);
-        telemetry.addData("br", backRightPower);
-
+        telemetry.addData("armPos", armPos);
         telemetry.addData("elePos", elePos);
-        telemetry.addData("rotPos", rotPos);
-
-        telemetry.addData("rotPoss", rotLeftMotor.getCurrentPosition());
-
+        telemetry.addData("maxSpd", maxSpeed);
+        telemetry.addData("odoDri", isOdoDrivingEnabled);
+        telemetry.addData("odoDeg", odo.getHeading());
+        telemetry.addData("eleMod", eleControlMode);
 
         telemetry.update();
-
-        gamepad1.copy(previousGamepad1);
-        gamepad2.copy(previousGamepad2);
     }
 
     @Override
     public void stop() {
         super.stop();
+    }
+
+    public void toggleEleControlMode() {
+        eleControlMode = eleControlMode == EleControlMode.CHAMBER ? EleControlMode.BASKET : EleControlMode.CHAMBER;
     }
 }
