@@ -64,33 +64,11 @@ public class TestDrive extends OpMode {
         }
         rotate(armPos, armPow);
 
-        if (driver2.wasJustPressed(Button.A)) elePos = ELE_BOT;
-        if (driver2.wasJustPressed(Button.B)) elePos = ELE_HIGH_CHAMBER;
-        if (driver2.wasJustPressed(Button.X)) elePos = ELE_MID;
-        if (driver2.wasJustPressed(Button.Y)) elePos = ELE_HIGH;
-        if (driver2.getLeftY() < -0.5) elePos = ELE_DROP_SPECIMEN;
+        if (driver2.wasJustPressed(Button.A)) elePos += 10;
+        if (driver2.wasJustPressed(Button.B)) elePos -= 10;
+        if (driver2.wasJustPressed(Button.X)) elePos += 50;
+        if (driver2.wasJustPressed(Button.Y)) elePos -= 50;
         elevate(elePos);
-
-        if (driver2.wasJustPressed(Button.Y)) {
-            toggleEleControlMode();
-            if (eleControlMode == EleControlMode.CHAMBER) gamepad2.rumbleBlips(1);
-            if (eleControlMode == EleControlMode.BASKET) gamepad2.rumbleBlips(2);
-        }
-
-        //TODO: change to ELE_CHAMBER_POS, ELE_BASKET_POS
-        if (eleControlMode == EleControlMode.CHAMBER) {
-            if (driver2.wasJustPressed(Button.A)) elePos = ELE_BOT;
-            if (driver2.wasJustPressed(Button.B)) {
-                if (elePos == ELE_HIGH_CHAMBER) elePos = ELE_DROP_SPECIMEN;
-                else elePos = ELE_HIGH_CHAMBER;
-            }
-            if (driver2.wasJustPressed(Button.X)) elePos = ELE_MID;
-        }
-        else {
-            if (driver2.wasJustPressed(Button.A)) elePos = ELE_BOT;
-            if (driver2.wasJustPressed(Button.B)) elePos = ELE_HIGH_CHAMBER;
-            if (driver2.wasJustPressed(Button.X)) elePos = ELE_MID;
-        }
 
         if (driver2.wasJustPressed(Button.LEFT_BUMPER)) grabber.turnToAngle(10.8);
         if (driver2.wasJustPressed(Button.RIGHT_BUMPER)) grabber.turnToAngle(585);
@@ -108,9 +86,5 @@ public class TestDrive extends OpMode {
     @Override
     public void stop() {
         super.stop();
-    }
-
-    public void toggleEleControlMode() {
-        eleControlMode = eleControlMode == EleControlMode.CHAMBER ? EleControlMode.BASKET : EleControlMode.CHAMBER;
     }
 }

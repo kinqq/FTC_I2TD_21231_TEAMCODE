@@ -1,69 +1,118 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import static org.firstinspires.ftc.teamcode.util.Constants.ARM_KP;
+import static org.firstinspires.ftc.teamcode.util.Constants.ELE_KP;
+
+import com.arcrobotics.ftclib.drivebase.MecanumDrive;
+import com.arcrobotics.ftclib.hardware.ServoEx;
+import com.arcrobotics.ftclib.hardware.SimpleServo;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.teamcode.util.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.util.LED;
 
+import java.util.List;
+
 public class RobotMap {
-    static public DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
-    static public DcMotorEx eleLeftMotor, eleRightMotor, rotLeftMotor, rotRightMotor;
-    static public Servo grabber;
+
+    static HardwareMap hwMap;
+    static public Motor frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
+    static public Motor eleLeftMotor, eleRightMotor, rotLeftMotor, rotRightMotor;
+    static public ServoEx grabber;
     static public GoBildaPinpointDriver odo;
-    static public LED led;
-    static public NormalizedColorSensor colorSensor;
+    static public MecanumDrive drive;
+    static public MotorGroup eleMotors, rotMotors;
 
-    public static void initRobot(HardwareMap hwMap) {
-        grabber = hwMap.get(Servo.class, "grabber");
-        colorSensor = hwMap.get(NormalizedColorSensor.class, "racistSensor");
+    public static void initRobot(HardwareMap hardwareMap) {
+        List<LynxModule> hubs = hardwareMap.getAll(LynxModule.class);
+
+        for (LynxModule hub : hubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
+
+        initDriveTrain();
+        initElevator();
+        initRotation();
+        initServos();
+    }
+
+    static void initDriveTrain() {
+        frontLeftMotor = initMotor("leftFront", Motor.GoBILDA.RPM_312);
+        frontRightMotor = initMotor("rightFront", Motor.GoBILDA.RPM_312);
+        backLeftMotor = initMotor("leftBack", Motor.GoBILDA.RPM_312);
+        backRightMotor = initMotor("rightBack", Motor.GoBILDA.RPM_312);
+
+        frontLeftMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        frontRightMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        backLeftMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        backRightMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+
         odo = hwMap.get(GoBildaPinpointDriver.class, "odo");
-        led = new LED(hwMap.get(RevBlinkinLedDriver.class, "led"));
+        odo.setOffsets(0, 0);
+        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        odo.resetPosAndIMU();
 
-        frontLeftMotor = hwMap.get(DcMotorEx.class, "leftFront");
-        frontRightMotor = hwMap.get(DcMotorEx.class, "rightFront");
-        backLeftMotor = hwMap.get(DcMotorEx.class, "leftBack");
-        backRightMotor = hwMap.get(DcMotorEx.class, "rightBack");
+        drive = new MecanumDrive(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor);
+        drive.setRightSideInverted(true);
+    }
 
-        eleLeftMotor = hwMap.get(DcMotorEx.class, "leftEle");
-        eleRightMotor = hwMap.get(DcMotorEx.class, "rightEle");
-        rotLeftMotor = hwMap.get(DcMotorEx.class, "leftRot");
-        rotRightMotor = hwMap.get(DcMotorEx.class, "rightRot");
+    static void initElevator() {
+        eleLeftMotor = initMotor("leftEle");
+        eleRightMotor = initMotor("rightEle");
 
-        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        eleMotors = new MotorGroup(eleLeftMotor, eleRightMotor);
+        eleMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+//        eleMotors.stopAndResetEncoder();
+    }
 
-        rotLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rotRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rotLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rotRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    static void initRotation() {
+        rotLeftMotor = initMotor("leftRot");
+        rotRightMotor = initMotor("rightRot");
 
-        rotLeftMotor.setDirection(DcMotor.Direction.REVERSE);
-        rotRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        rotMotors = new MotorGroup(rotLeftMotor, rotRightMotor);
+        rotMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        rotMotors.stopAndResetEncoder();
+    }
 
-        frontLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    static void initServos() {
+        grabber = new SimpleServo(hwMap, "grabber", 0, 360 * 5);
+    }
 
-//      Not resetting encoder in case the elevator malfunctioned and didn't stopped at rest position.
-//      eleLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//      eleRightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    static Motor initMotor(String id) {
+        return new Motor(hwMap, id);
+    }
 
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    static Motor initMotor(String id, Motor.GoBILDA type) {
+        return new Motor(hwMap, id, type);
+    }
 
-        eleLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        eleRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    public static void rotate(int pos, double pow) {
+        rotMotors.setRunMode(Motor.RunMode.PositionControl);
 
-        frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rotMotors.setPositionCoefficient(ARM_KP);
+        rotMotors.setTargetPosition(pos);
+        rotMotors.set(0);
+        rotMotors.setPositionTolerance(10);
 
-        eleLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        eleRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        while (!rotMotors.atTargetPosition()) rotMotors.set(pow);
+
+        rotMotors.stopMotor();
+        rotMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public static void elevate(int pos) {
+        eleMotors.setRunMode(Motor.RunMode.PositionControl);
+        eleMotors.setPositionCoefficient(ELE_KP);
+        eleMotors.setTargetPosition(pos);
+        eleMotors.setPositionTolerance(10);
+        while (!eleMotors.atTargetPosition()) {
+            eleMotors.set(0.8);
+        }
+        eleMotors.stopMotor();
     }
 }
