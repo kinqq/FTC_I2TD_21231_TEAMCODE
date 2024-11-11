@@ -22,7 +22,7 @@ public class RobotMap {
     static HardwareMap hwMap;
     static public Motor frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
     static public Motor eleLeftMotor, eleRightMotor, rotLeftMotor, rotRightMotor;
-    static public ServoEx grabber;
+    static public ServoEx grabber, grabberPitch;
     static public GoBildaPinpointDriver odo;
     static public MecanumDrive drive;
     static public MotorGroup eleMotors, rotMotors;
@@ -81,6 +81,7 @@ public class RobotMap {
 
     static void initServos() {
         grabber = new SimpleServo(hwMap, "grabber", 0, 360 * 5);
+        grabberPitch = new SimpleServo(hwMap, "pitch", 0, 360);
     }
 
     static Motor initMotor(String id) {

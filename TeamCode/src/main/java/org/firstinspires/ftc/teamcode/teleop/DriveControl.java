@@ -92,7 +92,8 @@ public class DriveControl extends OpMode {
             if (driver2.wasJustPressed(GamepadKeys.Button.X)) {
                 elePos = elePos == ELE_CHAMBER_HIGH ? ELE_CHAMBER_HIGH_DROP : ELE_CHAMBER_HIGH;
             }
-        } else {
+        }
+        else if (eleControlMode == EleControlMode.BASKET) {
             if (driver2.wasJustPressed(GamepadKeys.Button.A)) {
                 elePos = ELE_BOT;
                 // pitchPos = PitchPosition.FORWARD

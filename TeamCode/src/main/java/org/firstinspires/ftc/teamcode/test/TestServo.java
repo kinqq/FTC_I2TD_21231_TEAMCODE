@@ -21,7 +21,7 @@ public class TestServo extends OpMode {
 
     @Override
     public void init() {
-        servo = hardwareMap.get(Servo.class, "grabber");
+        servo = hardwareMap.get(Servo.class, "pitch");
         servoPos = servo.getPosition();
     }
 
