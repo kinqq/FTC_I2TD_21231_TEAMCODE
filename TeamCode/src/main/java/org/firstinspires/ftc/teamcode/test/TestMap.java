@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.test;
 
-import static org.firstinspires.ftc.teamcode.util.Constants.ARM_KP;
-import static org.firstinspires.ftc.teamcode.util.Constants.ELE_KP;
-
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
@@ -90,7 +87,7 @@ public class TestMap {
 
     public static void rotate(int pos, double pow) {
         rotMotors.setRunMode(Motor.RunMode.PositionControl);
-        rotMotors.setPositionCoefficient(ARM_KP);
+        rotMotors.setPositionCoefficient(0.1);
         rotMotors.setTargetPosition(pos);
         rotMotors.setPositionTolerance(10);
 
@@ -105,7 +102,7 @@ public class TestMap {
 
     public static void elevate(int pos) {
         eleMotors.setRunMode(Motor.RunMode.PositionControl);
-        eleMotors.setPositionCoefficient(ELE_KP);
+        eleMotors.setPositionCoefficient(0.1);
         eleMotors.setTargetPosition(pos);
         eleMotors.setPositionTolerance(10);
         while (!eleMotors.atTargetPosition()) {

@@ -29,8 +29,8 @@ public class TestColorSensor extends LinearOpMode {
     public void runOpMode() {
         boolean prevAButtonState = false;
 
-        led = new LED(hardwareMap.get(RevBlinkinLedDriver.class, "led"));
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "racistSensor");
+//        led = new LED(hardwareMap.get(RevBlinkinLedDriver.class, "led"));
+//        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "racistSensor");
 
         waitForStart();
 

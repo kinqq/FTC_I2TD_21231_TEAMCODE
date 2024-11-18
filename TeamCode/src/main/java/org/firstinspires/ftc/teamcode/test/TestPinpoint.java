@@ -89,7 +89,7 @@ public class TestPinpoint extends LinearOpMode {
         the tracking point the Y (strafe) odometry pod is. forward of center is a positive number,
         backwards is a negative number.
          */
-        odo.setOffsets(0, 0); //these are tuned for 3110-0002-0001 Product Insight #1
+        odo.setOffsets(0, -6.5); //these are tuned for 3110-0002-0001 Product Insight #1
 
         /*
         Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either

@@ -10,36 +10,42 @@ public class Constants {
     }
 
     // Grabber servo position
-    public static double GRABBER_CLOSE = 0.006;
-    public static double GRABBER_OPEN = 0.325;
+    public static double GRABBER_CLOSE = 0.21;
+    public static double GRABBER_OPEN = 0;
+
+    public static double PITCH_FORWARD = 0.498;
+    public static double PITCH_UP = 0.555;
+    public static double PITCH_BACKWARD = 0.612; // 0.376 for the other way
+    public static double PITCH_GRAB = 0.54;
+
+    public static double ROLL_NEG_45 = 0.5;
+    public static double ROLL_45 = 0.1436;
+    public static double ROLL_0 = 0.3026;
+    public static double ROLL_90 = 0.0;
+    public static double ROLL_180 = 0.9542;
 
     // Elevator position
     //TODO: ELE_CHAMBER_POS and ELE_BASKET_POS
     public static int ELE_BOT = 0;
-    public static int ELE_LOW = 300;
-    public static int ELE_HIGH_CHAMBER = 1150;
-    public static int ELE_DROP_SPECIMEN = 500;
-    public static int ELE_MID = 1600;
-    public static int ELE_HIGH = 2020;
 
+    public static int ELE_CHAMBER_LOW = 600;
+    public static int ELE_CHAMBER_LOW_DROP = 200;
+    public static int ELE_CHAMBER_HIGH = 1200;
+    public static int ELE_CHAMBER_HIGH_DROP = 300;
 
-    public static int ELE_CHAMBER_LOW = 500;
-    public static int ELE_CHAMBER_LOW_DROP = 100;
-    public static int ELE_CHAMBER_HIGH = 1150;
-    public static int ELE_CHAMBER_HIGH_DROP = 650;
-
-    public static int ELE_BASKET_LOW = 1150;
-    public static int ELE_BASKET_HIGH = 2300;
+    public static int ELE_BASKET_LOW = 1500;
+    public static int ELE_BASKET_HIGH = 3500;
 
     public static int ROT_UP = 0;
-    public static int ROT_DOWN = 680;
-    public static int ROT_GRAB = 840;
-
-    public static double ARM_KP = 0.01;
-    public static double ELE_KP = 0.01;
+    public static int ROT_DOWN = 655;
+    public static int ROT_GRAB = 490;
 
     // Drivetrain motor speed
-    public static double SAFE_MODE = 0.5;
-    public static double PRECISION_MODE = 0.25;
+    public static double SAFE_MODE = 0.6;
+    public static double PRECISION_MODE = 0.3;
     public static double NORMAL_MODE = 1.0;
+
+    // Autonomous configs...
+    public static double angleCoeff = 0.5; //angleCorrectionCoefficient
+    public static double powerCoeff = 1;
 }

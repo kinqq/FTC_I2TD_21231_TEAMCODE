@@ -18,11 +18,14 @@ public class TestMotor extends LinearOpMode {
         waitForStart();
 
         DcMotor motor = hardwareMap.get(DcMotor.class, deviceName);
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         int pos = 0;
         double pow = 0.5;
+
+
 
         while (opModeIsActive()) {
             if (gamepad1.dpad_up) {
@@ -40,6 +43,9 @@ public class TestMotor extends LinearOpMode {
             if (gamepad1.b) {
                 pow -= 0.01;
             }
+            if (gamepad1.y) {
+                motor.setDirection(DcMotorSimple.Direction.REVERSE);
+            }
 
             if (!gamepad1.x) {
                 motor.setTargetPosition(pos);
@@ -48,6 +54,7 @@ public class TestMotor extends LinearOpMode {
             }
 
             telemetry.addData("motorName", deviceName);
+            telemetry.addData("motorDir", motor.getDirection());
             telemetry.addData("targetPos", pos);
             telemetry.addData("currPos", motor.getCurrentPosition());
             telemetry.addData("targetPow", pow);
