@@ -8,12 +8,12 @@ import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 public class MeepMeepTesting {
-    static enum Alliance {
+    enum Alliance {
         RED,
         BLUE
     }
 
-    static enum Position {
+    enum Position {
         LEFT,
         RIGHT
     }
@@ -23,8 +23,8 @@ public class MeepMeepTesting {
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setDimensions(16, 18)
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 16.27901070146687)
+                .setDimensions(17, 17.7)
                 .build();
 
         Alliance alliance = Alliance.RED;
@@ -32,22 +32,22 @@ public class MeepMeepTesting {
 
 
         if (position == Position.RIGHT && alliance == Alliance.RED) {
-            myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(32, 63, Math.toRadians(90)))
-                    .strafeTo(new Vector2d(10, 35))
+            myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(15, 63, Math.toRadians(90)))
+                    .strafeTo(new Vector2d(8, 35))
                     .waitSeconds(1)
                     .strafeToLinearHeading(new Vector2d(48, 42), Math.toRadians(270))
                     .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(55, 55), Math.toRadians(-135))
+                    .strafeToLinearHeading(new Vector2d(58, 58), Math.toRadians(-135))
                     .waitSeconds(1)
                     .strafeToLinearHeading(new Vector2d(58.6, 42), Math.toRadians(270))
                     .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(55, 55), Math.toRadians(-135))
+                    .strafeToLinearHeading(new Vector2d(58, 58), Math.toRadians(-135))
                     .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(60, 35), Math.toRadians(-45))
+                    .strafeToLinearHeading(new Vector2d(54, 33), Math.toRadians(-30))
                     .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(55, 55), Math.toRadians(-135))
+                    .strafeToLinearHeading(new Vector2d(58, 58), Math.toRadians(-135))
                     .waitSeconds(1)
-                    .splineToSplineHeading(new Pose2d(15, 10, Math.toRadians(180)), Math.toRadians(180))
+                    .splineToLinearHeading(new Pose2d(30, 10, Math.toRadians(180)), Math.toRadians(180))
                     .build());
         }
         if (position == Position.LEFT && alliance == Alliance.RED) {

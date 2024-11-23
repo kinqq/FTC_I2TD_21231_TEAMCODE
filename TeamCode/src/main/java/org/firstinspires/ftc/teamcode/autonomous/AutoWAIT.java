@@ -5,7 +5,7 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.util.AutoUtil;
+import org.firstinspires.ftc.teamcode.autonomous.AutoUtil;
 import static org.firstinspires.ftc.teamcode.test.TestMap.*;
 import org.firstinspires.ftc.teamcode.util.Constants;
 
