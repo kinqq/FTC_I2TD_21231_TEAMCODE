@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 import static org.firstinspires.ftc.teamcode.util.Constants.GRABBER_CLOSE;
 import static org.firstinspires.ftc.teamcode.util.Constants.GRABBER_OPEN;
 
+import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriver;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
@@ -16,7 +17,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.util.DcMotorGroup;
-import org.firstinspires.ftc.teamcode.util.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.util.LED;
 
 import java.util.List;
@@ -76,8 +76,8 @@ public class RobotMap {
         eleLeftMotor = initDcMotor("leftEle");
         eleRightMotor = initDcMotor("rightEle");
 
-        eleLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        eleRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        eleLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        eleRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         eleMotors = new DcMotorGroup(eleLeftMotor, eleRightMotor);
         eleMotors.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

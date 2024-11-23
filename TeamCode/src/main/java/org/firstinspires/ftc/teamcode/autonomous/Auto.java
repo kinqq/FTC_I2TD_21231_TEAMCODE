@@ -5,6 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.Const;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.util.Constants;
 
 @Autonomous(group = "Auto")
@@ -95,7 +98,7 @@ public class Auto extends LinearOpMode {
             auto.roll(Constants.ROLL_180);
             auto.strafeOdo(920, 225, 0.6, 5);
             auto.elevator(Constants.ELE_CHAMBER_HIGH, 1, 3);
-            auto.strafeOdo(95, -90, 0.3, 2);
+            auto.strafeOdo(80, -90, 0.3, 2);
             sleep(800);
             auto.elevator(Constants.ELE_CHAMBER_HIGH_DROP, 1, 2);
             sleep(500);
@@ -132,7 +135,16 @@ public class Auto extends LinearOpMode {
             auto.pitch(Constants.PITCH_GRAB);
         }
 
+        if (position == Position.RIGHT) {
+            auto.driveToPosition(30, 30, 0);
+            sleep(3000);
+            auto.driveToPosition(30, 90, 0);
+            sleep(3000);
+            auto.driveToPosition(-30, 90, 0);
+        }
+
         telemetry.addData("Path", "Execution complete");
         telemetry.update();
     }
+
 }

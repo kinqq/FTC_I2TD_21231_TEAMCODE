@@ -57,19 +57,19 @@ import java.util.List;
 public class MecanumDrive {
     public static class Params {
         // IMU orientation
-          public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.FORWARD;
+        public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.UP;
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
         // drive model parameters
         public double inPerTick = 1; // SparkFun OTOS Note: you can probably leave this at 1
-        public double lateralInPerTick = 0.7279547770045294; // included low values. else, 0.7439369380881641.
-        public double trackWidthTicks = 15.242621699698505;
+        public double lateralInPerTick = 1; // included low values. else, 0.7439369380881641.
+        public double trackWidthTicks = 16.27901070146687;
 
         // feedforward parameters (in tick units)
-        public double kS = 0.7473410147758015;
-        public double kV = 0.1945767408595386;
+        public double kS = 0.7109486602025354;
+        public double kV = 0.19158995358232614;
         public double kA = 0.025;
 
         // path profile parameters (in inches)
@@ -82,9 +82,9 @@ public class MecanumDrive {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 5.0;
-        public double lateralGain = 1.5;
-        public double headingGain = 2.0; // shared with turn
+        public double axialGain = 0.0;
+        public double lateralGain = 0.0;
+        public double headingGain = 0.0; // shared with turn
 
         public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;

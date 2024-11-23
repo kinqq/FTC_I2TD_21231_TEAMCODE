@@ -86,15 +86,15 @@ public class DriveControl extends OpMode {
 
         double heading = isOdoDrivingEnabled ? -odo.getHeading() * 180 / Math.PI : 0;
         drive.setMaxSpeed(maxSpeed);
-        drive.driveFieldCentric(-gamepad1.left_stick_x, -gamepad1.left_stick_y, -gamepad1.right_stick_x, heading);
+        drive.driveFieldCentric(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, heading);
 
             if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_DOWN) && elePos == ELE_BOT) {
                 armPos = ROT_DOWN;
-                armPow = 0.2;
+                armPow = 0.5;
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
                 armPos = ROT_UP;
-                armPow = 0.4;
+                armPow = 0.7;
 
                 elePos = ELE_BOT;
             }
@@ -124,7 +124,7 @@ public class DriveControl extends OpMode {
             if (driver2.wasJustPressed(GamepadKeys.Button.A)) {
                 elePos = ELE_BOT;
                 armPos = ROT_UP;
-                pitchPos = PITCH_FORWARD;
+//                pitchPos = PITCH_FORWARD;
                 rollPos = ROLL_0;
                 grab();
             }

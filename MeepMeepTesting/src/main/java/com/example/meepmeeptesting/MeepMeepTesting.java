@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
@@ -28,39 +29,47 @@ public class MeepMeepTesting {
 
         Alliance alliance = Alliance.RED;
         Position position = Position.RIGHT;
-        
+
 
         if (position == Position.RIGHT && alliance == Alliance.RED) {
-            myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(25, -60, Math.toRadians(90)))
-                    .strafeTo(new Vector2d(4, -37))
-                    .waitSeconds(2)
-                    .strafeTo(new Vector2d(48,-39))
+            myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(32, 63, Math.toRadians(90)))
+                    .strafeTo(new Vector2d(10, 35))
                     .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(-52,-52), Math.toRadians(225))
-                    .waitSeconds(.5)
-                    .strafeToLinearHeading(new Vector2d(4,-33), Math.toRadians(90))
+                    .strafeToLinearHeading(new Vector2d(48, 42), Math.toRadians(270))
+                    .waitSeconds(1)
+                    .strafeToLinearHeading(new Vector2d(55, 55), Math.toRadians(-135))
+                    .waitSeconds(1)
+                    .strafeToLinearHeading(new Vector2d(58.6, 42), Math.toRadians(270))
+                    .waitSeconds(1)
+                    .strafeToLinearHeading(new Vector2d(55, 55), Math.toRadians(-135))
+                    .waitSeconds(1)
+                    .strafeToLinearHeading(new Vector2d(60, 35), Math.toRadians(-45))
+                    .waitSeconds(1)
+                    .strafeToLinearHeading(new Vector2d(55, 55), Math.toRadians(-135))
+                    .waitSeconds(1)
+                    .splineToSplineHeading(new Pose2d(15, 10, Math.toRadians(180)), Math.toRadians(180))
                     .build());
         }
         if (position == Position.LEFT && alliance == Alliance.RED) {
             myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-25, -60, Math.toRadians(90)))
-                    .strafeTo(new Vector2d(-8,-37))
+                    .strafeTo(new Vector2d(-8, -37))
                     .waitSeconds(2)
-                    .strafeTo(new Vector2d(-48,-39))
+                    .strafeTo(new Vector2d(-48, -39))
                     .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(-52,-52), Math.toRadians(225))
+                    .strafeToLinearHeading(new Vector2d(-52, -52), Math.toRadians(225))
                     .waitSeconds(.5)
-                    .strafeToLinearHeading(new Vector2d(-8,-33), Math.toRadians(90))
+                    .strafeToLinearHeading(new Vector2d(-8, -33), Math.toRadians(90))
                     .build());
         }
         if (position == Position.RIGHT && alliance == Alliance.BLUE) {
             myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(25, 60, Math.toRadians(270)))
-                    .strafeTo(new Vector2d(8,37))
+                    .strafeTo(new Vector2d(8, 37))
                     .waitSeconds(2)
-                    .strafeTo(new Vector2d(48,39))
+                    .strafeTo(new Vector2d(48, 39))
                     .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(52,52), Math.toRadians(45))
+                    .strafeToLinearHeading(new Vector2d(52, 52), Math.toRadians(45))
                     .waitSeconds(.5)
-                    .strafeToLinearHeading(new Vector2d(8,33), Math.toRadians(270))
+                    .strafeToLinearHeading(new Vector2d(8, 33), Math.toRadians(270))
                     .build());
 
         }
@@ -68,11 +77,11 @@ public class MeepMeepTesting {
             myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-25, 60, Math.toRadians(270)))
                     .strafeTo(new Vector2d(-4, 37))
                     .waitSeconds(2)
-                    .strafeTo(new Vector2d(-48,39))
+                    .strafeTo(new Vector2d(-48, 39))
                     .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(52,52), Math.toRadians(45))
+                    .strafeToLinearHeading(new Vector2d(52, 52), Math.toRadians(45))
                     .waitSeconds(.5)
-                    .strafeToLinearHeading(new Vector2d(4,-33), Math.toRadians(270))
+                    .strafeToLinearHeading(new Vector2d(4, -33), Math.toRadians(270))
                     .build());
         }
 

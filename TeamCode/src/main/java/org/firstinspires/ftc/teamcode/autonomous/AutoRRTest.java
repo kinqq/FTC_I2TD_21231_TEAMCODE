@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.PinpointDrive;
 
 @Autonomous(group = "Auto")
 @Config
@@ -29,12 +30,7 @@ public class AutoRRTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(23, -65, Math.PI / 2));
-        Action Traj1 = drive.actionBuilder(drive.pose)
-                .splineTo(new Vector2d(30, 30), Math.PI / 3)
-                .turn(4 * Math.PI / 6)
-                .splineTo(new Vector2d(0, 0), 0)
-                .build();
+        PinpointDrive drive = new PinpointDrive(hardwareMap, new Pose2d(32, 63, Math.toRadians(90)));
 
 //         Action Traj2 = drive.actionBuilder(drive.pose)
 //                    .lineToY(40)
@@ -65,9 +61,24 @@ public class AutoRRTest extends LinearOpMode {
              telemetry.addData("Position", position);
         }
 
-        Actions.runBlocking(new SequentialAction(
-                Traj1
-        ));
+        Actions.runBlocking(drive.actionBuilder(new Pose2d(32, 63, Math.toRadians(90)))
+                .strafeTo(new Vector2d(10, 35))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(48, 42), Math.toRadians(270))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(55, 55), Math.toRadians(-135))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(58.6, 42), Math.toRadians(270))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(55, 55), Math.toRadians(-135))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(60, 35), Math.toRadians(-45))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(55, 55), Math.toRadians(-135))
+                .waitSeconds(1)
+                .splineToSplineHeading(new Pose2d(25, 15, Math.toRadians(180)), Math.toRadians(180))
+                .build()
+        );
 
         telemetry.addData("Path", "Execution complete");
         telemetry.update();

@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.util.Constants.powerCoeff;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriver;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -19,29 +20,20 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.util.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.util.LED;
 
 public class AutoUtil {
     LinearOpMode opMode;
     static ElapsedTime runtime = new ElapsedTime();
+    boolean isLastActionFinshed = true;
 
     // Declare motor variables
-    DcMotorEx frontLeft;
-    DcMotorEx frontRight;
-    DcMotorEx backLeft;
-    DcMotorEx backRight;
-    DcMotor eleLeft, eleRight, rotLeft, rotRight;
+    DcMotorEx frontLeft, frontRight, backLeft, backRight;
+    DcMotorEx eleLeft, eleRight, rotLeft, rotRight;
     Servo grabber, pitch, roll;
-//    LED led;
 
     // Odometry driver
     GoBildaPinpointDriver odo;
-
-    // Position
-    double x = 0; //mm
-    double y = 0; // mm
-    double heading = 0; // Radian
 
     // Ticks per one revolution of the motor
     final double TICKS_PER_REV = 537.7;
@@ -87,16 +79,12 @@ public class AutoUtil {
 
         this.odo = linearOpMode.hardwareMap.get(GoBildaPinpointDriver.class, "odo");
 
-        odo.setOffsets(0, -6.5);
+        odo.setOffsets(0, -165);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         odo.resetPosAndIMU();
 //        odo.setPosition(new Pose2D(DistanceUnit.MM, 0, 0, AngleUnit.DEGREES, 0));
     }
-
-//    public void resetOdo() {
-//        odo.resetPosAndIMU();
-//    }
 
     /**
      *
@@ -128,7 +116,6 @@ public class AutoUtil {
         eleLeft.setPower(0);
         eleRight.setPower(0);
     }
-
     /**
      *
      * @param position This is for the rotater position, use stuff like ROT_UP not just numbers
@@ -154,15 +141,12 @@ public class AutoUtil {
         rotLeft.setPower(0);
         rotRight.setPower(0);
     }
-
     public void pitch(double pos) {
         pitch.setPosition(pos);
     }
-
     public void roll(double pos) {
         roll.setPosition(pos);
     }
-
     /**
      *
      * @param position Set to the position given, use GRABBER_OPEN and GRABBER_CLOSE
@@ -170,8 +154,6 @@ public class AutoUtil {
     public void grabber(double position){
         grabber.setPosition(position);
     }
-
-
     // For some reason, distance is not really accurate
     /**
      * Strafes the robot in a specified direction for a given distance.
@@ -269,29 +251,6 @@ public class AutoUtil {
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-
-    public void forwardOdo(double distance) {
-        PIDFController pid = new PIDFController(0.03, 0, 0, 0);
-        pid.setTolerance(0.1);
-
-        odo.update();
-        double firstPos = odo.getPosY();
-
-        pid.reset();
-        pid.setSetPoint(distance);
-
-        do {
-            double pos = odo.getPosY();
-            double power = Range.clip(pid.calculate(pos - firstPos), -1, 1);
-
-            frontRight.setPower(power);
-            frontLeft.setPower(power);
-            backRight.setPower(power);
-            backLeft.setPower(power);
-
-        } while (opMode.opModeIsActive() && !opMode.isStopRequested() && !pid.atSetPoint());
-    }
-
     public void strafeOdo(double distance, double angle, double power, double timeout) {
         // Convert angle to radians
         double robotAngle = Math.toRadians(angle);
@@ -391,7 +350,6 @@ public class AutoUtil {
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-
     public void strafeXY(double x, double y, double power, double timeout) {
         // Convert angle to radians
         odo.update();
@@ -585,6 +543,43 @@ public class AutoUtil {
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
+    public void driveToPosition(double x, double y, double h) {
+        Pose2D pos = new Pose2D(DistanceUnit.MM, x, y, AngleUnit.DEGREES, h);
+        PIDFController pidfForward = new PIDFController(0.1, 0, 0, 0);
+        PIDFController pidfHorizontal = new PIDFController(0.1, 0, 0, 0);
+        PIDFController pidfRotate = new PIDFController(0.1, 0, 0, 0);
+        Pose2D currentPos = odo.getPosition();
+        pos = addPos(pos, currentPos);
+
+        double xError = Math.abs(pos.getX(DistanceUnit.MM) - currentPos.getX(DistanceUnit.MM));
+        double yError = Math.abs(pos.getY(DistanceUnit.MM) - currentPos.getY(DistanceUnit.MM));
+        double hError = Math.abs(pos.getHeading(AngleUnit.DEGREES) - currentPos.getHeading(AngleUnit.DEGREES));
+
+        while((xError >= 10 || yError >= 10 || hError >= 1) && opMode.opModeIsActive()) {
+            odo.update();
+            currentPos = odo.getPosition();
+            double forwardCorrect = pidfForward.calculate(currentPos.getY(DistanceUnit.MM), pos.getY(DistanceUnit.MM));
+            double horizontalCorrect = pidfHorizontal.calculate(currentPos.getX(DistanceUnit.MM), pos.getX(DistanceUnit.MM));
+            double rotateCorrect = pidfRotate.calculate(currentPos.getHeading(AngleUnit.DEGREES), pos.getHeading(AngleUnit.DEGREES));
+            mecanumDriveFieldCentric(forwardCorrect, -horizontalCorrect, rotateCorrect);
+
+            xError = Math.abs(pos.getX(DistanceUnit.MM) - currentPos.getX(DistanceUnit.MM));
+            yError = Math.abs(pos.getY(DistanceUnit.MM) - currentPos.getY(DistanceUnit.MM));
+            hError = Math.abs(pos.getHeading(AngleUnit.DEGREES) - currentPos.getHeading(AngleUnit.DEGREES));
+
+            opMode.telemetry.addData("xError", xError);
+            opMode.telemetry.addData("yError", yError);
+            opMode.telemetry.addData("hError", hError);
+            opMode.telemetry.update();
+        }
+    }
+
+    public Pose2D addPos(Pose2D pos1, Pose2D pos2) {
+        double posX = pos1.getX(DistanceUnit.MM) + pos2.getX(DistanceUnit.MM);
+        double posY = pos1.getY(DistanceUnit.MM) + pos2.getY(DistanceUnit.MM);
+        double posH = pos1.getHeading(AngleUnit.DEGREES) + pos2.getHeading(AngleUnit.DEGREES);
+        return new Pose2D(DistanceUnit.MM, posX, posY, AngleUnit.DEGREES, posH);
+    }
     public void turn(double targetHeading, double power, double timeout) {
         odo.update(); // Update odometry
 
@@ -655,5 +650,26 @@ public class AutoUtil {
         frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void mecanumDrive(double forward, double strafe, double rotate) {
+        // math to move and turn
+        frontLeft.setPower(forward + strafe - rotate);
+        frontRight.setPower(forward - strafe + rotate);
+        backLeft.setPower(forward - strafe - rotate);
+        backRight.setPower(forward + strafe + rotate);
+
+//        String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", position.getX(DistanceUnit.INCH), position.getY(DistanceUnit.INCH), position.getHeading(AngleUnit.DEGREES));
+//        telemetry.addData("Position", data);
+//        String data2 = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", posTarget.getX(DistanceUnit.INCH), posTarget.getY(DistanceUnit.INCH), posTarget.getHeading(AngleUnit.DEGREES));
+//        telemetry.addData("Position target", data2);
+//        telemetry.update();
+    }
+
+    public void mecanumDriveFieldCentric(double vertical, double horizontal, double rotate) {
+        double heading = -odo.getHeading();
+        double robotVert = Math.sin(heading) * horizontal + Math.cos(heading) * vertical;
+        double robotHoriz = Math.cos(heading) * horizontal - Math.sin(heading) * vertical;
+        mecanumDrive(robotVert, robotHoriz, rotate);
     }
 }
