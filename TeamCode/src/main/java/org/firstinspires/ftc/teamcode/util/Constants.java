@@ -25,7 +25,6 @@ public class Constants {
     public static double ROLL_180 = 0.9542;
 
     // Elevator position
-    //TODO: ELE_CHAMBER_POS and ELE_BASKET_POS
     public static int ELE_BOT = 0;
 
     public static int ELE_CHAMBER_LOW = 600;

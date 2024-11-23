@@ -101,7 +101,7 @@ public class TestMap {
     public static void rotateWait(int pos, double pow) {
         rotMotors.setRunMode(Motor.RunMode.PositionControl);
 
-        rotMotors.setPositionCoefficient(ARM_KP);
+        rotMotors.setPositionCoefficient(0.1);
         rotMotors.setTargetPosition(pos);
         rotMotors.set(0);
         rotMotors.setPositionTolerance(10);
