@@ -67,6 +67,8 @@ public class TestMap {
     static void initRotation() {
         rotLeftMotor = initMotor("leftRot");
         rotRightMotor = initMotor("rightRot");
+        rotLeftMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+        rotRightMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
 
         rotMotors = new MotorGroup(rotLeftMotor, rotRightMotor);
         rotMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
@@ -93,10 +95,20 @@ public class TestMap {
 
         rotMotors.set(pow);
 
-//        while (!rotLeftMotor.atTargetPosition()) {
-//            rotMotors.set(pow);
-//        }
-//        rotMotors.stopMotor();
+        rotMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public static void rotateWait(int pos, double pow) {
+        rotMotors.setRunMode(Motor.RunMode.PositionControl);
+
+        rotMotors.setPositionCoefficient(ARM_KP);
+        rotMotors.setTargetPosition(pos);
+        rotMotors.set(0);
+        rotMotors.setPositionTolerance(10);
+
+        while (!rotMotors.atTargetPosition()) rotMotors.set(pow);
+        rotMotors.stopMotor();
+
         rotMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
     }
 
@@ -105,10 +117,10 @@ public class TestMap {
         eleMotors.setPositionCoefficient(0.1);
         eleMotors.setTargetPosition(pos);
         eleMotors.setPositionTolerance(10);
-        while (!eleMotors.atTargetPosition()) {
-            eleMotors.set(0.8);
-        }
-        eleMotors.stopMotor();
+
+        eleMotors.set(0.8);
+
+        eleMotors.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
     }
 
 }
