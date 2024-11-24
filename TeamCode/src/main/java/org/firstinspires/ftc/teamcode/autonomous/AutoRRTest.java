@@ -37,14 +37,23 @@ public class AutoRRTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Pose2d initialPose = new Pose2d(32, 63, Math.toRadians(90));
+        Pose2d initialPose = new Pose2d(15, 63, Math.toRadians(-90));
 
         PinpointDrive drive = new PinpointDrive(hardwareMap, initialPose);
         Elevator elevator = new Elevator(hardwareMap);
         Grabber grabber = new Grabber(hardwareMap);
 
-        TrajectoryActionBuilder traj1 = drive.actionBuilder(initialPose).strafeTo(new Vector2d(10, 35));
-        TrajectoryActionBuilder traj2 = traj1.endTrajectory().strafeToLinearHeading(new Vector2d(48, 42), Math.toRadians(270));
+        TrajectoryActionBuilder traj1, traj2, traj3, traj4, traj5, traj6, traj7, traj8, traj9;
+
+        traj1 = drive.actionBuilder(initialPose).strafeTo(new Vector2d(8, 32));
+        traj2 = traj1.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(50, 42), Math.toRadians(270));
+        traj3 = traj2.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(60, 60), Math.toRadians(-135));
+        traj4 = traj3.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(58.6, 42), Math.toRadians(270));
+        traj5 = traj4.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(60, 60), Math.toRadians(-135));
+        traj6 = traj5.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(54, 33), Math.toRadians(-30));
+        traj7 = traj6.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(60, 60), Math.toRadians(-135));
+        traj8 = traj7.endTrajectory().fresh().splineToLinearHeading(new Pose2d(30, 10, Math.toRadians(180)), Math.toRadians(180));
+
 
         // Wait until start and set up parameters
         while (!opModeIsActive() && !isStopRequested()) {
@@ -60,22 +69,62 @@ public class AutoRRTest extends LinearOpMode {
             if (gamepad1.right_trigger > 0.25) {
                 position = Position.RIGHT;
             }
+
+            if (gamepad2.back) {
+                elevator.initRot();
+            }
+            if (gamepad2.start) {
+                elevator.initEle();
+            }
+
             telemetry.addData("Alliance", alliance);
             telemetry.addData("Position", position);
         }
 
-        Actions.runBlocking(new ParallelAction(traj1.build(), elevator.elevate(ELE_CHAMBER_HIGH)));
-
+//        Actions.runBlocking(new ParallelAction(traj1.build(), elevator.elevate(ELE_CHAMBER_HIGH)));
+//        Actions.runBlocking(new SequentialAction(
+//                        elevator.elevate(ELE_CHAMBER_HIGH_DROP),
+//                        grabber.release(),
+//                        new ParallelAction(
+//                                traj2.build(),
+//                                elevator.rotateDown()
+//                        )
+//
+//                )
+//        );
         Actions.runBlocking(new SequentialAction(
-                        elevator.elevate(ELE_CHAMBER_HIGH_DROP),
-                        grabber.release(),
-                        new ParallelAction(
-                                traj2.build(),
-                                elevator.rotateDown()
-                        )
-                
-                )
-        );
+                new ParallelAction(
+                        traj1.build(),
+                        elevator.elevate(ELE_CHAMBER_HIGH),
+                        elevator.rotateTo(160)
+                ),
+                grabber.release(),
+                new ParallelAction(
+                        elevator.elevate(ELE_BOT),
+                        traj2.build()
+                ),
+                new ParallelAction(
+                        elevator.rotateDown(),
+                        elevator.elevate(600)
+                ),
+                grabber.grab(),
+                elevator.rotateUp(),
+                new ParallelAction(
+                        traj3.build(),
+                        elevator.elevate(ELE_BASKET_HIGH),
+                        elevator.rotateUp()
+                ),
+                grabber.release(),
+                new ParallelAction(
+                        elevator.elevate(ELE_BOT),
+                        traj4.build()
+                ),
+                elevator.rotateDown()
+//                traj5.build(),
+//                traj6.build(),
+//                traj7.build(),
+//                traj8.build()
+        ));
 
 
         telemetry.addData("Path", "Execution complete");

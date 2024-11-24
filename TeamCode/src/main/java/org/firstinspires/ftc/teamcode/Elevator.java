@@ -89,6 +89,16 @@ public class Elevator {
         }
     }
 
+    public void initRot() {
+        leftRot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    public void initEle() {
+        leftEle.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightEle.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
     public Action rotateUp() {
         return new Rotate(ROT_UP);
     }
