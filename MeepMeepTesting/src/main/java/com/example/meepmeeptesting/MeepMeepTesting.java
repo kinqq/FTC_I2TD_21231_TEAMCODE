@@ -31,34 +31,51 @@ public class MeepMeepTesting {
         Position position = Position.RIGHT;
 
 
-        if (position == Position.RIGHT && alliance == Alliance.RED) {
+        if (position == Position.LEFT && alliance == Alliance.RED) {
             myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(15, 63, Math.toRadians(-90)))
-                    .strafeTo(new Vector2d(8, 35))
+                    .strafeTo(new Vector2d(8, 32))
                     .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(48, 42), Math.toRadians(270))
+                    .strafeToLinearHeading(new Vector2d(50, 42), Math.toRadians(270))
                     .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(58, 58), Math.toRadians(-135))
+                    .strafeToLinearHeading(new Vector2d(60, 60), Math.toRadians(-135))
                     .waitSeconds(1)
                     .strafeToLinearHeading(new Vector2d(58.6, 42), Math.toRadians(270))
                     .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(58, 58), Math.toRadians(-135))
+                    .strafeToLinearHeading(new Vector2d(60, 60), Math.toRadians(-135))
                     .waitSeconds(1)
                     .strafeToLinearHeading(new Vector2d(54, 33), Math.toRadians(-30))
                     .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(58, 58), Math.toRadians(-135))
+                    .strafeToLinearHeading(new Vector2d(60, 60), Math.toRadians(-135))
                     .waitSeconds(1)
                     .splineToLinearHeading(new Pose2d(30, 10, Math.toRadians(180)), Math.toRadians(180))
                     .build());
         }
-        if (position == Position.LEFT && alliance == Alliance.RED) {
-            myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-25, -60, Math.toRadians(90)))
-                    .strafeTo(new Vector2d(-8, -37))
-                    .waitSeconds(2)
-                    .strafeTo(new Vector2d(-48, -39))
-                    .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(-52, -52), Math.toRadians(225))
-                    .waitSeconds(.5)
-                    .strafeToLinearHeading(new Vector2d(-8, -33), Math.toRadians(90))
+        if (position == Position.RIGHT && alliance == Alliance.RED) {
+            myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-15, 63, Math.toRadians(-90)))
+                    .strafeTo(new Vector2d(-8, 32))
+                    .waitSeconds(0.5)
+                    .strafeToLinearHeading(new Vector2d(-31, 40), Math.toRadians(-130))
+                    .turnTo(Math.toRadians(140))
+                    .strafeToLinearHeading(new Vector2d(-40, 40), Math.toRadians(-140))
+                    .turnTo(Math.toRadians(120))
+                    .turnTo(Math.toRadians(-150))
+                    .strafeToLinearHeading(new Vector2d(-44, 54), Math.toRadians(90))
+                    .waitSeconds(0.5)
+                    .strafeToLinearHeading(new Vector2d(-8, 32), Math.toRadians(90))
+                    .waitSeconds(0.5)
+                    .strafeToLinearHeading(new Vector2d(-44, 54), Math.toRadians(90))
+                    .waitSeconds(0.5)
+                    .strafeToLinearHeading(new Vector2d(-8, 32), Math.toRadians(90))
+                    .waitSeconds(0.5)
+                    .strafeToLinearHeading(new Vector2d(-44, 54), Math.toRadians(90))
+                    .waitSeconds(0.5)
+                    .strafeToLinearHeading(new Vector2d(-8, 32), Math.toRadians(90))
+                    .waitSeconds(0.5)
+                    .strafeToLinearHeading(new Vector2d(-44, 54), Math.toRadians(90))
+                    .waitSeconds(0.5)
+                    .strafeToLinearHeading(new Vector2d(-8, 32), Math.toRadians(90))
+                    .waitSeconds(0.5)
+                    .strafeToLinearHeading(new Vector2d(-34, 48), Math.toRadians(145))
                     .build());
         }
         if (position == Position.RIGHT && alliance == Alliance.BLUE) {

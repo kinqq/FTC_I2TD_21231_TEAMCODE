@@ -23,7 +23,7 @@ import java.util.concurrent.Delayed;
 public class DriveControl extends OpMode {
     private GamepadEx driver1, driver2;
 
-    private int armPos = ROT_UP;
+    private int armPos = ROT_DOWN;
     private double armPow;
     private double elePos = ELE_BOT;
     private double pitchPos = PITCH_FORWARD, rollPos = ROLL_0;
@@ -82,22 +82,23 @@ public class DriveControl extends OpMode {
             maxSpeed = SAFE_MODE;
 
         if (driver1.wasJustPressed(GamepadKeys.Button.START)) odo.resetPosAndIMU();
-        if (driver2.wasJustPressed(GamepadKeys.Button.START)) eleMotors.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if (driver2.wasJustPressed(GamepadKeys.Button.START))
+            eleMotors.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         double heading = isOdoDrivingEnabled ? -odo.getHeading() * 180 / Math.PI : 0;
         drive.setMaxSpeed(maxSpeed);
         drive.driveFieldCentric(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x, heading);
 
-            if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_DOWN) && elePos == ELE_BOT) {
-                armPos = ROT_DOWN;
-                armPow = 0.5;
-            }
-            if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
-                armPos = ROT_UP;
-                armPow = 0.7;
+        if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_DOWN) && elePos == ELE_BOT) {
+            armPos = ROT_DOWN;
+            armPow = 0.5;
+        }
+        if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
+            armPos = ROT_UP;
+            armPow = 0.7;
 
-                elePos = ELE_BOT;
-            }
+            elePos = ELE_BOT;
+        }
         rotate(armPos, armPow);
 
         if (driver2.wasJustPressed(GamepadKeys.Button.Y)) {
@@ -106,7 +107,7 @@ public class DriveControl extends OpMode {
             if (eleControlMode == EleControlMode.BASKET) gamepad2.rumble(800);
         }
 
-        if(armPos != ROT_UP) {
+        if (armPos != ROT_UP) {
             if (driver2.wasJustPressed(GamepadKeys.Button.A)) {
                 elePos = ELE_BOT;
             }
@@ -141,8 +142,7 @@ public class DriveControl extends OpMode {
                 pitchPos = PITCH_BACKWARD;
                 rollPos = ROLL_180;
             }
-        }
-        else if (eleControlMode == EleControlMode.BASKET) {
+        } else if (eleControlMode == EleControlMode.BASKET) {
             if (driver2.wasJustPressed(GamepadKeys.Button.A)) {
                 elePos = ELE_BOT;
                 pitchPos = PITCH_FORWARD;
@@ -160,7 +160,7 @@ public class DriveControl extends OpMode {
                 rollPos = ROLL_0;
             }
         }
-        elevate((int)elePos, 1);
+        elevate((int) elePos, 1);
         pitch(pitchPos);
 
         if ((elePos == ELE_CHAMBER_HIGH_DROP || elePos == ELE_CHAMBER_LOW_DROP) && eleMotors.atTargetPosition()) {

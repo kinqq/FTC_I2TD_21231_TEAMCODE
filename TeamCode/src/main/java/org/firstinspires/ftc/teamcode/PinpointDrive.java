@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
 
-
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.ftc.FlightRecorder;
 import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriver;
 import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriverRR;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -32,8 +32,6 @@ public class PinpointDrive extends MecanumDrive {
          */
         //These are tuned for 3110-0002-0001 Product Insight #1
         // RR localizer note: These units are inches, presets are converted from mm (which is why they are inexact)
-//        public double xOffset = -5.991346952857263;
-//        public double yOffset = -0.8934847495916045;
 
         public double xOffset = 0.8934847495916045;
         public double yOffset = -5.991346952857263;
@@ -65,8 +63,8 @@ public class PinpointDrive extends MecanumDrive {
 
     public PinpointDrive(HardwareMap hardwareMap, Pose2d pose) {
         super(hardwareMap, pose);
-        FlightRecorder.write("PINPOINT_PARAMS",PARAMS);
-        pinpoint = hardwareMap.get(GoBildaPinpointDriverRR.class,"odo");
+        FlightRecorder.write("PINPOINT_PARAMS", PARAMS);
+        pinpoint = hardwareMap.get(GoBildaPinpointDriverRR.class, "odo");
 
         // RR localizer note: don't love this conversion (change driver?)
         pinpoint.setOffsets(DistanceUnit.MM.fromInches(PARAMS.xOffset), DistanceUnit.MM.fromInches(PARAMS.yOffset));
@@ -95,6 +93,7 @@ public class PinpointDrive extends MecanumDrive {
 
         pinpoint.setPosition(pose);
     }
+
     @Override
     public PoseVelocity2d updatePoseEstimate() {
         if (lastPinpointPose != pose) {
@@ -118,8 +117,8 @@ public class PinpointDrive extends MecanumDrive {
         }
 
         FlightRecorder.write("ESTIMATED_POSE", new PoseMessage(pose));
-        FlightRecorder.write("PINPOINT_RAW_POSE",new FTCPoseMessage(pinpoint.getPosition()));
-        FlightRecorder.write("PINPOINT_STATUS",pinpoint.getDeviceStatus());
+        FlightRecorder.write("PINPOINT_RAW_POSE", new FTCPoseMessage(pinpoint.getPosition()));
+        FlightRecorder.write("PINPOINT_STATUS", pinpoint.getDeviceStatus());
 
         return pinpoint.getVelocityRR();
     }
