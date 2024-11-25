@@ -8,6 +8,8 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
@@ -16,12 +18,16 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Delayed;
 
 @TeleOp(name = "DriveControl", group = "TeleOp")
 @Config
 public class DriveControl extends OpMode {
     private GamepadEx driver1, driver2;
+    private FtcDashboard dash = FtcDashboard.getInstance();
+    private List<Action> runningActions = new ArrayList<>();
 
     private int armPos = ROT_DOWN;
     private double armPow;
@@ -38,7 +44,7 @@ public class DriveControl extends OpMode {
         //init hardware
         initRobot(hardwareMap);
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        telemetry = new MultipleTelemetry(telemetry, dash.getTelemetry());
 
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
@@ -71,6 +77,8 @@ public class DriveControl extends OpMode {
         driver2.readButtons();
         driver2LeftTrigger.readValue();
         driver2RightTrigger.readValue();
+        TelemetryPacket packet = new TelemetryPacket();
+
 
         if (driver1.wasJustPressed(GamepadKeys.Button.BACK))
             isOdoDrivingEnabled = !isOdoDrivingEnabled;
@@ -189,6 +197,26 @@ public class DriveControl extends OpMode {
             else if (rollPos == ROLL_90) rollPos = ROLL_NEG_45;
         }
         roll(rollPos);
+
+        /* Example code for addaing action
+        if (gamepad1.a) {
+            runningActions.add(new SequentialAction(
+                    new SleepAction(0.5),
+                    new InstantAction(() -> servo.setPosition(0.5))
+            ));
+        }
+        */
+
+        List<Action> newActions = new ArrayList<>();
+        for (Action action : runningActions) {
+            action.preview(packet.fieldOverlay());
+            if (action.run(packet)) {
+                newActions.add(action);
+            }
+        }
+        runningActions = newActions;
+
+        dash.sendTelemetryPacket(packet);
 
         telemetry.addData("armPos", armPos);
         telemetry.addData("armLft", rotLeftMotor.getCurrentPosition());
