@@ -79,7 +79,6 @@ public class DriveControl extends OpMode {
         driver2RightTrigger.readValue();
         TelemetryPacket packet = new TelemetryPacket();
 
-
         if (driver1.wasJustPressed(GamepadKeys.Button.BACK))
             isOdoDrivingEnabled = !isOdoDrivingEnabled;
         if (driver1.isDown(GamepadKeys.Button.LEFT_BUMPER))

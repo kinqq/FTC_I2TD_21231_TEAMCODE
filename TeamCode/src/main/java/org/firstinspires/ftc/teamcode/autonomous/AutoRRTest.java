@@ -69,6 +69,7 @@ public class AutoRRTest extends LinearOpMode {
 
             telemetry.addData("Alliance", alliance);
             telemetry.addData("Position", position);
+            telemetry.update();
         }
 
         if (position == Position.LEFT)
@@ -201,7 +202,7 @@ public class AutoRRTest extends LinearOpMode {
         if (position == Position.RIGHT) {
             TrajectoryActionBuilder traj1, traj2, traj3, traj4, traj5, traj6, traj7, traj8, traj9, traj10, traj11, traj12, traj13, traj14, traj15, traj16;
 
-            traj1 = drive.actionBuilder(rightInitialPose).strafeTo(new Vector2d(-8, 32));
+            traj1 = drive.actionBuilder(rightInitialPose).strafeTo(new Vector2d(-8, 34));
             traj2 = traj1.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-31, 40), Math.toRadians(-130));
             traj3 = traj2.endTrajectory().fresh().turnTo(Math.toRadians(140));
             traj4 = traj3.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-40, 40), Math.toRadians(-140));

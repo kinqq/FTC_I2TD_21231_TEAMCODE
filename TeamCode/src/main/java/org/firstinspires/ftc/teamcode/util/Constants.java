@@ -40,7 +40,7 @@ public class Constants {
     public static int ROT_GRAB = 490;
 
     // Drivetrain motor speed
-    public static double SAFE_MODE = 0.6;
+    public static double SAFE_MODE = 0.7;
     public static double PRECISION_MODE = 0.3;
     public static double NORMAL_MODE = 1.0;
 
