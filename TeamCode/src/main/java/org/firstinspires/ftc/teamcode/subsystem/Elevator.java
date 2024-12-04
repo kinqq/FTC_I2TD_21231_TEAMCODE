@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.subsystem;
 
 import static org.firstinspires.ftc.teamcode.util.Constants.*;
 
@@ -39,6 +39,13 @@ public class Elevator {
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
+            // Giving a generous value of 50 ticks error
+            // Combining with initialize if statement will just delay and schedule the action
+            if (Math.abs(leftEle.getCurrentPosition() - ELE_BOT) > 50) {
+                packet.addLine("WARNING: Arm pivot was commanded to move while elevator was raised.");
+                return false;
+            }
+
             if (!initialized) {
                 leftRot.setTargetPosition(pos);
                 rightRot.setTargetPosition(pos);
@@ -105,6 +112,14 @@ public class Elevator {
 
     public Action rotateDown() {
         return new Rotate(ROT_DOWN);
+    }
+
+    public Action rotateGrab() {
+        return new Rotate(ROT_GRAB);
+    }
+
+    public int getPivotTarget() {
+        return leftRot.getTargetPosition();
     }
 
     public Action rotateTo(int pos) {

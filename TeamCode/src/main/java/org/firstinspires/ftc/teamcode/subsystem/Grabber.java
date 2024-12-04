@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.subsystem;
 
 import static org.firstinspires.ftc.teamcode.util.Constants.*;
 
@@ -6,9 +6,6 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -132,8 +129,8 @@ public class Grabber {
         return new Pitch(PITCH_BACKWARD);
     }
 
-    public Action pitchTo(double target) {
-        return new Pitch(target);
+    public Action pitchGrab() {
+        return new Pitch(PITCH_GRAB);
     }
 
     public Action roll(double degree) {
