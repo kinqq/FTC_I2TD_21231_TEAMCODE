@@ -4,39 +4,55 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 public class DcMotorGroup {
-    DcMotorEx m1, m2;
+    private DcMotorEx[] motors;
 
-    public DcMotorGroup(DcMotorEx _m1, DcMotorEx _m2) {
-        m1 = _m1;
-        m2 = _m2;
+    // Constructor using varargs to allow any number of motors
+    public DcMotorGroup(DcMotorEx... motors) {
+        this.motors = motors;
     }
 
-    public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zpb) {
-        m1.setZeroPowerBehavior(zpb);
-        m2.setZeroPowerBehavior(zpb);
+    // Set zero power behavior for all motors
+    public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
+        for (DcMotorEx motor : motors) {
+            motor.setZeroPowerBehavior(zeroPowerBehavior);
+        }
     }
 
-    public void setMode(DcMotor.RunMode rm) {
-        m1.setMode(rm);
-        m2.setMode(rm);
+    // Set mode for all motors
+    public void setMode(DcMotor.RunMode runMode) {
+        for (DcMotorEx motor : motors) {
+            motor.setMode(runMode);
+        }
     }
 
-    public void setTargetPosition(int pos) {
-        m1.setTargetPosition(pos);
-        m2.setTargetPosition(pos);
+    // Set target position for all motors
+    public void setTargetPosition(int targetPosition) {
+        for (DcMotorEx motor : motors) {
+            motor.setTargetPosition(targetPosition);
+        }
     }
 
-    public void setPower(double pow) {
-        m1.setPower(pow);
-        m2.setPower(pow);
+    // Set power for all motors
+    public void setPower(double power) {
+        for (DcMotorEx motor : motors) {
+            motor.setPower(power);
+        }
     }
 
-    public void setTolerance(int tick) {
-        m1.setTargetPositionTolerance(tick);
-        m2.setTargetPositionTolerance(tick);
+    // Set tolerance for target position for all motors
+    public void setTolerance(int tolerance) {
+        for (DcMotorEx motor : motors) {
+            motor.setTargetPositionTolerance(tolerance);
+        }
     }
 
+    // Check if all motors are at their target positions
     public boolean atTargetPosition() {
-        return m1.getCurrentPosition() - m1.getTargetPosition() < m1.getTargetPositionTolerance();
+        for (DcMotorEx motor : motors) {
+            if (Math.abs(motor.getCurrentPosition() - motor.getTargetPosition()) >= motor.getTargetPositionTolerance()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

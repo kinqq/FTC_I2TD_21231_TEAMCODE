@@ -4,7 +4,6 @@ package org.firstinspires.ftc.teamcode.autonomous;
 import static org.firstinspires.ftc.teamcode.util.Constants.*;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -15,9 +14,8 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.Elevator;
-import org.firstinspires.ftc.teamcode.Grabber;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystem.Elevator;
+import org.firstinspires.ftc.teamcode.subsystem.Grabber;
 import org.firstinspires.ftc.teamcode.PinpointDrive;
 
 @Autonomous(group = "Auto")
@@ -261,8 +259,8 @@ public class AutoRRTest extends LinearOpMode {
                             grabber.grab(),
                             new ParallelAction(
                                     traj7.build(),
-                                    elevator.rotateTo(ROT_GRAB),
-                                    grabber.pitchTo(PITCH_GRAB)
+                                    elevator.rotateGrab(),
+                                    grabber.pitchGrab()
                             ),
                             grabber.release(),
                             traj8.build(),
@@ -278,8 +276,8 @@ public class AutoRRTest extends LinearOpMode {
                             grabber.release(),
                             new ParallelAction(
                                     traj10.build(),
-                                    elevator.rotateTo(ROT_GRAB),
-                                    grabber.pitchTo(PITCH_GRAB),
+                                    elevator.rotateGrab(),
+                                    grabber.pitchGrab(),
                                     grabber.roll(0)
                             ),
                             grabber.grab(),
@@ -294,8 +292,8 @@ public class AutoRRTest extends LinearOpMode {
                             grabber.release(),
                             new ParallelAction(
                                     traj12.build(),
-                                    elevator.rotateTo(ROT_GRAB),
-                                    grabber.pitchTo(PITCH_GRAB),
+                                    elevator.rotateGrab(),
+                                    grabber.pitchGrab(),
                                     grabber.roll(0)
                             ),
                             grabber.grab(),
@@ -310,8 +308,8 @@ public class AutoRRTest extends LinearOpMode {
                             grabber.release(),
                             new ParallelAction(
                                     traj14.build(),
-                                    elevator.rotateTo(ROT_GRAB),
-                                    grabber.pitchTo(PITCH_GRAB),
+                                    elevator.rotateGrab(),
+                                    grabber.pitchGrab(),
                                     grabber.roll(0)
                             ),
                             grabber.grab(),

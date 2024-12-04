@@ -1,13 +1,10 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.autonomous.AutoUtil;
 import static org.firstinspires.ftc.teamcode.test.TestMap.*;
-import org.firstinspires.ftc.teamcode.util.Constants;
 
 @Autonomous(group = "AutoWAIT")
 @Config
@@ -18,7 +15,6 @@ public class AutoWAIT extends LinearOpMode {
         initTestRobot(hardwareMap);
 
         waitForStart();
-
 
         rotateWait(300, 0.4);
         sleep(500);
