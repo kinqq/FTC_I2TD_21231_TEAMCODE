@@ -12,6 +12,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @TeleOp(name="TestMotor", group = "Test")
 public class TestMotor extends LinearOpMode {
     public static String deviceName = "leftRot";
+    public static int pos = 0;
+    public static double pow = 0.5;
+    public static boolean isReversed = false;
 
     @Override
     public void runOpMode() {
@@ -21,10 +24,6 @@ public class TestMotor extends LinearOpMode {
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
-        int pos = 0;
-        double pow = 0.5;
-
 
 
         while (opModeIsActive()) {
@@ -43,8 +42,12 @@ public class TestMotor extends LinearOpMode {
             if (gamepad1.b) {
                 pow -= 0.01;
             }
-            if (gamepad1.y) {
+            if (gamepad1.y) isReversed = !isReversed;
+            if (isReversed) {
                 motor.setDirection(DcMotorSimple.Direction.REVERSE);
+            }
+            else {
+                motor.setDirection(DcMotorSimple.Direction.FORWARD);
             }
 
             if (!gamepad1.x) {

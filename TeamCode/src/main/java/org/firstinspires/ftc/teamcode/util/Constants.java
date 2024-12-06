@@ -10,13 +10,13 @@ public class Constants {
     }
 
     // Grabber servo position
-    public static double GRABBER_CLOSE = 0.21;
-    public static double GRABBER_OPEN = 0;
+    public static double GRABBER_CLOSE = 0.405;
+    public static double GRABBER_OPEN = 0.195;
 
-    public static double PITCH_FORWARD = 0.498;
-    public static double PITCH_UP = 0.555;
-    public static double PITCH_BACKWARD = 0.612; // 0.376 for the other way
-    public static double PITCH_GRAB = 0.54;
+    public static double PITCH_FORWARD = 1.00;
+    public static double PITCH_UP = 0.65;
+    public static double PITCH_BACKWARD = 0.41; // 0.376 for the other way
+    public static double PITCH_GRAB = 0.8;
 
     public static double ROLL_NEG_45 = 0.5;
     public static double ROLL_45 = 0.1436;

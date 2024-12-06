@@ -1,31 +1,28 @@
 package org.firstinspires.ftc.teamcode.test;
 
-import static org.firstinspires.ftc.teamcode.teleop.RobotMap.*;
-
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.SwitchableLight;
+import com.qualcomm.robotcore.hardware.ServoImpl;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
-import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.teamcode.util.Constants;
 
 @TeleOp(name = "TestServo", group = "Test")
 @Config
 public class TestServo extends OpMode {
-    Servo servo;
+    ServoImplEx servo;
     public static String deviceName = "pitch";
-    double servoPos = 0;
+    public static double servoPos = 0;
     double GRABBER_CLOSE = 0.006;
     double GRABBER_OPEN  = 0.285;
 
     @Override
     public void init() {
-        servo = hardwareMap.get(Servo.class, deviceName);
+        servo = (ServoImplEx) hardwareMap.get(Servo.class, deviceName);
+        servo.setPwmRange(new PwmControl.PwmRange(500, 2500));
         servoPos = servo.getPosition();
     }
 
