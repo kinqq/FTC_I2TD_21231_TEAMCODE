@@ -219,12 +219,14 @@ public class AutoRRTest extends LinearOpMode {
 
             Actions.runBlocking(
                     new SequentialAction(
+                            // Clip preload specimen
                             new ParallelAction(
                                     traj1.build(),
                                     elevator.elevate(ELE_CHAMBER_HIGH),
                                     elevator.rotateTo(160)
                             ),
                             grabber.release(),
+                            // Go to first sample
                             new ParallelAction(
                                     elevator.elevate(ELE_BOT),
                                     traj2.build(),
@@ -237,34 +239,42 @@ public class AutoRRTest extends LinearOpMode {
                                     )
                             ),
                             grabber.grab(),
+                            // Drop
                             new ParallelAction(
                                     traj3.build(),
                                     elevator.elevate(1600)
                             ),
                             grabber.release(),
+                            // Second sample
                             new ParallelAction(
                                     traj4.build(),
                                     elevator.elevate(600)
                             ),
                             grabber.grab(),
+                            // Drop
                             new ParallelAction(
                                     traj5.build(),
                                     elevator.elevate(1600)
                             ),
                             grabber.release(),
+                            // Third sample
                             new ParallelAction(
                                     traj6.build(),
                                     elevator.elevate(1000)
                             ),
                             grabber.grab(),
+                            // Go to observation zone
                             new ParallelAction(
                                     traj7.build(),
                                     elevator.rotateGrab(),
                                     grabber.pitchGrab()
                             ),
+                            // Release third sample
                             grabber.release(),
+                            // Grab specimen
                             traj8.build(),
                             grabber.grab(),
+                            // Go clip first specimen
                             new ParallelAction(
                                     traj9.build(),
                                     elevator.rotateUp(),
@@ -274,6 +284,7 @@ public class AutoRRTest extends LinearOpMode {
                             ),
                             elevator.elevate(ELE_CHAMBER_HIGH_DROP),
                             grabber.release(),
+                            // Go grab second specimen
                             new ParallelAction(
                                     traj10.build(),
                                     elevator.rotateGrab(),
@@ -281,6 +292,7 @@ public class AutoRRTest extends LinearOpMode {
                                     grabber.roll(0)
                             ),
                             grabber.grab(),
+                            // Go clip second specimen
                             new ParallelAction(
                                     traj11.build(),
                                     elevator.rotateUp(),
@@ -290,6 +302,7 @@ public class AutoRRTest extends LinearOpMode {
                             ),
                             elevator.elevate(ELE_CHAMBER_HIGH_DROP),
                             grabber.release(),
+                            // Go grab third specimen
                             new ParallelAction(
                                     traj12.build(),
                                     elevator.rotateGrab(),
@@ -297,6 +310,7 @@ public class AutoRRTest extends LinearOpMode {
                                     grabber.roll(0)
                             ),
                             grabber.grab(),
+                            // Go clip third specimen
                             new ParallelAction(
                                     traj13.build(),
                                     elevator.rotateUp(),
@@ -306,6 +320,7 @@ public class AutoRRTest extends LinearOpMode {
                             ),
                             elevator.elevate(ELE_CHAMBER_HIGH_DROP),
                             grabber.release(),
+                            // Go grab fourth specimen
                             new ParallelAction(
                                     traj14.build(),
                                     elevator.rotateGrab(),
@@ -313,6 +328,7 @@ public class AutoRRTest extends LinearOpMode {
                                     grabber.roll(0)
                             ),
                             grabber.grab(),
+                            // Go clip fourth specimen
                             new ParallelAction(
                                     traj15.build(),
                                     elevator.rotateUp(),
@@ -322,6 +338,7 @@ public class AutoRRTest extends LinearOpMode {
                             ),
                             elevator.elevate(ELE_CHAMBER_HIGH_DROP),
                             grabber.release(),
+                            // Park
                             new ParallelAction(
                                     traj16.build(),
                                     elevator.rotateDown(),
