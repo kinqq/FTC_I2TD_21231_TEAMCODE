@@ -88,7 +88,7 @@ public class DriveControl extends OpMode {
             elevator.initEle();
 
         drive.setMaxPower(maxSpeed);
-        drive.drive(-gamepad1.left_stick_x, gamepad1.left_stick_y, -gamepad1.right_stick_x);
+        drive.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
         if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_DOWN) && elePos == ELE_BOT) {
             runningActions.add(elevator.rotateDown());
@@ -96,6 +96,13 @@ public class DriveControl extends OpMode {
         if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
             runningActions.add(elevator.rotateUp());
             // we had elevator-bottom code here...
+        }
+
+        if (gamepad1.left_bumper && gamepad1.dpad_down) {
+            elevator.rigging();
+        }
+        if (gamepad1.left_bumper && gamepad1.dpad_up) {
+            elevator.stopRigging();
         }
 
         if (driver2.wasJustPressed(GamepadKeys.Button.Y)) {

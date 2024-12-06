@@ -13,18 +13,21 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Elevator {
     private final DcMotorEx leftEle, rightEle;
-    private final DcMotorEx leftRot, rightRot;
+    private final DcMotorEx leftRot;
+    private boolean isRigging = false;
 
     public Elevator(HardwareMap hardwareMap) {
         leftEle = hardwareMap.get(DcMotorEx.class, "leftEle");
         rightEle = hardwareMap.get(DcMotorEx.class, "rightEle");
         leftRot = hardwareMap.get(DcMotorEx.class, "leftRot");
-        rightRot = hardwareMap.get(DcMotorEx.class, "rightRot");
 
         leftEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightRot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        leftEle.setPower(0);
+        rightEle.setPower(0);
+        leftRot.setPower(0);
 
         rightEle.setDirection(DcMotorSimple.Direction.REVERSE);
     }
@@ -48,21 +51,19 @@ public class Elevator {
 
             if (!initialized) {
                 leftRot.setTargetPosition(pos);
-                rightRot.setTargetPosition(pos);
 
                 leftRot.setPower(0.8);
-                rightRot.setPower(0.8);
 
                 leftRot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                rightRot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                leftRot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
                 initialized = true;
             }
 
             double leftRotError = Math.abs(leftRot.getCurrentPosition() - leftRot.getTargetPosition());
-            double rightRotError = Math.abs(rightRot.getCurrentPosition() - rightRot.getTargetPosition());
 
-            return !(leftRotError < 10 || rightRotError < 10);
+            return leftRotError > 10;
         }
     }
 
@@ -76,6 +77,7 @@ public class Elevator {
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
+            if (isRigging) return false;
             if (!initialized) {
                 leftEle.setTargetPosition(pos);
                 rightEle.setTargetPosition(pos);
@@ -85,6 +87,9 @@ public class Elevator {
 
                 leftEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 rightEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                leftEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                rightEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
                 initialized = true;
             }
@@ -98,7 +103,6 @@ public class Elevator {
 
     public void initRot() {
         leftRot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightRot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void initEle() {
@@ -128,5 +132,25 @@ public class Elevator {
 
     public Action elevate(int pos) {
         return new Elevate(pos);
+    }
+
+    public void rigging() {
+        leftEle.setPower(-1);
+        rightEle.setPower(-1);
+
+        leftEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        isRigging = true;
+    }
+
+    public void stopRigging() {
+        leftEle.setPower(0);
+        rightEle.setPower(0);
+
+        leftEle.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightEle.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 }

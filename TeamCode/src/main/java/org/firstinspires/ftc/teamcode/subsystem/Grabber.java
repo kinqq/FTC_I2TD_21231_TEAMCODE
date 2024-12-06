@@ -7,16 +7,22 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Grabber {
-    private final Servo grabber, pitch, roll;
+    private final ServoImplEx grabber, pitch, roll;
+
+
 
     public Grabber(HardwareMap hardwareMap) {
-        grabber = hardwareMap.get(Servo.class, "grabber");
-        pitch = hardwareMap.get(Servo.class, "pitch");
-        roll = hardwareMap.get(Servo.class, "roll");
+        grabber = (ServoImplEx) hardwareMap.get(Servo.class, "grabber");
+        pitch = (ServoImplEx) hardwareMap.get(Servo.class, "pitch");
+        roll = (ServoImplEx) hardwareMap.get(Servo.class, "roll");
+
+        grabber.setPwmRange(new PwmControl.PwmRange(500, 2500));
     }
 
     public class Grab implements Action {
