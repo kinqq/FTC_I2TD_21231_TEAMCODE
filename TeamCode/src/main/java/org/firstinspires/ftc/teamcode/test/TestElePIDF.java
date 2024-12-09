@@ -14,33 +14,41 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @TeleOp(name = "TestElePIDF", group = "Test")
 public class TestElePIDF extends OpMode {
     private PIDController controller;
-    public static double p = 0.0015, i = 0, d = 0.00001;
+    public static double p = 0.005, i = 0.0001, d = 0.0001;
 
     public static int target = 0;
-    public static String deviceName = "rightEle";
+    public static String leftEleName = "leftEle";
+    public static String rightEleName = "rightEle";
 
-    private DcMotorEx eleMotor;
+    private DcMotorEx leftEle, rightEle;
 
     @Override
     public void init() {
         controller = new PIDController(p, i, d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        eleMotor = hardwareMap.get(DcMotorEx.class, deviceName);
+        leftEle = hardwareMap.get(DcMotorEx.class, leftEleName);
+        rightEle = hardwareMap.get(DcMotorEx.class, rightEleName);
 
-        eleMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        eleMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        eleMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftEle.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightEle.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        leftEle.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightEle.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     @Override
     public void loop() {
-        // 312 rpm -- 0.005, 0.0001, 0.0001
-        //
         controller.setPID(p, i, d);
-        int arm_pos = eleMotor.getCurrentPosition();
+        int arm_pos = leftEle.getCurrentPosition();
         double pid = controller.calculate(arm_pos, target);
-        eleMotor.setPower(pid);
+
+        leftEle.setPower(pid);
+        rightEle.setPower(pid);
 
         telemetry.addData("pos", arm_pos);
         telemetry.addData("pow", pid);

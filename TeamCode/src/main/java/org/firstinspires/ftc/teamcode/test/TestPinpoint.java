@@ -89,7 +89,7 @@ public class TestPinpoint extends LinearOpMode {
         the tracking point the Y (strafe) odometry pod is. forward of center is a positive number,
         backwards is a negative number.
          */
-        odo.setOffsets(0, -6.5); //these are tuned for 3110-0002-0001 Product Insight #1
+        odo.setOffsets(-1.8253699838065023, -2.0703880227832605); //these are tuned for 3110-0002-0001 Product Insight #1
 
         /*
         Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
@@ -132,7 +132,7 @@ public class TestPinpoint extends LinearOpMode {
         waitForStart();
         resetRuntime();
 
-        IMU.Parameters param = new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.FORWARD, RevHubOrientationOnRobot.UsbFacingDirection.UP));
+        IMU.Parameters param = new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT, RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD));
         imu.initialize(param);
 
         // run until the end of the match (driver presses STOP)
@@ -148,7 +148,7 @@ public class TestPinpoint extends LinearOpMode {
             Optionally, you can update only the heading of the device. This takes less time to read, but will not
             pull any other data. Only the heading (which you can pull with getHeading() or in getPosition().
              */
-            odo.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
+//            odo.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
 
 
             if (gamepad1.a){
