@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.util.Constants.*;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -32,7 +33,7 @@ public class AutoRRTest extends LinearOpMode {
     }
 
     public Alliance alliance = Alliance.BLUE;
-    public Position position = Position.LEFT;
+    public Position position = Position.RIGHT;
 
     @Override
     public void runOpMode() {
@@ -40,8 +41,11 @@ public class AutoRRTest extends LinearOpMode {
         Elevator elevator = new Elevator(hardwareMap);
         Grabber grabber = new Grabber(hardwareMap);
 
-        Pose2d leftInitialPose = new Pose2d(15, 63, Math.toRadians(-90));
-        Pose2d rightInitialPose = new Pose2d(-15, 63, Math.toRadians(-90));
+        Pose2d leftInitialPose = new Pose2d(15, 63, Math.toRadians(90));
+        Pose2d rightInitialPose = new Pose2d(-15, 63, Math.toRadians(90));
+
+        grabber.grab();
+        grabber.pitchBackward();
 
         // Wait until start and set up parameters
         while (!opModeIsActive() && !isStopRequested()) {
@@ -76,22 +80,22 @@ public class AutoRRTest extends LinearOpMode {
             drive = new PinpointDrive(hardwareMap, rightInitialPose);
 
         if (position == Position.LEFT) {
-            Vector2d CHAMBER_POSE = new Vector2d(8, 32);
-            Vector2d FIRST_SAMPLE_POSE = new Vector2d(50, 42);
-            double FIRST_SAMPLE_HEADING = Math.toRadians(270);
+            Vector2d CHAMBER_POSE = new Vector2d(3, 29.4);
+            Pose2d FIRST_SAMPLE_POSE = new Pose2d(48, 39, Math.toRadians(270));
+            double FIRST_SAMPLE_TANGENT = Math.toRadians(15);
             Vector2d BASKET_POSE = new Vector2d(59, 59);
             double BASKET_HEADING = Math.toRadians(-135);
-            Vector2d SECOND_SAMPLE_POSE = new Vector2d(59, 42);
+            Vector2d SECOND_SAMPLE_POSE = new Vector2d(58.6, 39);
             double SECOND_SAMPLE_HEADING = Math.toRadians(270);
-            Vector2d THIRD_SAMPLE_POSE = new Vector2d(54, 33);
-            double THIRD_SAMPLE_HEADING = Math.toRadians(-30);
-            Pose2d PARKING_POSE = new Pose2d(30, 10, Math.toRadians(180));
+            Vector2d THIRD_SAMPLE_POSE = new Vector2d(58, 36.5);
+            double THIRD_SAMPLE_HEADING = Math.toRadians(-45);
+            Pose2d PARKING_POSE = new Pose2d(22, 10, Math.toRadians(180));
             double PARKING_TANGENT = Math.toRadians(180);
 
             TrajectoryActionBuilder traj1, traj2, traj3, traj4, traj5, traj6, traj7, traj8;
 
             traj1 = drive.actionBuilder(leftInitialPose).strafeTo(CHAMBER_POSE);
-            traj2 = traj1.endTrajectory().fresh().strafeToLinearHeading(FIRST_SAMPLE_POSE, FIRST_SAMPLE_HEADING);
+            traj2 = traj1.endTrajectory().fresh().splineToLinearHeading(FIRST_SAMPLE_POSE, FIRST_SAMPLE_TANGENT);
             traj3 = traj2.endTrajectory().fresh().strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
             traj4 = traj3.endTrajectory().fresh().strafeToLinearHeading(SECOND_SAMPLE_POSE, SECOND_SAMPLE_HEADING);
             traj5 = traj4.endTrajectory().fresh().strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
@@ -103,22 +107,19 @@ public class AutoRRTest extends LinearOpMode {
                     // Clip Pre-loaded Specimen
                     new ParallelAction(
                             traj1.build(),
-                            elevator.elevate(ELE_CHAMBER_HIGH),
-                            elevator.rotateTo(160)
+                            grabber.pitchBackward(),
+                            grabber.grab(),
+                            elevator.rotateUp(),
+                            elevator.elevate(ELE_CHAMBER_HIGH)
                     ),
+                    elevator.elevate(ELE_CHAMBER_HIGH_DROP),
                     grabber.release(),
                     // Go to first sample
                     new ParallelAction(
                             elevator.elevate(ELE_BOT),
-                            traj2.build(),
-                            new SequentialAction(
-                                    new SleepAction(1.5),
-                                    new ParallelAction(
-                                            elevator.rotateDown(),
-                                            elevator.elevate(600)
-                                    )
-                            )
+                            traj2.build()
                     ),
+                    elevator.rotateDown(),
                     // Grab first sample and go to basket
                     grabber.grab(),
                     elevator.rotateUp(),
@@ -129,7 +130,7 @@ public class AutoRRTest extends LinearOpMode {
                             grabber.pitchUp()
                     ),
                     // Release first sample
-                    new ParallelAction(
+                    new SequentialAction(
                             grabber.pitchBackward(),
                             grabber.release()
                     ),
@@ -137,15 +138,9 @@ public class AutoRRTest extends LinearOpMode {
                     new ParallelAction(
                             grabber.pitchForward(),
                             elevator.elevate(ELE_BOT),
-                            traj4.build(),
-                            new SequentialAction(
-                                    new SleepAction(1),
-                                    new ParallelAction(
-                                            elevator.rotateDown(),
-                                            elevator.elevate(600)
-                                    )
-                            )
+                            traj4.build()
                     ),
+                    elevator.rotateDown(),
                     grabber.grab(),
                     elevator.rotateUp(),
                     new ParallelAction(
@@ -155,7 +150,7 @@ public class AutoRRTest extends LinearOpMode {
                             grabber.pitchUp()
                     ),
                     // Release second sample
-                    new ParallelAction(
+                    new SequentialAction(
                             grabber.pitchBackward(),
                             grabber.release()
                     ),
@@ -163,15 +158,9 @@ public class AutoRRTest extends LinearOpMode {
                     new ParallelAction(
                             grabber.pitchForward(),
                             elevator.elevate(ELE_BOT),
-                            traj6.build(),
-                            new SequentialAction(
-                                    new SleepAction(1),
-                                    new ParallelAction(
-                                            elevator.rotateDown(),
-                                            elevator.elevate(600)
-                                    )
-                            )
+                            traj6.build()
                     ),
+                    elevator.rotateDown(),
                     grabber.grab(),
                     elevator.rotateUp(),
                     new ParallelAction(
@@ -181,102 +170,64 @@ public class AutoRRTest extends LinearOpMode {
                             grabber.pitchUp()
                     ),
                     // Release third sample
-                    new ParallelAction(
+                    new SequentialAction(
                             grabber.pitchBackward(),
                             grabber.release()
                     ),
                     // Go park
                     new ParallelAction(
-                            grabber.pitchUp(),
-                            elevator.elevate(ELE_BOT),
-                            traj8.build(),
-                            new SequentialAction(
-                                    new SleepAction(2),
-                                    elevator.rotateDown()
-                            )
+                            grabber.pitchBackward(),
+                            elevator.elevate(400),
+                            traj8.build()
                     )
             ));
         }
         if (position == Position.RIGHT) {
-            TrajectoryActionBuilder traj1, traj2, traj3, traj4, traj5, traj6, traj7, traj8, traj9, traj10, traj11, traj12, traj13, traj14, traj15, traj16;
+            TrajectoryActionBuilder traj1, traj2, traj3, traj4, traj5, traj6, traj7, traj8, traj9, traj10, traj11;
 
-            traj1 = drive.actionBuilder(rightInitialPose).strafeTo(new Vector2d(-8, 34));
-            traj2 = traj1.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-31, 40), Math.toRadians(-130));
-            traj3 = traj2.endTrajectory().fresh().turnTo(Math.toRadians(140));
-            traj4 = traj3.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-40, 40), Math.toRadians(-140));
-            traj5 = traj4.endTrajectory().fresh().turnTo(Math.toRadians(120));
-            traj6 = traj5.endTrajectory().fresh().turnTo(Math.toRadians(-150));
-            traj7 = traj6.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-44, 50), Math.toRadians(90));
-            traj8 = traj7.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-44, 54), Math.toRadians(90));
-            traj9 = traj8.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-8, 32), Math.toRadians(90));
-            traj10 = traj9.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-44, 54), Math.toRadians(90));
-            traj11 = traj10.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-8, 32), Math.toRadians(90));
-            traj12 = traj11.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-44, 54), Math.toRadians(90));
-            traj13 = traj12.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-8, 32), Math.toRadians(90));
-            traj14 = traj13.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-44, 54), Math.toRadians(90));
-            traj15 = traj14.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-8, 32), Math.toRadians(90));
-            traj16 = traj15.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-34, 48), Math.toRadians(145));
+            traj1 = drive.actionBuilder(rightInitialPose).strafeTo(new Vector2d(-3, 29.4));
+            traj2 = traj1.endTrajectory().fresh().strafeToConstantHeading(new Vector2d(-15, 40))
+                    .splineToConstantHeading(new Vector2d(-45, 10), Math.toRadians(90))
+                    .splineToConstantHeading(new Vector2d(-45, 56), Math.toRadians(90))
+                    .splineToConstantHeading(new Vector2d(-45, 25), Math.toRadians(-90))
+                    .splineToConstantHeading(new Vector2d(-54, 15), Math.toRadians(90))
+                    .splineToConstantHeading(new Vector2d(-54, 56), Math.toRadians(90))
+                    .splineToConstantHeading(new Vector2d(-54, 25), Math.toRadians(-90))
+                    .splineToConstantHeading(new Vector2d(-63, 15), Math.toRadians(90))
+                    .splineToConstantHeading(new Vector2d(-63, 56), Math.toRadians(90));
+            traj3 = traj2.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-44, 54), Math.toRadians(90));
+            traj4 = traj3.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-3, 29.4), Math.toRadians(90));
+            traj5 = traj4.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-44, 54), Math.toRadians(90));
+            traj6 = traj5.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-3, 29.4), Math.toRadians(90));
+            traj7 = traj6.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-44, 54), Math.toRadians(90));
+            traj8 = traj7.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-3, 29.4), Math.toRadians(90));
+            traj9 = traj8.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-44, 54), Math.toRadians(90));
+            traj10 = traj9.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-3, 29.4), Math.toRadians(90));
+            traj11 = traj10.endTrajectory().fresh().strafeToLinearHeading(new Vector2d(-34, 48), Math.toRadians(145));
 
             Actions.runBlocking(
                     new SequentialAction(
                             // Clip preload specimen
                             new ParallelAction(
-                                    traj1.build(),
+                                    elevator.rotateUp(),
                                     elevator.elevate(ELE_CHAMBER_HIGH),
-                                    elevator.rotateTo(160)
+                                    grabber.pitchBackward(),
+                                    grabber.grab(),
+                                    traj1.build()
                             ),
+                            elevator.elevate(ELE_CHAMBER_HIGH_DROP),
                             grabber.release(),
-                            // Go to first sample
-                            new ParallelAction(
-                                    elevator.elevate(ELE_BOT),
-                                    traj2.build(),
-                                    new SequentialAction(
-                                            new SleepAction(1.5),
-                                            new ParallelAction(
-                                                    elevator.rotateDown(),
-                                                    elevator.elevate(600)
-                                            )
-                                    )
-                            ),
-                            grabber.grab(),
-                            // Drop
-                            new ParallelAction(
-                                    traj3.build(),
-                                    elevator.elevate(1600)
-                            ),
-                            grabber.release(),
-                            // Second sample
-                            new ParallelAction(
-                                    traj4.build(),
-                                    elevator.elevate(600)
-                            ),
-                            grabber.grab(),
-                            // Drop
-                            new ParallelAction(
-                                    traj5.build(),
-                                    elevator.elevate(1600)
-                            ),
-                            grabber.release(),
-                            // Third sample
-                            new ParallelAction(
-                                    traj6.build(),
-                                    elevator.elevate(1000)
-                            ),
-                            grabber.grab(),
+                            traj2.build(),
                             // Go to observation zone
                             new ParallelAction(
-                                    traj7.build(),
+                                    traj3.build(),
                                     elevator.rotateGrab(),
                                     grabber.pitchGrab()
                             ),
-                            // Release third sample
-                            grabber.release(),
-                            // Grab specimen
-                            traj8.build(),
                             grabber.grab(),
                             // Go clip first specimen
                             new ParallelAction(
-                                    traj9.build(),
+                                    traj4.build(),
                                     elevator.rotateUp(),
                                     elevator.elevate(ELE_CHAMBER_HIGH),
                                     grabber.pitchBackward(),
@@ -286,7 +237,7 @@ public class AutoRRTest extends LinearOpMode {
                             grabber.release(),
                             // Go grab second specimen
                             new ParallelAction(
-                                    traj10.build(),
+                                    traj5.build(),
                                     elevator.rotateGrab(),
                                     grabber.pitchGrab(),
                                     grabber.roll(0)
@@ -294,7 +245,7 @@ public class AutoRRTest extends LinearOpMode {
                             grabber.grab(),
                             // Go clip second specimen
                             new ParallelAction(
-                                    traj11.build(),
+                                    traj6.build(),
                                     elevator.rotateUp(),
                                     elevator.elevate(ELE_CHAMBER_HIGH),
                                     grabber.pitchBackward(),
@@ -304,7 +255,7 @@ public class AutoRRTest extends LinearOpMode {
                             grabber.release(),
                             // Go grab third specimen
                             new ParallelAction(
-                                    traj12.build(),
+                                    traj7.build(),
                                     elevator.rotateGrab(),
                                     grabber.pitchGrab(),
                                     grabber.roll(0)
@@ -312,7 +263,7 @@ public class AutoRRTest extends LinearOpMode {
                             grabber.grab(),
                             // Go clip third specimen
                             new ParallelAction(
-                                    traj13.build(),
+                                    traj8.build(),
                                     elevator.rotateUp(),
                                     elevator.elevate(ELE_CHAMBER_HIGH),
                                     grabber.pitchBackward(),
@@ -322,7 +273,7 @@ public class AutoRRTest extends LinearOpMode {
                             grabber.release(),
                             // Go grab fourth specimen
                             new ParallelAction(
-                                    traj14.build(),
+                                    traj9.build(),
                                     elevator.rotateGrab(),
                                     grabber.pitchGrab(),
                                     grabber.roll(0)
@@ -330,7 +281,7 @@ public class AutoRRTest extends LinearOpMode {
                             grabber.grab(),
                             // Go clip fourth specimen
                             new ParallelAction(
-                                    traj15.build(),
+                                    traj10.build(),
                                     elevator.rotateUp(),
                                     elevator.elevate(ELE_CHAMBER_HIGH),
                                     grabber.pitchBackward(),
@@ -340,7 +291,7 @@ public class AutoRRTest extends LinearOpMode {
                             grabber.release(),
                             // Park
                             new ParallelAction(
-                                    traj16.build(),
+                                    traj11.build(),
                                     elevator.rotateDown(),
                                     elevator.elevate(1000)
                             )
