@@ -16,28 +16,26 @@ public class Constants {
     public static double PITCH_FORWARD = 1.00;
     public static double PITCH_UP = 0.65;
     public static double PITCH_BACKWARD = 0.41; // 0.376 for the other way
-    public static double PITCH_GRAB = 0.8;
+    public static double PITCH_GRAB = 0.78;
+    public static double PITCH_CLIP = 0.57;
 
-    public static double ROLL_NEG_45 = 0.5;
-    public static double ROLL_45 = 0.1436;
-    public static double ROLL_0 = 0.3026;
-    public static double ROLL_90 = 0.0;
-    public static double ROLL_180 = 0.9542;
+    public static double ROLL_TICK_ON_ZERO = 0.38;
+    public static double ROLL_TICK_PER_DEG = 1.0 / 300;
 
     // Elevator position
     public static int ELE_BOT = 0;
 
-    public static int ELE_CHAMBER_LOW = 600;
+    public static int ELE_CHAMBER_LOW = 400;
     public static int ELE_CHAMBER_LOW_DROP = 200;
-    public static int ELE_CHAMBER_HIGH = 1200;
-    public static int ELE_CHAMBER_HIGH_DROP = 300;
+    public static int ELE_CHAMBER_HIGH = 680;
+    public static int ELE_CHAMBER_HIGH_DROP = 140;
 
     public static int ELE_BASKET_LOW = 1500;
-    public static int ELE_BASKET_HIGH = 3500;
+    public static int ELE_BASKET_HIGH = 2200;
 
-    public static int ROT_UP = 0;
-    public static int ROT_DOWN = 655;
-    public static int ROT_GRAB = 490;
+    public static int ROT_UP = -10; // Giving negative to maintain position (giving a constant negative power)
+    public static int ROT_DOWN = 600;
+    public static int ROT_GRAB = 450;
 
     // Drivetrain motor speed
     public static double SAFE_MODE = 0.7;

@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Elevator {
     private final DcMotorEx leftEle, rightEle;
-    private final DcMotorEx leftRot;
+    public final DcMotorEx leftRot;
     private boolean isRigging = false;
 
     public Elevator(HardwareMap hardwareMap) {
@@ -44,26 +44,28 @@ public class Elevator {
         public boolean run(@NonNull TelemetryPacket packet) {
             // Giving a generous value of 50 ticks error
             // Combining with initialize if statement will just delay and schedule the action
-            if (Math.abs(leftEle.getCurrentPosition() - ELE_BOT) > 50) {
-                packet.addLine("WARNING: Arm pivot was commanded to move while elevator was raised.");
-                return false;
-            }
+//            if (Math.abs(leftEle.getCurrentPosition() - ELE_BOT) > 50) {
+//                packet.addLine("WARNING: Arm pivot was commanded to move while elevator was raised.");
+//                return false;
+//            }
 
             if (!initialized) {
                 leftRot.setTargetPosition(pos);
-
-                leftRot.setPower(0.8);
+                if (pos - leftRot.getCurrentPosition() > 0) {
+                    leftRot.setPower(0.3);
+                }
+                else {
+                    leftRot.setPower(0.5);
+                }
 
                 leftRot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                leftRot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
                 initialized = true;
             }
 
             double leftRotError = Math.abs(leftRot.getCurrentPosition() - leftRot.getTargetPosition());
-
-            return leftRotError > 10;
+            if (leftRotError <= 10) leftRot.setPower(1);
+            return !(leftRotError < 10);
         }
     }
 
@@ -82,8 +84,8 @@ public class Elevator {
                 leftEle.setTargetPosition(pos);
                 rightEle.setTargetPosition(pos);
 
-                leftEle.setPower(0.8);
-                rightEle.setPower(0.8);
+                leftEle.setPower(1);
+                rightEle.setPower(1);
 
                 leftEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 rightEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -122,12 +124,12 @@ public class Elevator {
         return new Rotate(ROT_GRAB);
     }
 
-    public int getPivotTarget() {
-        return leftRot.getTargetPosition();
-    }
-
     public Action rotateTo(int pos) {
         return new Rotate(pos);
+    }
+
+    public int getPivotTarget() {
+        return leftRot.getTargetPosition();
     }
 
     public Action elevate(int pos) {
