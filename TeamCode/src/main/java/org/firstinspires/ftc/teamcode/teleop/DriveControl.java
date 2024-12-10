@@ -16,6 +16,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.Range;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +28,19 @@ public class DriveControl extends OpMode {
     private FtcDashboard dash = FtcDashboard.getInstance();
     private List<Action> runningActions = new ArrayList<>();
 
-    private int elePos = ELE_BOT;
+    private int elePos = ELE_BOT, rotPos = ROT_UP;
     private double rollAngle = 0;
     private EleControlMode eleControlMode = EleControlMode.BASKET;
     private double maxSpeed = 1.0;
+
+    private enum RiggingState {
+        START,
+        INIT,
+        RETRACT,
+        DISENGAGE,
+    }
+
+    RiggingState riggingState = RiggingState.START;
 
     TriggerReader driver2LeftTrigger, driver2RightTrigger;
 
@@ -91,18 +101,52 @@ public class DriveControl extends OpMode {
         drive.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
         if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_DOWN) && elePos == ELE_BOT) {
-            runningActions.add(elevator.rotateDown());
+            runningActions.add(new ParallelAction(grabber.release(), grabber.pitchForward()));
+            rotPos = ROT_DOWN;
         }
         if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
-            runningActions.add(elevator.rotateUp());
-            // we had elevator-bottom code here...
+            rotPos = ROT_UP;
         }
 
-        if (gamepad1.left_bumper && gamepad1.dpad_down) {
-            elevator.rigging();
+        if (gamepad1.dpad_left) {
+            rotPos -= 5;
         }
-        if (gamepad1.left_bumper && gamepad1.dpad_up) {
-            elevator.stopRigging();
+        if (gamepad1.dpad_right) {
+            rotPos += 5;
+        }
+
+        switch (riggingState) {
+            case START:
+                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
+                    rotPos = 250;
+                    elePos = 800;
+                    riggingState = RiggingState.INIT;
+                }
+                break;
+            case INIT:
+                if (elevator.rotationAtPosition() && elevator.elevatorAtPosition()) {
+                    rotPos = 200;
+                    riggingState = RiggingState.RETRACT;
+                }
+                break;
+            case RETRACT:
+                if (elevator.rotationAtPosition()) {
+                    elevator.rigging();
+                }
+                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
+                    elevator.stopRigging();
+                    riggingState = RiggingState.DISENGAGE;
+                }
+                break;
+            case DISENGAGE:
+                elevator.stopRigging();
+                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
+                    riggingState = RiggingState.START;
+                    elePos = ELE_BOT;
+                }
+                break;
+            default:
+                riggingState = RiggingState.START;
         }
 
         if (driver2.wasJustPressed(GamepadKeys.Button.Y)) {
@@ -111,62 +155,66 @@ public class DriveControl extends OpMode {
             if (eleControlMode == EleControlMode.BASKET) gamepad2.rumble(800);
         }
 
-        if (elevator.getPivotTarget() != ROT_UP) {
+        if (rotPos == ROT_DOWN) {
             if (driver2.wasJustPressed(GamepadKeys.Button.A))
                 elePos = ELE_BOT;
             if (driver2.wasJustPressed(GamepadKeys.Button.B))
                 elePos = ELE_CHAMBER_LOW;
             if (driver2.wasJustPressed(GamepadKeys.Button.X))
                 elePos = ELE_CHAMBER_HIGH;
-            elePos += (int) (driver2.getLeftY() * 35.0);
-            if (elePos > 2200) elePos = 2200;
-            if (elePos < 0) elePos = 0;
+            elePos += (int) (driver2.getLeftY() * 45.0);
+            elePos = Range.clip(elePos, 0, 1550);
         }
         if (eleControlMode == EleControlMode.CHAMBER) {
             if (driver2.wasJustPressed(GamepadKeys.Button.A)) {
                 elePos = ELE_BOT;
-                runningActions.add(elevator.rotateUp());
-                runningActions.add(grabber.roll(0));
+                rotPos = ROT_UP;
+                rollAngle = 0;
                 runningActions.add(grabber.grab());
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.B)) {
                 elePos = ELE_BOT;
+                rotPos = ROT_GRAB;
+                rollAngle = 0;
                 runningActions.add(new ParallelAction(
-                        elevator.rotateGrab(),
                         grabber.pitchGrab(),
-                        grabber.roll(0),
                         grabber.release()
                 ));
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.X)) {
+                telemetry.addData("isEleChamberHigh", elePos == ELE_CHAMBER_HIGH);
                 elePos = elePos == ELE_CHAMBER_HIGH ? ELE_CHAMBER_HIGH_DROP : ELE_CHAMBER_HIGH;
-                runningActions.add(new ParallelAction(grabber.pitchBackward(), grabber.roll(180)));
+                rollAngle = 180;
+                runningActions.add(grabber.pitchBackward());
             }
         } else if (eleControlMode == EleControlMode.BASKET) {
             if (driver2.wasJustPressed(GamepadKeys.Button.A)) {
                 elePos = ELE_BOT;
+                rollAngle = 0;
                 runningActions.add(new ParallelAction(
-                        grabber.pitchForward(),
-                        grabber.roll(0),
-                        grabber.grab()
+                        grabber.pitchForward()
                 ));
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.B)) {
                 elePos = ELE_BASKET_LOW;
+                rollAngle = 0;
                 runningActions.add(new ParallelAction(
-                        grabber.pitchUp(),
-                        grabber.roll(0)
+                        grabber.pitchUp()
                 ));
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.X)) {
                 elePos = ELE_BASKET_HIGH;
+                rollAngle = 0;
                 runningActions.add(new ParallelAction(
-                        grabber.pitchUp(),
-                        grabber.roll(0)
+                        grabber.pitchUp()
                 ));
             }
         }
-        runningActions.add(elevator.elevate(elePos));
+
+        if (!elevator.isRigging) {
+            elevator.elevatePIDF(elePos);
+            elevator.rotatePIDF(rotPos);
+        }
 
         // Auto release specimen -- activate when clipping is reliable
 //        if ((elePos == ELE_CHAMBER_HIGH_DROP || elePos == ELE_CHAMBER_LOW_DROP) && eleMotors.atTargetPosition()) {
@@ -177,14 +225,20 @@ public class DriveControl extends OpMode {
         if (driver2.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER))
             runningActions.add(grabber.grab());
         if (driver2.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
-            runningActions.add(new SequentialAction(grabber.pitchBackward(), grabber.release()));
+            if (eleControlMode == EleControlMode.BASKET && (elePos == ELE_BASKET_HIGH || elePos == ELE_BASKET_LOW)) {
+                runningActions.add(new SequentialAction(grabber.pitchBackward(), grabber.release()));
+            }
+            else {
+                runningActions.add(grabber.release());
+            }
         }
 
         if (driver2LeftTrigger.wasJustPressed())
             rollAngle += 30;
         if (driver2RightTrigger.wasJustPressed())
             rollAngle -= 30;
-        rollAngle = (rollAngle + 360) % 360;
+
+        rollAngle = rollAngle % 360;
         runningActions.add(grabber.roll(rollAngle));
 
         List<Action> newActions = new ArrayList<>();
@@ -200,6 +254,7 @@ public class DriveControl extends OpMode {
 
         telemetry.addData("elePos", elePos);
         telemetry.addData("eleMod", eleControlMode);
+        telemetry.addData("rotPos", rotPos);
 
         telemetry.update();
     }

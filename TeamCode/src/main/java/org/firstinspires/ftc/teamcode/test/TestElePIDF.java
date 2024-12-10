@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,8 +14,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @Config
 @TeleOp(name = "TestElePIDF", group = "Test")
 public class TestElePIDF extends OpMode {
-    private PIDController controller;
-    public static double p = 0.005, i = 0.0001, d = 0.0001;
+    private PIDFController controller;
+    public static double p = 0.005, i = 0, d = 0, f = 0;
 
     public static int target = 0;
     public static String leftEleName = "leftEle";
@@ -24,7 +25,7 @@ public class TestElePIDF extends OpMode {
 
     @Override
     public void init() {
-        controller = new PIDController(p, i, d);
+        controller = new PIDFController(p, i, d, f);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         leftEle = hardwareMap.get(DcMotorEx.class, leftEleName);
@@ -43,7 +44,7 @@ public class TestElePIDF extends OpMode {
 
     @Override
     public void loop() {
-        controller.setPID(p, i, d);
+        controller.setPIDF(p, i, d, f);
         int arm_pos = leftEle.getCurrentPosition();
         double pid = controller.calculate(arm_pos, target);
 

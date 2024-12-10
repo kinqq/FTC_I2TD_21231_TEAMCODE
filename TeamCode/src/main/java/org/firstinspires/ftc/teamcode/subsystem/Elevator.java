@@ -6,15 +6,30 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Elevator {
     private final DcMotorEx leftEle, rightEle;
-    public final DcMotorEx leftRot;
-    private boolean isRigging = false;
+    private final DcMotorEx leftRot;
+    public boolean isRigging = false;
+    private PIDController rotController;
+    private PIDFController eleController;
+
+    private static class rotPIDF {
+        public static double pUp = 0.0025, i = 0, d = 0, f = 0.2, pDown = 0.001;
+    }
+
+    private static class elePIDF {
+        public static double p = 0.005, i = 0, d = 0, f = 0.00004;
+    }
+
+
 
     public Elevator(HardwareMap hardwareMap) {
         leftEle = hardwareMap.get(DcMotorEx.class, "leftEle");
@@ -30,6 +45,9 @@ public class Elevator {
         leftRot.setPower(0);
 
         rightEle.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        rotController = new PIDController(rotPIDF.pUp, rotPIDF.i, rotPIDF.d);
+        eleController = new PIDFController(elePIDF.p, elePIDF.i, elePIDF.d, elePIDF.f);
     }
 
     public class Rotate implements Action {
@@ -42,30 +60,22 @@ public class Elevator {
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            // Giving a generous value of 50 ticks error
-            // Combining with initialize if statement will just delay and schedule the action
-//            if (Math.abs(leftEle.getCurrentPosition() - ELE_BOT) > 50) {
-//                packet.addLine("WARNING: Arm pivot was commanded to move while elevator was raised.");
-//                return false;
+//            if (!initialized) {
+//                leftRot.setTargetPosition(pos);
+//                if (pos - leftRot.getCurrentPosition() > 0) {
+//                    leftRot.setPower(0.3);
+//                }
+//                else {
+//                    leftRot.setPower(0.5);
+//                }
+//
+//                leftRot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//
+//                initialized = true;
 //            }
+            rotatePIDF(pos);
 
-            if (!initialized) {
-                leftRot.setTargetPosition(pos);
-                if (pos - leftRot.getCurrentPosition() > 0) {
-                    leftRot.setPower(0.3);
-                }
-                else {
-                    leftRot.setPower(0.5);
-                }
-
-                leftRot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                initialized = true;
-            }
-
-            double leftRotError = Math.abs(leftRot.getCurrentPosition() - leftRot.getTargetPosition());
-            if (leftRotError <= 10) leftRot.setPower(1);
-            return !(leftRotError < 10);
+            return !rotationAtPosition();
         }
     }
 
@@ -79,27 +89,24 @@ public class Elevator {
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            if (isRigging) return false;
-            if (!initialized) {
-                leftEle.setTargetPosition(pos);
-                rightEle.setTargetPosition(pos);
+//            if (!initialized) {
+//                leftEle.setTargetPosition(pos);
+//                rightEle.setTargetPosition(pos);
+//
+//                leftEle.setPower(1);
+//                rightEle.setPower(1);
+//
+//                leftEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                rightEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//
+//                leftEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//                rightEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//
+//                initialized = true;
+//            }
+            elevatePIDF(pos);
 
-                leftEle.setPower(1);
-                rightEle.setPower(1);
-
-                leftEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                rightEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                leftEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                rightEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-                initialized = true;
-            }
-
-            double leftEleError = Math.abs(leftEle.getCurrentPosition() - leftEle.getTargetPosition());
-            double rightEleError = Math.abs(rightEle.getCurrentPosition() - rightEle.getTargetPosition());
-
-            return !(leftEleError < 10 || rightEleError < 10);
+            return !elevatorAtPosition();
         }
     }
 
@@ -124,16 +131,45 @@ public class Elevator {
         return new Rotate(ROT_GRAB);
     }
 
-    public Action rotateTo(int pos) {
-        return new Rotate(pos);
-    }
-
-    public int getPivotTarget() {
-        return leftRot.getTargetPosition();
-    }
-
     public Action elevate(int pos) {
         return new Elevate(pos);
+    }
+
+    public void elevatePIDF(int target) {
+        int currentPosition = leftEle.getCurrentPosition();
+        double pid = eleController.calculate(currentPosition, target);
+
+        leftEle.setPower(pid);
+        rightEle.setPower(pid);
+    }
+
+    public void rotatePIDF(int target) {
+        int currentPosition = leftRot.getCurrentPosition();
+
+        // When going down
+        if (currentPosition - target < 0)
+            rotController.setP(rotPIDF.pDown);
+        else
+            rotController.setP(rotPIDF.pUp);
+
+        double pid = rotController.calculate(currentPosition, target);
+        double TICKS_PER_DEG = 537.7 * 5 / 360.0;
+        double ff = -Math.sin(Math.toRadians(currentPosition / TICKS_PER_DEG)) * rotPIDF.f;
+        double power = pid + ff;
+
+        leftRot.setPower(power);
+    }
+
+    public boolean elevatorAtPosition() {
+        double leftEleError = Math.abs(leftEle.getCurrentPosition() - leftEle.getTargetPosition());
+        double rightEleError = Math.abs(rightEle.getCurrentPosition() - rightEle.getTargetPosition());
+
+        return leftEleError < 10 || rightEleError < 10;
+    }
+
+    public boolean rotationAtPosition() {
+        double leftRotError = Math.abs(leftRot.getCurrentPosition() - leftRot.getTargetPosition());
+        return leftRotError < 10;
     }
 
     public void rigging() {
