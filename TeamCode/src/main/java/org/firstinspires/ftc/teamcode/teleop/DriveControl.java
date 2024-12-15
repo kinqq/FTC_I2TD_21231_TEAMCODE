@@ -33,15 +33,6 @@ public class DriveControl extends OpMode {
     private EleControlMode eleControlMode = EleControlMode.BASKET;
     private double maxSpeed = 1.0;
 
-    private enum RiggingState {
-        START,
-        INIT,
-        RETRACT,
-        DISENGAGE,
-    }
-
-    RiggingState riggingState = RiggingState.START;
-
     TriggerReader driver2LeftTrigger, driver2RightTrigger;
 
     @Override
@@ -76,6 +67,15 @@ public class DriveControl extends OpMode {
     }
 
     @Override
+    public void start() {
+        grabber.grabber.setPosition(GRABBER_CLOSE);
+        grabber.pitch.setPosition(PITCH_FORWARD);
+        grabber.roll.setPosition(ROLL_TICK_ON_ZERO);
+    }
+
+
+
+    @Override
     public void loop() {
         driver1.readButtons();
         driver2.readButtons();
@@ -87,11 +87,11 @@ public class DriveControl extends OpMode {
             drive.toggleFieldCentricDrive();
 
         if (driver1.isDown(GamepadKeys.Button.LEFT_BUMPER))
-            maxSpeed = NORMAL_MODE;
+            maxSpeed = SAFE_MODE;
         else if (driver1.isDown(GamepadKeys.Button.RIGHT_BUMPER))
             maxSpeed = PRECISION_MODE;
         else
-            maxSpeed = SAFE_MODE;
+            maxSpeed = NORMAL_MODE;
 
         if (driver1.wasJustPressed(GamepadKeys.Button.START)) drive.resetImu();
         if (driver2.wasJustPressed(GamepadKeys.Button.START))
@@ -108,45 +108,26 @@ public class DriveControl extends OpMode {
             rotPos = ROT_UP;
         }
 
-        if (gamepad1.dpad_left) {
-            rotPos -= 5;
+        if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
+            runningActions.add(new ParallelAction(grabber.pitchUp()));
         }
-        if (gamepad1.dpad_right) {
-            rotPos += 5;
+        if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
+            runningActions.add(new ParallelAction(grabber.pitchForward()));
         }
 
-        switch (riggingState) {
-            case START:
-                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
-                    rotPos = 250;
-                    elePos = 800;
-                    riggingState = RiggingState.INIT;
-                }
-                break;
-            case INIT:
-                if (elevator.rotationAtPosition() && elevator.elevatorAtPosition()) {
-                    rotPos = 200;
-                    riggingState = RiggingState.RETRACT;
-                }
-                break;
-            case RETRACT:
-                if (elevator.rotationAtPosition()) {
-                    elevator.rigging();
-                }
-                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
-                    elevator.stopRigging();
-                    riggingState = RiggingState.DISENGAGE;
-                }
-                break;
-            case DISENGAGE:
-                elevator.stopRigging();
-                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
-                    riggingState = RiggingState.START;
-                    elePos = ELE_BOT;
-                }
-                break;
-            default:
-                riggingState = RiggingState.START;
+        if (gamepad1.dpad_left) {
+            rotPos = ROT_HANG_DOWN;
+        }
+        if (gamepad1.dpad_right) {
+            elePos = ELE_HANG;
+        }
+
+        if (gamepad1.dpad_down) {
+            elevator.rigging();
+        }
+
+        if (gamepad1.dpad_up) {
+            elevator.stopRigging();
         }
 
         if (driver2.wasJustPressed(GamepadKeys.Button.Y)) {
@@ -163,9 +144,9 @@ public class DriveControl extends OpMode {
             if (driver2.wasJustPressed(GamepadKeys.Button.X))
                 elePos = ELE_CHAMBER_HIGH;
             elePos += (int) (driver2.getLeftY() * 45.0);
-            elePos = Range.clip(elePos, 0, 1550);
+            elePos = Range.clip(elePos, 0, 1450);
         }
-        if (eleControlMode == EleControlMode.CHAMBER) {
+        else if (eleControlMode == EleControlMode.CHAMBER) {
             if (driver2.wasJustPressed(GamepadKeys.Button.A)) {
                 elePos = ELE_BOT;
                 rotPos = ROT_UP;
@@ -182,9 +163,9 @@ public class DriveControl extends OpMode {
                 ));
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.X)) {
-                telemetry.addData("isEleChamberHigh", elePos == ELE_CHAMBER_HIGH);
                 elePos = elePos == ELE_CHAMBER_HIGH ? ELE_CHAMBER_HIGH_DROP : ELE_CHAMBER_HIGH;
                 rollAngle = 180;
+                rotPos = ROT_UP;
                 runningActions.add(grabber.pitchBackward());
             }
         } else if (eleControlMode == EleControlMode.BASKET) {
@@ -222,9 +203,10 @@ public class DriveControl extends OpMode {
 //            elePos = ELE_BOT;
 //        }
 
-        if (driver2.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER))
+
+        if (driver2LeftTrigger.wasJustPressed())
             runningActions.add(grabber.grab());
-        if (driver2.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
+        if (driver2RightTrigger.wasJustPressed()) {
             if (eleControlMode == EleControlMode.BASKET && (elePos == ELE_BASKET_HIGH || elePos == ELE_BASKET_LOW)) {
                 runningActions.add(new SequentialAction(grabber.pitchBackward(), grabber.release()));
             }
@@ -233,9 +215,9 @@ public class DriveControl extends OpMode {
             }
         }
 
-        if (driver2LeftTrigger.wasJustPressed())
+        if (driver2.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER))
             rollAngle += 30;
-        if (driver2RightTrigger.wasJustPressed())
+        if (driver2.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER))
             rollAngle -= 30;
 
         rollAngle = rollAngle % 360;

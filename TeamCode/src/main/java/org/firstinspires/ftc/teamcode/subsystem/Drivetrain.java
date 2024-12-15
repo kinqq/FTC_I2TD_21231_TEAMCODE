@@ -5,6 +5,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.util.DcMotorGroup;
 
 public class Drivetrain {
@@ -24,10 +27,11 @@ public class Drivetrain {
         _backLeftMotor.setDirection(DcMotorEx.Direction.REVERSE);
 
         odo = hwMap.get(GoBildaPinpointDriver.class, "odo");
-        odo.setOffsets(0, 0);
+        odo.setOffsets(1.5, -1.45);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
         odo.resetPosAndIMU();
+
 
         dtMotors = new DcMotorGroup(_frontLeftMotor, _frontRightMotor, _backLeftMotor, _backRightMotor);
         dtMotors.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -40,7 +44,7 @@ public class Drivetrain {
 
         double heading;
         if (!isFieldCentricDriveEnabled) heading = 0;
-        else heading = -odo.getHeading();
+        else heading = -odo.getHeading() + Math.PI / 2;
 
         forwardSpeed *= -1;
 
@@ -50,12 +54,12 @@ public class Drivetrain {
         // Counteract imperfect strafing
         xSpeed *= 1.1;
 
-        double max = Math.max(Math.abs(ySpeed) + Math.abs(xSpeed) + Math.abs(turnSpeed), maxPower);
+        double max = Math.max(Math.abs(ySpeed) + Math.abs(xSpeed) + Math.abs(turnSpeed), 1.0);
 
-        _frontLeftMotor.setPower((ySpeed + xSpeed + turnSpeed) / max);
-        _frontRightMotor.setPower((ySpeed - xSpeed - turnSpeed) / max);
-        _backLeftMotor.setPower((ySpeed - xSpeed + turnSpeed) / max);
-        _backRightMotor.setPower((ySpeed + xSpeed - turnSpeed) / max);
+        _frontLeftMotor.setPower((ySpeed + xSpeed + turnSpeed) / max * maxPower);
+        _frontRightMotor.setPower((ySpeed - xSpeed - turnSpeed) / max * maxPower);
+        _backLeftMotor.setPower((ySpeed - xSpeed + turnSpeed) / max * maxPower);
+        _backRightMotor.setPower((ySpeed + xSpeed - turnSpeed) / max * maxPower);
     }
 
     public void resetImu() {
