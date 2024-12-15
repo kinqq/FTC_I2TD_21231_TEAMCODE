@@ -14,9 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 public class Grabber {
-    private final ServoImplEx grabber, pitch, roll;
-
-
+    public final ServoImplEx grabber, pitch, roll;
 
     public Grabber(HardwareMap hardwareMap) {
         grabber = (ServoImplEx) hardwareMap.get(Servo.class, "grabber");

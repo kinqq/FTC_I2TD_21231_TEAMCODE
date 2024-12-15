@@ -10,12 +10,12 @@ public class Constants {
     }
 
     // Grabber servo position
-    public static double GRABBER_CLOSE = 0.405;
+    public static double GRABBER_CLOSE = 0.415;
     public static double GRABBER_OPEN = 0.195;
 
-    public static double PITCH_FORWARD = 1.00;
+    public static double PITCH_FORWARD = 0.98;
     public static double PITCH_UP = 0.65;
-    public static double PITCH_BACKWARD = 0.41; // 0.376 for the other way
+    public static double PITCH_BACKWARD = 0.38;
     public static double PITCH_GRAB = 0.78;
     public static double PITCH_CLIP = 0.57;
 
@@ -33,9 +33,12 @@ public class Constants {
     public static int ELE_BASKET_LOW = 1500;
     public static int ELE_BASKET_HIGH = 2200;
 
+    public static int ELE_HANG = 870;
+
     public static int ROT_UP = -10; // Giving negative to maintain position (giving a constant negative power)
-    public static int ROT_DOWN = 600;
-    public static int ROT_GRAB = 450;
+    public static int ROT_DOWN = 675;
+    public static int ROT_GRAB = 430;
+    public static int ROT_HANG_DOWN = 260;
 
     // Drivetrain motor speed
     public static double SAFE_MODE = 0.7;

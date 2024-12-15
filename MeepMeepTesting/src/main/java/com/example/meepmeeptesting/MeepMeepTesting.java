@@ -28,14 +28,15 @@ public class MeepMeepTesting {
                 .build();
 
         Alliance alliance = Alliance.RED;
-        Position position = Position.RIGHT;
+        Position position = Position.LEFT;
 
 
         if (position == Position.LEFT && alliance == Alliance.RED) {
             myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(15, 63, Math.toRadians(90)))
                     .strafeTo(new Vector2d(3, 29.4))
                     .waitSeconds(1)
-                    .splineToLinearHeading(new Pose2d(48, 39, Math.toRadians(270)), Math.toRadians(15))
+                    .strafeTo(new Vector2d(3, 40))
+                    .strafeToLinearHeading(new Vector2d(48, 39), Math.toRadians(270))
                     .waitSeconds(1)
                     .strafeToLinearHeading(new Vector2d(59, 59), Math.toRadians(-135))
                     .waitSeconds(1)
@@ -53,33 +54,28 @@ public class MeepMeepTesting {
         if (position == Position.RIGHT && alliance == Alliance.RED) {
             myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-15, 63, Math.toRadians(90)))
                     .strafeTo(new Vector2d(-3, 29.4))
-                    .splineToConstantHeading(new Vector2d(-17, 45), Math.toRadians(-90))
-                    .splineToSplineHeading(new Pose2d(-45, 10, Math.toRadians(-90)), Math.toRadians(90))
-                    .splineToConstantHeading(new Vector2d(-45, 56), Math.toRadians(90))
-                    .splineToConstantHeading(new Vector2d(-45, 25), Math.toRadians(-90))
-                    .splineToConstantHeading(new Vector2d(-54, 15), Math.toRadians(90))
-                    .splineToConstantHeading(new Vector2d(-54, 56), Math.toRadians(90))
-                    .splineToConstantHeading(new Vector2d(-54, 25), Math.toRadians(-90))
-                    .splineToConstantHeading(new Vector2d(-63, 15), Math.toRadians(90))
-                    .splineToConstantHeading(new Vector2d(-63, 56), Math.toRadians(90))
-
-                    .strafeToLinearHeading(new Vector2d(-44, 54), Math.toRadians(90))
+                    .waitSeconds(1)
+                    .splineTo(new Vector2d(-31, 40), Math.toRadians(-135))
                     .waitSeconds(0.5)
-                    .strafeToLinearHeading(new Vector2d(-3, 29.4), Math.toRadians(90))
+                    .turnTo(Math.toRadians(140))
                     .waitSeconds(0.5)
-                    .strafeToLinearHeading(new Vector2d(-44, 54), Math.toRadians(90))
+                    .strafeToLinearHeading(new Vector2d(-40, 40), Math.toRadians(-140))
                     .waitSeconds(0.5)
-                    .strafeToLinearHeading(new Vector2d(-3, 29.4), Math.toRadians(90))
-                    .waitSeconds(0.5)
-                    .strafeToLinearHeading(new Vector2d(-44, 54), Math.toRadians(90))
-                    .waitSeconds(0.5)
-                    .strafeToLinearHeading(new Vector2d(-3, 29.4), Math.toRadians(90))
-                    .waitSeconds(0.5)
-                    .strafeToLinearHeading(new Vector2d(-44, 54), Math.toRadians(90))
-                    .waitSeconds(0.5)
-                    .strafeToLinearHeading(new Vector2d(-3, 29.4), Math.toRadians(90))
-                    .waitSeconds(0.5)
-                    .strafeToLinearHeading(new Vector2d(-34, 48), Math.toRadians(145))
+//                    .turnTo(Math.toRadians(120))
+//                    .strafeToLinearHeading(new Vector2d(-50, 40), Math.toRadians(-150))
+                    .strafeToLinearHeading(new Vector2d(-44, 50), Math.toRadians(90))
+                    .strafeTo(new Vector2d(-44, 58))
+                    .strafeTo(new Vector2d(-1, 29.4))
+                    .waitSeconds(1)
+                    .strafeTo(new Vector2d(-44, 58))
+                    .strafeTo(new Vector2d(1, 29.4))
+                    .waitSeconds(1)
+                    .strafeTo(new Vector2d(-44, 58))
+                    .strafeTo(new Vector2d(3, 29.4))
+                    .waitSeconds(1)
+//                    .strafeToLinearHeading(new Vector2d(-44, 58), Math.toRadians(90))
+//                    .strafeToLinearHeading(new Vector2d(-3, 29.4), Math.toRadians(90))
+                    .strafeToLinearHeading(new Vector2d(-40, 60), Math.toRadians(90))
                     .build());
         }
         if (position == Position.RIGHT && alliance == Alliance.BLUE) {

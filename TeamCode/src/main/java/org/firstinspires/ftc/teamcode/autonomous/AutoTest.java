@@ -1,15 +1,8 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
-
-import static org.firstinspires.ftc.teamcode.util.Constants.*;
-
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -29,6 +22,6 @@ public class AutoTest extends LinearOpMode {
 
         waitForStart();
 
-        Actions.runBlocking(new SequentialAction(grabber.roll(60), new SleepAction(1), grabber.roll(-60)));
+        Actions.runBlocking(new SequentialAction(grabber.roll(90), grabber.roll(0)));
     }
 }
