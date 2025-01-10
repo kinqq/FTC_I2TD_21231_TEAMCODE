@@ -31,14 +31,14 @@ public class Constants {
     public static int ELE_CHAMBER_HIGH_DROP = 140;
 
     public static int ELE_BASKET_LOW = 1500;
-    public static int ELE_BASKET_HIGH = 2200;
+    public static int ELE_BASKET_HIGH = 2400;
 
-    public static int ELE_HANG = 870;
+    public static int ELE_HANG = 990;
 
     public static int ROT_UP = -10; // Giving negative to maintain position (giving a constant negative power)
     public static int ROT_DOWN = 675;
     public static int ROT_GRAB = 430;
-    public static int ROT_HANG_DOWN = 260;
+    public static int ROT_HANG_DOWN = 230;
 
     // Drivetrain motor speed
     public static double SAFE_MODE = 0.7;

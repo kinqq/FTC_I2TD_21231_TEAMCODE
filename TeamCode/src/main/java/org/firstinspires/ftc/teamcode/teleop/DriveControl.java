@@ -33,6 +33,13 @@ public class DriveControl extends OpMode {
     private EleControlMode eleControlMode = EleControlMode.BASKET;
     private double maxSpeed = 1.0;
 
+    enum InitalizeControlMode {
+        ELEVATOR,
+        ROTATION
+    }
+
+    private InitalizeControlMode icm = InitalizeControlMode.ROTATION;
+
     TriggerReader driver2LeftTrigger, driver2RightTrigger;
 
     @Override
@@ -73,8 +80,6 @@ public class DriveControl extends OpMode {
         grabber.roll.setPosition(ROLL_TICK_ON_ZERO);
     }
 
-
-
     @Override
     public void loop() {
         driver1.readButtons();
@@ -83,9 +88,6 @@ public class DriveControl extends OpMode {
         driver2RightTrigger.readValue();
         TelemetryPacket packet = new TelemetryPacket();
 
-        if (driver1.wasJustPressed(GamepadKeys.Button.BACK))
-            drive.toggleFieldCentricDrive();
-
         if (driver1.isDown(GamepadKeys.Button.LEFT_BUMPER))
             maxSpeed = SAFE_MODE;
         else if (driver1.isDown(GamepadKeys.Button.RIGHT_BUMPER))
@@ -93,9 +95,18 @@ public class DriveControl extends OpMode {
         else
             maxSpeed = NORMAL_MODE;
 
+        if (driver1.wasJustPressed(GamepadKeys.Button.Y))
+            icm = icm == InitalizeControlMode.ROTATION ? InitalizeControlMode.ELEVATOR : InitalizeControlMode.ROTATION;
+
+        if (icm == InitalizeControlMode.ROTATION)
+            rotPos += -(int) driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * 10 + (int) driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * 10;
+        else if (icm == InitalizeControlMode.ELEVATOR)
+            elePos += -(int) driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * 10 + (int) driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * 10;
+
         if (driver1.wasJustPressed(GamepadKeys.Button.START)) drive.resetImu();
-        if (driver2.wasJustPressed(GamepadKeys.Button.START))
-            elevator.initEle();
+        if (driver2.wasJustPressed(GamepadKeys.Button.START)) elevator.initEle();
+        if (driver1.wasJustPressed(GamepadKeys.Button.BACK)) drive.toggleFieldCentricDrive();
+        if (driver2.wasJustPressed(GamepadKeys.Button.BACK)) elevator.initRot();
 
         drive.setMaxPower(maxSpeed);
         drive.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
@@ -237,6 +248,7 @@ public class DriveControl extends OpMode {
         telemetry.addData("elePos", elePos);
         telemetry.addData("eleMod", eleControlMode);
         telemetry.addData("rotPos", rotPos);
+        telemetry.addData("initControl", icm);
 
         telemetry.update();
     }

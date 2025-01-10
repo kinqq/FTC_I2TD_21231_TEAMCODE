@@ -263,8 +263,8 @@ public class Elevator {
         leftEle.setPower(pid);
         rightEle.setPower(pid);
 
-        leftEle.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightEle.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public Action rotate(int target) {
@@ -286,8 +286,7 @@ public class Elevator {
         double power = pid + ff;
 
         leftRot.setPower(power);
-
-        leftRot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void rigging() {
@@ -297,8 +296,9 @@ public class Elevator {
         leftEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        leftRot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftRot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftRot.setPower(0);
-        leftRot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         isRigging = true;
     }
