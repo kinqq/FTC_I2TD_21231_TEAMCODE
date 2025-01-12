@@ -47,11 +47,10 @@ public class AUTO_RIGHT extends LinearOpMode {
                 grabber.pitch.setPosition(PITCH_BACKWARD);
             }
 
-            telemetry.addLine("I'm ready to cook this match.");
+            telemetry.addLine("-------Initialized-------");
+            telemetry.addLine(">>>> Press ▶ to start. <<<<");
             telemetry.update();
         }
-
-        drive = new PinpointDrive(hardwareMap, initialPose);
 
         Vector2d CHAMBER_POSE = new Vector2d(3, 27);
         Vector2d BACKUP_POSE = new Vector2d(3, 40);

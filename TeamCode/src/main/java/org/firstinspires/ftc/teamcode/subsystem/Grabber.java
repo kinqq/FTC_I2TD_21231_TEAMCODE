@@ -44,7 +44,7 @@ public class Grabber {
 
                 // Tuned for speed servo with 4.8V
                 double MAX_TRAVEL = Math.toRadians(300);
-                double SEC_PER_RAD = 0.11 / Math.toRadians(60);
+                double SEC_PER_RAD = 0.28 / Math.toRadians(60); //TODO: This is for torque servo
                 double TIME_FACTOR = 1.0;
                 expectedTime = posErrorTick * MAX_TRAVEL * SEC_PER_RAD * TIME_FACTOR;
 

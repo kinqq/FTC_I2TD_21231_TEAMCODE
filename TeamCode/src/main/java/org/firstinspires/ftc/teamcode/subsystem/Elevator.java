@@ -36,11 +36,6 @@ public class Elevator {
         rightEle = hardwareMap.get(DcMotorEx.class, "rightEle");
         leftRot = hardwareMap.get(DcMotorEx.class, "leftRot");
 
-        // Reset encoders to zero
-//        leftEle.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        rightEle.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        leftRot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         leftEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -183,35 +178,6 @@ public class Elevator {
         return new RotateDown(target);
     }
 
-    public class Rotate implements Action {
-        private boolean initialized = false;
-        private final int pos;
-        ElapsedTime runtime = new ElapsedTime();
-
-        public Rotate(int _pos) {
-            pos = _pos;
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            if (!initialized) {
-                runtime.reset();
-                leftRot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                leftRot.setTargetPosition(pos);
-                leftRot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                leftRot.setPower(0.7);
-                initialized = true;
-            }
-
-            boolean atPosition = Math.abs(leftRot.getCurrentPosition() - pos) < 10;
-            if (atPosition) {
-                leftRot.setPower(0);
-                leftRot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            }
-            return !atPosition && runtime.seconds() < 3;
-        }
-    }
-
     public class Elevate implements Action {
         private boolean initialized = false;
         private final int pos;
@@ -248,10 +214,6 @@ public class Elevator {
         rightEle.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
-    public Action rotateGrab() {
-        return new Rotate(ROT_GRAB);
-    }
-
     public Action elevate(int pos) {
         return new Elevate(pos);
     }
@@ -265,10 +227,6 @@ public class Elevator {
 
         leftEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
-
-    public Action rotate(int target) {
-        return new Rotate(target);
     }
 
     public void rotatePIDF(int target) {
