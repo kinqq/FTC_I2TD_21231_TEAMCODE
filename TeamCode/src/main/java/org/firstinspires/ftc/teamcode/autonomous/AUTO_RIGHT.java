@@ -25,7 +25,7 @@ public class AUTO_RIGHT extends LinearOpMode {
     public void runOpMode() {
         Elevator elevator = new Elevator(hardwareMap);
         Grabber grabber = new Grabber(hardwareMap);
-        Pose2d initialPose = new Pose2d(15, 63, Math.toRadians(90));
+        Pose2d initialPose = new Pose2d(15, 63, Math.toRadians(-90));
 
         PinpointDrive drive = new PinpointDrive(hardwareMap, initialPose);
 
@@ -33,18 +33,18 @@ public class AUTO_RIGHT extends LinearOpMode {
         elevator.initRot();
 
         grabber.grabber.setPosition(GRABBER_CLOSE);
-        grabber.pitch.setPosition(PITCH_BACKWARD);
+        grabber.pitch.setPosition(PITCH_FORWARD);
         grabber.roll.setPosition(ROLL_TICK_ON_ZERO);
 
         // Wait until start and set up parameters
         while (!opModeIsActive() && !isStopRequested()) {
             if (gamepad2.left_trigger > 0.25) {
                 grabber.grabber.setPosition(GRABBER_CLOSE);
-                grabber.pitch.setPosition(PITCH_BACKWARD);
+                grabber.pitch.setPosition(PITCH_FORWARD);
             }
             if (gamepad2.right_trigger > 0.25) {
                 grabber.grabber.setPosition(GRABBER_OPEN);
-                grabber.pitch.setPosition(PITCH_BACKWARD);
+                grabber.pitch.setPosition(PITCH_FORWARD);
             }
 
             telemetry.addLine("-------Initialized-------");
@@ -52,241 +52,132 @@ public class AUTO_RIGHT extends LinearOpMode {
             telemetry.update();
         }
 
-        Vector2d CHAMBER_POSE = new Vector2d(3, 27);
-        Vector2d BACKUP_POSE = new Vector2d(3, 40);
-        Vector2d FIRST_SAMPLE_POSE = new Vector2d(49, 39.5);
-        double FIRST_SAMPLE_HEADING = Math.toRadians(270);
-        Vector2d BASKET_POSE = new Vector2d(59, 59);
-        double BASKET_HEADING = Math.toRadians(-135);
-        Vector2d SECOND_SAMPLE_POSE = new Vector2d(58.6, 39.5);
-        double SECOND_SAMPLE_HEADING = Math.toRadians(270);
-        Vector2d THIRD_SAMPLE_POSE = new Vector2d(52.5, 24.5);
-        double THIRD_SAMPLE_HEADING = Math.toRadians(0);
-        Pose2d PARKING_POSE = new Pose2d(22, 10, Math.toRadians(180));
-        double PARKING_TANGENT = Math.toRadians(180);
+        Vector2d PRELOAD_SPECIMEN_CLIP = new Vector2d(-3, 34);
+        Vector2d HP_SPECIMEN_POSE = new Vector2d(-37, 54);
+        Vector2d HP_SPECIMEN_CLIP = new Vector2d(-1, 29.4);
+        Vector2d FIRST_SPECIMEN_CLIP = new Vector2d(1, 29.4);
+        Vector2d SECOND_SPECIMEN_CLIP = new Vector2d(3, 29.4);
+        Vector2d THIRD_SPECIMEN_CLIP = new Vector2d(3, 29.4);
+        Vector2d PARKING_POSE = new Vector2d(-40, 60);
+        double PARKING_HEADING = Math.toRadians(140);
 
-        TrajectoryActionBuilder traj1, traj2, traj3, traj4, traj5, traj6, traj7, traj8;
+        TrajectoryActionBuilder traj1, traj2, traj3, traj4, traj5, traj6, traj7, traj8, traj9, traj10, traj11, traj12;
 
-        traj1 = drive.actionBuilder(initialPose).strafeTo(CHAMBER_POSE);
-        traj2 = traj1.endTrajectory().fresh().strafeTo(BACKUP_POSE).strafeToLinearHeading(FIRST_SAMPLE_POSE, FIRST_SAMPLE_HEADING);
-        traj3 = traj2.endTrajectory().fresh().strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
-        traj4 = traj3.endTrajectory().fresh().strafeToLinearHeading(SECOND_SAMPLE_POSE, SECOND_SAMPLE_HEADING);
-        traj5 = traj4.endTrajectory().fresh().strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
-        traj6 = traj5.endTrajectory().fresh().strafeToLinearHeading(THIRD_SAMPLE_POSE, THIRD_SAMPLE_HEADING);
-        traj7 = traj6.endTrajectory().fresh().strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
-        traj8 = traj7.endTrajectory().fresh().splineToLinearHeading(PARKING_POSE, PARKING_TANGENT);
+        traj1 = drive.actionBuilder(initialPose).strafeTo(PRELOAD_SPECIMEN_CLIP);
+        traj2 = traj1.endTrajectory().fresh().setTangent(Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-35, 36), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-35, 12), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-42, 12), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-42, 56), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-42, 25), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-51, 15), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-51, 56), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-51, 25), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-61, 15), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-61, 56), Math.toRadians(90));
+        traj3 = traj2.endTrajectory().fresh().strafeToLinearHeading(HP_SPECIMEN_POSE, Math.toRadians(90));
+        traj4 = traj3.endTrajectory().fresh().strafeTo(HP_SPECIMEN_CLIP);
+        traj5 = traj4.endTrajectory().fresh().strafeTo(HP_SPECIMEN_POSE);
+        traj6 = traj5.endTrajectory().fresh().strafeTo(FIRST_SPECIMEN_CLIP);
+        traj7 = traj6.endTrajectory().fresh().strafeTo(HP_SPECIMEN_POSE);
+        traj8 = traj7.endTrajectory().fresh().strafeTo(SECOND_SPECIMEN_CLIP);
+        traj9 = traj8.endTrajectory().fresh().strafeTo(HP_SPECIMEN_POSE);
+        traj10 = traj9.endTrajectory().fresh().strafeTo(THIRD_SPECIMEN_CLIP);
+        traj11 = traj10.endTrajectory().fresh().strafeToLinearHeading(PARKING_POSE, PARKING_HEADING);
 
-        Actions.runBlocking(new SequentialAction(
-                // Clip Pre-loaded Specimen
-                new ParallelAction(
-                        traj1.build(),
-                        grabber.pitchBackward(),
-                        grabber.grab(),
-                        elevator.rotateUp(ROT_UP),
-                        elevator.elevateUp(ELE_CHAMBER_HIGH)
-                ),
-                elevator.elevateDown(ELE_CHAMBER_HIGH_DROP),
-                grabber.release(),
-                // Go to first sample
-                new ParallelAction(
-                        elevator.elevateDown(ELE_BOT),
-                        grabber.pitchForward(),
-                        traj2.build()
-                ),
-                elevator.rotateDown(ROT_DOWN),
-                // Grab first sample and go to basket
-                grabber.grab(),
-                elevator.rotateUp(ROT_UP),
-                new ParallelAction(
+        Actions.runBlocking(
+                new SequentialAction(
+                        // Clip preload specimen
+                        new ParallelAction(
+                                elevator.rotateDown(ROT_CLIP),
+                                elevator.elevate(ELE_CLIP),
+                                grabber.pitchClip(),
+                                grabber.grab(),
+                                traj1.build()
+                        ),
+                        grabber.release(),
+                        new ParallelAction(
+                                traj2.build(),
+                                elevator.rotateUp(ROT_UP),
+                                elevator.elevateDown(ELE_BOT)
+                        ),
+                        // Grab HP Spec
                         traj3.build(),
-                        elevator.rotateUp(ROT_UP),
-                        grabber.pitchUp(),
-                        new SequentialAction(
-                                new SleepAction(1),
-                                elevator.elevateUp(ELE_BASKET_HIGH)
-                        )
-                ),
-                // Release first sample
-                new SequentialAction(
-                        grabber.pitchBackward(),
-                        grabber.release()
-                ),
-                // Go to second sample
-                new ParallelAction(
-                        grabber.pitchForward(),
-                        grabber.roll(0),
-                        elevator.elevateDown(ELE_BOT),
-                        traj4.build()
-                ),
-                elevator.rotateDown(ROT_DOWN),
-                grabber.grab(),
-                elevator.rotateUp(ROT_UP),
-                new ParallelAction(
-                        traj5.build(),
-                        elevator.rotateUp(ROT_UP),
-                        grabber.pitchUp(),
-                        grabber.roll(0),
-                        new SequentialAction(
-                                new SleepAction(1),
-                                elevator.elevateUp(ELE_BASKET_HIGH)
-                        )
-                ),
-                // Release second sample
-                new SequentialAction(
-                        grabber.pitchBackward(),
-                        grabber.release()
-                ),
-                // Go to third sample
-                new ParallelAction(
-                        grabber.pitchForward(),
-                        elevator.elevate(ELE_BOT),
-                        grabber.roll(90),
-                        traj6.build()
-                ),
-                elevator.rotateDown(ROT_DOWN),
-                grabber.grab(),
-                elevator.rotateUp(ROT_UP),
-                new ParallelAction(
-                        traj7.build(),
-                        elevator.rotateUp(ROT_UP),
-                        grabber.pitchUp(),
-                        grabber.roll(0),
-                        new SequentialAction(
-                                new SleepAction(1),
-                                elevator.elevate(ELE_BASKET_HIGH)
-                        )
-                ),
-                // Release third sample
-                new SequentialAction(
-                        grabber.pitchBackward(),
-                        grabber.release()
-                ),
-                // Go park
-                new ParallelAction(
-                        grabber.pitchBackward(),
-                        elevator.elevateDown(400),
-                        traj8.build()
-                ),
-                elevator.rotateDown(170)
-        ));
+                        new ParallelAction(
+                                elevator.rotateDown(ROT_GRAB),
+                                grabber.pitchGrab(),
+                                grabber.roll(0)
+                        ),
+                        grabber.grab(),
+                        new ParallelAction(
+                                traj4.build(),
+                                elevator.elevateUp(ELE_CHAMBER_HIGH),
+                                grabber.pitchBackward(),
+                                grabber.roll(180)
+                        ),
+                        elevator.elevateDown(ELE_CHAMBER_HIGH_DROP),
+                        grabber.release(),
 
-//        if (position == Position.RIGHT) {
-//            Vector2d PRELOAD_CHAMBER_POSE = new Vector2d(-3, 29.4);
-//            Vector2d FIRST_SAMPLE_POSE = new Vector2d(-31, 40);
-//            double FIRST_SAMPLE_HEADING = Math.toRadians(-135);
-//            double FIRST_SAMPLE_DEPOSIT_HEADING = Math.toRadians(140);
-//            Vector2d SECOND_SAMPLE_POSE = new Vector2d(-40, 40);
-//            double SECOND_SAMPLE_HEADING = Math.toRadians(-140);
-//            Vector2d SECOND_SAMPLE_DEPOSIT_POSE = new Vector2d(-44, 50);
-//            double CLIP_HEADING = Math.toRadians(90);
-//            Vector2d HP_SPECIMEN_POSE = new Vector2d(-44, 58);
-//            Vector2d HP_SPECIMEN_CLIP = new Vector2d(-1, 29.4);
-//            Vector2d FIRST_SPECIMEN_POSE = new Vector2d(-44, 58);
-//            Vector2d FIRST_SPECIMEN_CLIP = new Vector2d(1, 29.4);
-//            Vector2d SECOND_SPECIMEN_POSE = new Vector2d(-44, 58);
-//            Vector2d SECOND_SPECIMEN_CLIP = new Vector2d(3, 29.4);
-//            Vector2d PARKING_POSE = new Vector2d(-40, 60);
-//
-//            TrajectoryActionBuilder traj1, traj2, traj3, traj4, traj5, traj6, traj7, traj8, traj9, traj10, traj11, traj12;
-//
-//            traj1 = drive.actionBuilder(rightInitialPose).strafeTo(PRELOAD_CHAMBER_POSE);
-//            traj2 = traj1.endTrajectory().fresh().splineTo(FIRST_SAMPLE_POSE, FIRST_SAMPLE_HEADING);
-//            traj3 = traj2.endTrajectory().fresh().turnTo(FIRST_SAMPLE_DEPOSIT_HEADING);
-//            traj4 = traj3.endTrajectory().fresh().strafeToLinearHeading(SECOND_SAMPLE_POSE, SECOND_SAMPLE_HEADING);
-//            traj5 = traj4.endTrajectory().fresh().strafeToLinearHeading(SECOND_SAMPLE_DEPOSIT_POSE, CLIP_HEADING);
-//            traj6 = traj5.endTrajectory().fresh().strafeTo(HP_SPECIMEN_POSE);
-//            traj7 = traj6.endTrajectory().fresh().strafeTo(HP_SPECIMEN_CLIP);
-//            traj8 = traj7.endTrajectory().fresh().strafeTo(FIRST_SPECIMEN_POSE);
-//            traj9 = traj8.endTrajectory().fresh().strafeTo(FIRST_SPECIMEN_CLIP);
-//            traj10 = traj9.endTrajectory().fresh().strafeTo(SECOND_SPECIMEN_POSE);
-//            traj11 = traj10.endTrajectory().fresh().strafeTo(SECOND_SPECIMEN_CLIP);
-//            traj12 = traj11.endTrajectory().fresh().strafeTo(PARKING_POSE);
-//
-//            Actions.runBlocking(
-//                    new SequentialAction(
-//                            // Clip preload specimen
-//                            new ParallelAction(
-//                                    elevator.rotateUp(ROT_UP),
-//                                    elevator.elevate(ELE_CHAMBER_HIGH),
-//                                    grabber.pitchBackward(),
-//                                    grabber.grab(),
-//                                    traj1.build()
-//                            ),
-//                            elevator.elevate(ELE_CHAMBER_HIGH_DROP),
-//                            grabber.release(),
-//                            new ParallelAction(
-//                                    traj2.build(),
-//                                    elevator.rotateDown(ROT_DOWN)
-//                            ),
-//                            elevator.elevate(800),
-//                            grabber.grab(),
-//                            traj3.build(),
-//                            grabber.release(),
-//                            traj4.build(),
-//                            grabber.grab(),
-//                            // Go to observation zone
-//                            new ParallelAction(
-//                                    traj5.build(),
-//                                    elevator.rotateGrab(),
-//                                    grabber.pitchGrab()
-//                            ),
-//                            grabber.release(),
-//                            traj6.build(),
-//                            grabber.grab(),
-//                            // Go clip first specimen
-//                            new ParallelAction(
-//                                    traj7.build(),
-//                                    elevator.rotateUp(ROT_UP),
-//                                    elevator.elevate(ELE_CHAMBER_HIGH),
-//                                    grabber.pitchBackward(),
-//                                    grabber.roll(180)
-//                            ),
-//                            elevator.elevate(ELE_CHAMBER_HIGH_DROP),
-//                            grabber.release(),
-//                            // Go grab second specimen
-//                            new ParallelAction(
-//                                    traj8.build(),
-//                                    elevator.rotateGrab(),
-//                                    grabber.pitchGrab(),
-//                                    grabber.roll(0)
-//                            ),
-//                            grabber.grab(),
-//                            // Go clip second specimen
-//                            new ParallelAction(
-//                                    traj9.build(),
-//                                    elevator.rotateUp(ROT_UP),
-//                                    elevator.elevate(ELE_CHAMBER_HIGH),
-//                                    grabber.pitchBackward(),
-//                                    grabber.roll(180)
-//                            ),
-//                            elevator.elevate(ELE_CHAMBER_HIGH_DROP),
-//                            grabber.release(),
-//                            // Go grab third specimen
-//                            new ParallelAction(
-//                                    traj10.build(),
-//                                    elevator.rotateGrab(),
-//                                    grabber.pitchGrab(),
-//                                    grabber.roll(0)
-//                            ),
-//                            grabber.grab(),
-//                            // Go clip third specimen
-//                            new ParallelAction(
-//                                    traj11.build(),
-//                                    elevator.rotateUp(ROT_UP),
-//                                    elevator.elevate(ELE_CHAMBER_HIGH),
-//                                    grabber.pitchBackward(),
-//                                    grabber.roll(180)
-//                            ),
-//                            elevator.elevate(ELE_CHAMBER_HIGH_DROP),
-//                            grabber.release(),
-//                            // Park
-//                            new ParallelAction(
-//                                    traj12.build(),
-//                                    elevator.elevate(ELE_BOT)
-//                            )
-//                    )
-//            );
-//        }
+                        // Grab 1st Spec
+                        new ParallelAction(
+                                traj5.build(),
+                                elevator.rotateDown(ROT_GRAB),
+                                grabber.pitchGrab(),
+                                grabber.roll(0)
+                        ),
+                        grabber.grab(),
+                        new ParallelAction(
+                                traj6.build(),
+                                elevator.elevateUp(ELE_CHAMBER_HIGH),
+                                grabber.pitchBackward(),
+                                grabber.roll(180)
+                        ),
+                        elevator.elevateDown(ELE_CHAMBER_HIGH_DROP),
+                        grabber.release(),
+
+                        // Grab 2nd Spec
+                        new ParallelAction(
+                                traj7.build(),
+                                elevator.rotateDown(ROT_GRAB),
+                                grabber.pitchGrab(),
+                                grabber.roll(0)
+                        ),
+                        grabber.grab(),
+                        new ParallelAction(
+                                traj8.build(),
+                                elevator.elevateUp(ELE_CHAMBER_HIGH),
+                                grabber.pitchBackward(),
+                                grabber.roll(180)
+                        ),
+                        elevator.elevateDown(ELE_CHAMBER_HIGH_DROP),
+                        grabber.release(),
+
+                        // Grab 3rd Spec
+                        new ParallelAction(
+                                traj9.build(),
+                                elevator.rotateDown(ROT_GRAB),
+                                grabber.pitchGrab(),
+                                grabber.roll(0)
+                        ),
+                        grabber.grab(),
+                        new ParallelAction(
+                                traj10.build(),
+                                elevator.elevateUp(ELE_CHAMBER_HIGH),
+                                grabber.pitchBackward(),
+                                grabber.roll(180)
+                        ),
+                        elevator.elevateDown(ELE_CHAMBER_HIGH_DROP),
+                        grabber.release(),
+
+                        // Park
+                        new ParallelAction(
+                                traj11.build(),
+                                elevator.elevate(ELE_BOT),
+                                grabber.pitchForward(),
+                                grabber.release()
+                        )
+                )
+        );
 
         telemetry.addData("Path", "Execution complete");
         telemetry.update();
