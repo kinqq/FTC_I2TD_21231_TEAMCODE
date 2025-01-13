@@ -34,14 +34,7 @@ public class DriveControl extends OpMode {
     private int elePos = ELE_BOT, rotPos = ROT_UP;
     private double rollAngle = 0;
     private EleControlMode eleControlMode = EleControlMode.BASKET;
-    private double maxSpeed = 1.0;
-
-    enum InitalizeControlMode {
-        ELEVATOR,
-        ROTATION
-    }
-
-    private InitalizeControlMode icm = InitalizeControlMode.ROTATION;
+    private double maxSpeed = NORMAL_MODE;
 
     TriggerReader driver2LeftTrigger, driver2RightTrigger;
 
@@ -91,20 +84,13 @@ public class DriveControl extends OpMode {
         driver2RightTrigger.readValue();
         TelemetryPacket packet = new TelemetryPacket();
 
-        if (driver1.isDown(GamepadKeys.Button.LEFT_BUMPER))
-            maxSpeed = SAFE_MODE;
-        else if (driver1.isDown(GamepadKeys.Button.RIGHT_BUMPER))
+        if (driver1.isDown(GamepadKeys.Button.A))
             maxSpeed = PRECISION_MODE;
         else
             maxSpeed = NORMAL_MODE;
 
-        if (driver1.wasJustPressed(GamepadKeys.Button.Y))
-            icm = icm == InitalizeControlMode.ROTATION ? InitalizeControlMode.ELEVATOR : InitalizeControlMode.ROTATION;
-
-        if (icm == InitalizeControlMode.ROTATION)
-            rotPos += (int) (-driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * 10 + driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * 10);
-        else if (icm == InitalizeControlMode.ELEVATOR)
-            elePos += (int) (-driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * 10 + driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * 10);
+        rotPos += (int) (-driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * 10 + driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * 10);
+        elePos += (driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) ? -10 : 0) + (driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER) ? 10 : 0);
 
         if (driver1.wasJustPressed(GamepadKeys.Button.START)) drive.resetImu();
         if (driver2.wasJustPressed(GamepadKeys.Button.START)) elevator.initEle();
@@ -159,8 +145,7 @@ public class DriveControl extends OpMode {
                 elePos = ELE_CHAMBER_HIGH;
             elePos += (int) (driver2.getLeftY() * 45.0);
             elePos = Range.clip(elePos, 0, 1450);
-        }
-        else if (eleControlMode == EleControlMode.CHAMBER) {
+        } else if (eleControlMode == EleControlMode.CHAMBER) {
             if (driver2.wasJustPressed(GamepadKeys.Button.A)) {
                 elePos = ELE_BOT;
                 rotPos = ROT_UP;
@@ -216,8 +201,7 @@ public class DriveControl extends OpMode {
         if (driver2RightTrigger.wasJustPressed()) {
             if (eleControlMode == EleControlMode.BASKET && (elePos == ELE_BASKET_HIGH || elePos == ELE_BASKET_LOW)) {
                 runningActions.add(new SequentialAction(grabber.pitchBackward(), grabber.release()));
-            }
-            else {
+            } else {
                 runningActions.add(grabber.release());
             }
         }
@@ -241,12 +225,16 @@ public class DriveControl extends OpMode {
 
         dash.sendTelemetryPacket(packet);
 
-        telemetry.addData("initControl", icm);
-        telemetry.addData("eleControl", eleControlMode);
-        telemetry.addData("elePos", elePos);
-        telemetry.addData("elePosActual", elevator.getElevatorPosition());
-        telemetry.addData("rotPos", rotPos);
-        telemetry.addData("rotPosActual", elevator.getRotationPosition());
+        telemetry.addLine("-------DRIVE CONTROL-------");
+        telemetry.addData("CONTROL MODE", eleControlMode);
+
+        telemetry.addLine("-------MOTOR POSITION-------");
+        telemetry.addData("elePosition", elePos);
+        telemetry.addData("eleEncoder", elevator.getElevatorPosition());
+        telemetry.addData("rotPosition", rotPos);
+        telemetry.addData("rotEncoder", elevator.getRotationPosition());
+
+        telemetry.addLine("-------ROBOT POSITION-------");
         telemetry.addData("robotX", drive.getPosition().getX(DistanceUnit.MM));
         telemetry.addData("robotY", drive.getPosition().getY(DistanceUnit.MM));
         telemetry.addData("robotH", drive.getPosition().getHeading(AngleUnit.DEGREES));
