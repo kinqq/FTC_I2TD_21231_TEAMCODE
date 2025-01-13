@@ -272,4 +272,12 @@ public class Elevator {
 
         leftRot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
+
+    public int getElevatorPosition() {
+        return leftEle.getCurrentPosition();
+    }
+
+    public int getRotationPosition() {
+        return leftRot.getCurrentPosition();
+    }
 }

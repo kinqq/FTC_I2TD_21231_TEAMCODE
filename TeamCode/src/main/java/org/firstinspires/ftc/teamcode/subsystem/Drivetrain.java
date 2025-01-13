@@ -30,8 +30,7 @@ public class Drivetrain {
         odo.setOffsets(1.5, -1.45);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
-        odo.resetPosAndIMU();
-
+//        odo.resetPosAndIMU();
 
         dtMotors = new DcMotorGroup(_frontLeftMotor, _frontRightMotor, _backLeftMotor, _backRightMotor);
         dtMotors.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -44,7 +43,7 @@ public class Drivetrain {
 
         double heading;
         if (!isFieldCentricDriveEnabled) heading = 0;
-        else heading = -odo.getHeading() + Math.PI / 2;
+        else heading = -odo.getHeading();
 
         forwardSpeed *= -1;
 
@@ -72,5 +71,9 @@ public class Drivetrain {
 
     public void toggleFieldCentricDrive() {
         isFieldCentricDriveEnabled ^= true;
+    }
+
+    public Pose2D getPosition() {
+        return odo.getPosition();
     }
 }

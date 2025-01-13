@@ -18,6 +18,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -208,13 +211,6 @@ public class DriveControl extends OpMode {
             elevator.rotatePIDF(rotPos);
         }
 
-        // Auto release specimen -- activate when clipping is reliable
-//        if ((elePos == ELE_CHAMBER_HIGH_DROP || elePos == ELE_CHAMBER_LOW_DROP) && eleMotors.atTargetPosition()) {
-//            release();
-//            elePos = ELE_BOT;
-//        }
-
-
         if (driver2LeftTrigger.wasJustPressed())
             runningActions.add(grabber.grab());
         if (driver2RightTrigger.wasJustPressed()) {
@@ -245,10 +241,15 @@ public class DriveControl extends OpMode {
 
         dash.sendTelemetryPacket(packet);
 
-        telemetry.addData("elePos", elePos);
-        telemetry.addData("eleMod", eleControlMode);
-        telemetry.addData("rotPos", rotPos);
         telemetry.addData("initControl", icm);
+        telemetry.addData("eleControl", eleControlMode);
+        telemetry.addData("elePos", elePos);
+        telemetry.addData("elePosActual", elevator.getElevatorPosition());
+        telemetry.addData("rotPos", rotPos);
+        telemetry.addData("rotPosActual", elevator.getRotationPosition());
+        telemetry.addData("robotX", drive.getPosition().getX(DistanceUnit.MM));
+        telemetry.addData("robotY", drive.getPosition().getY(DistanceUnit.MM));
+        telemetry.addData("robotH", drive.getPosition().getHeading(AngleUnit.DEGREES));
 
         telemetry.update();
     }
