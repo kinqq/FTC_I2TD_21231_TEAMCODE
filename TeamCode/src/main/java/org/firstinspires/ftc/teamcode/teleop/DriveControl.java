@@ -99,9 +99,9 @@ public class DriveControl extends OpMode {
             icm = icm == InitalizeControlMode.ROTATION ? InitalizeControlMode.ELEVATOR : InitalizeControlMode.ROTATION;
 
         if (icm == InitalizeControlMode.ROTATION)
-            rotPos += -(int) driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * 10 + (int) driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * 10;
+            rotPos += (int) (-driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * 10 + driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * 10);
         else if (icm == InitalizeControlMode.ELEVATOR)
-            elePos += -(int) driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * 10 + (int) driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * 10;
+            elePos += (int) (-driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * 10 + driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * 10);
 
         if (driver1.wasJustPressed(GamepadKeys.Button.START)) drive.resetImu();
         if (driver2.wasJustPressed(GamepadKeys.Button.START)) elevator.initEle();
