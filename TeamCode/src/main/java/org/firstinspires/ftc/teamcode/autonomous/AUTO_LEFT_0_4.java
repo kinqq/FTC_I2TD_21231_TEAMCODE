@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.PinpointDrive;
 
 @Autonomous(group = "Auto")
 @Config
-public class AUTO_LEFT extends LinearOpMode {
+public class AUTO_LEFT_0_4 extends LinearOpMode {
     @Override
     public void runOpMode() {
         Pose2d initialPose = new Pose2d(15, 63, Math.toRadians(90));
@@ -91,9 +91,12 @@ public class AUTO_LEFT extends LinearOpMode {
                 new ParallelAction(
                         elevator.elevateDown(ELE_BOT),
                         grabber.pitchForward(),
-                        traj2.build()
+                        traj2.build(),
+                        new SequentialAction(
+                                new SleepAction(1.5),
+                                elevator.rotateDown(ROT_DOWN)
+                        )
                 ),
-                elevator.rotateDown(ROT_DOWN),
                 // Grab first sample and go to basket
                 grabber.grab(),
                 elevator.rotateUp(ROT_UP),
@@ -102,7 +105,7 @@ public class AUTO_LEFT extends LinearOpMode {
                         elevator.rotateUp(ROT_UP),
                         grabber.pitchUp(),
                         new SequentialAction(
-                                new SleepAction(1),
+                                new SleepAction(0.5),
                                 elevator.elevateUp(ELE_BASKET_HIGH)
                         )
                 ),
@@ -127,7 +130,7 @@ public class AUTO_LEFT extends LinearOpMode {
                         grabber.pitchUp(),
                         grabber.roll(0),
                         new SequentialAction(
-                                new SleepAction(1),
+                                new SleepAction(0.5),
                                 elevator.elevateUp(ELE_BASKET_HIGH)
                         )
                 ),
@@ -152,8 +155,8 @@ public class AUTO_LEFT extends LinearOpMode {
                         grabber.pitchUp(),
                         grabber.roll(0),
                         new SequentialAction(
-                            new SleepAction(1),
-                            elevator.elevate(ELE_BASKET_HIGH)
+                                new SleepAction(1),
+                                elevator.elevate(ELE_BASKET_HIGH)
                         )
                 ),
                 // Release third sample
