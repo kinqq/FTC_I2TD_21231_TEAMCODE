@@ -31,7 +31,7 @@ public class MeepMeepTesting {
         Position position = Position.LEFT;
 
         if (position == Position.LEFT && alliance == Alliance.RED) {
-            myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(39, 63, Math.toRadians(-180)))
+            myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(39, 62, Math.toRadians(-180)))
                     .strafeToLinearHeading(new Vector2d(59, 59), Math.toRadians(-135))
                     .waitSeconds(1)
                     .strafeToLinearHeading(new Vector2d(49, 39.5), Math.toRadians(270))

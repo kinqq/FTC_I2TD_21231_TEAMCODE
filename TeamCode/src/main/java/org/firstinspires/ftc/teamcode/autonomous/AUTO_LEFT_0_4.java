@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.PinpointDrive;
 public class AUTO_LEFT_0_4 extends LinearOpMode {
     @Override
     public void runOpMode() {
-        Pose2d initialPose = new Pose2d(15, 63, Math.toRadians(90));
+        Pose2d initialPose = new Pose2d(39, 62, Math.toRadians(-180));
         Elevator elevator = new Elevator(hardwareMap);
         Grabber grabber = new Grabber(hardwareMap);
 
@@ -52,48 +52,52 @@ public class AUTO_LEFT_0_4 extends LinearOpMode {
             telemetry.update();
         }
 
-        Vector2d CHAMBER_POSE = new Vector2d(0, 26);
-        Vector2d BACKUP_POSE = new Vector2d(0, 40);
         Vector2d FIRST_SAMPLE_POSE = new Vector2d(49, 39.5);
         double FIRST_SAMPLE_HEADING = Math.toRadians(270);
         Vector2d BASKET_POSE = new Vector2d(59.5, 59.5);
         double BASKET_HEADING = Math.toRadians(-135);
         Vector2d SECOND_SAMPLE_POSE = new Vector2d(58.6, 39.5);
         double SECOND_SAMPLE_HEADING = Math.toRadians(270);
-        Vector2d THIRD_SAMPLE_POSE = new Vector2d(53.5, 24.5);
-        double THIRD_SAMPLE_HEADING = Math.toRadians(0);
-        Pose2d PARKING_POSE = new Pose2d(22, 10, Math.toRadians(180));
-        double PARKING_TANGENT = Math.toRadians(180);
+        Vector2d THIRD_SAMPLE_POSE = new Vector2d(57, 35);
+        double THIRD_SAMPLE_HEADING = Math.toRadians(-45);
+        Vector2d SUBMERSIBLE_POSE = new Vector2d(22, 10);
+        double SUBMERSIBLE_TANGENT = Math.toRadians(180);
 
-        TrajectoryActionBuilder traj1, traj2, traj3, traj4, traj5, traj6, traj7, traj8;
+        TrajectoryActionBuilder traj1, traj2, traj3, traj4, traj5, traj6, traj7, traj8, traj9;
 
-        traj1 = drive.actionBuilder(initialPose).strafeTo(CHAMBER_POSE);
-        traj2 = traj1.endTrajectory().fresh().strafeTo(BACKUP_POSE).strafeToLinearHeading(FIRST_SAMPLE_POSE, FIRST_SAMPLE_HEADING);
+        traj1 = drive.actionBuilder(initialPose).strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
+        traj2 = traj1.endTrajectory().fresh().strafeToLinearHeading(FIRST_SAMPLE_POSE, FIRST_SAMPLE_HEADING);
         traj3 = traj2.endTrajectory().fresh().strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
         traj4 = traj3.endTrajectory().fresh().strafeToLinearHeading(SECOND_SAMPLE_POSE, SECOND_SAMPLE_HEADING);
         traj5 = traj4.endTrajectory().fresh().strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
         traj6 = traj5.endTrajectory().fresh().strafeToLinearHeading(THIRD_SAMPLE_POSE, THIRD_SAMPLE_HEADING);
         traj7 = traj6.endTrajectory().fresh().strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
-        traj8 = traj7.endTrajectory().fresh().splineToLinearHeading(PARKING_POSE, PARKING_TANGENT);
+        traj8 = traj7.endTrajectory().fresh().splineTo(SUBMERSIBLE_POSE, SUBMERSIBLE_TANGENT);
+        traj9 = traj8.endTrajectory().fresh().setTangent(0).strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
 
         Actions.runBlocking(new SequentialAction(
-                // Clip Pre-loaded Specimen
+                // Go to basket
                 new ParallelAction(
                         traj1.build(),
-                        grabber.pitchBackward(),
-                        grabber.grab(),
                         elevator.rotateUp(ROT_UP),
-                        elevator.elevateUp(ELE_CHAMBER_HIGH)
+                        grabber.pitchUp(),
+                        new SequentialAction(
+                                new SleepAction(0.3),
+                                elevator.elevateUp(ELE_BASKET_HIGH)
+                        )
                 ),
-                elevator.elevateDown(ELE_CHAMBER_HIGH_DROP),
-                grabber.release(),
+                // Release preload sample
+                new SequentialAction(
+                        grabber.pitchBackward(),
+                        grabber.release()
+                ),
                 // Go to first sample
                 new ParallelAction(
                         elevator.elevateDown(ELE_BOT),
                         grabber.pitchForward(),
                         traj2.build(),
                         new SequentialAction(
-                                new SleepAction(1.5),
+                                new SleepAction(1),
                                 elevator.rotateDown(ROT_DOWN)
                         )
                 ),

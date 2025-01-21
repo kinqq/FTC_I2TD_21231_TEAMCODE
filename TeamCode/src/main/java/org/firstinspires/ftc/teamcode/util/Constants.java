@@ -14,6 +14,7 @@ public class Constants {
     public static double GRABBER_OPEN = 0.195;
 
     public static double PITCH_FORWARD = 0.98;
+    public static double PITCH_PARALLEL = 0.75;
     public static double PITCH_UP = 0.65;
     public static double PITCH_BACKWARD = 0.38;
     public static double PITCH_GRAB = 0.75;

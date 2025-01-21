@@ -77,6 +77,7 @@ public class Elevator {
             }
         }
     }
+
     public Action rotateUp(int target) {
         return new RotateUp(target);
     }
@@ -94,8 +95,8 @@ public class Elevator {
             if (!initialized) {
                 leftEle.setPower(1);
                 rightEle.setPower(1);
-                leftEle.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                rightEle.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                leftEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                rightEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 initialized = true;
             }
 
@@ -105,12 +106,13 @@ public class Elevator {
             } else {
                 leftEle.setPower(0);
                 rightEle.setPower(0);
-                leftEle.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                rightEle.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                leftEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                rightEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 return false;
             }
         }
     }
+
     public Action elevateUp(int target) {
         return new ElevateUp(target);
     }
@@ -118,6 +120,7 @@ public class Elevator {
     public class ElevateDown implements Action {
         private boolean initialized = false;
         private int target;
+
         public ElevateDown(int target) {
             this.target = target;
         }
@@ -127,8 +130,8 @@ public class Elevator {
             if (!initialized) {
                 leftEle.setPower(-1);
                 rightEle.setPower(-1);
-                leftEle.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                rightEle.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                leftEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                rightEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 initialized = true;
             }
 
@@ -138,12 +141,13 @@ public class Elevator {
             } else {
                 leftEle.setPower(0);
                 rightEle.setPower(0);
-                leftEle.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                rightEle.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                leftEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                rightEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 return false;
             }
         }
     }
+
     public Action elevateDown(int target) {
         return new ElevateDown(target);
     }
@@ -174,6 +178,7 @@ public class Elevator {
             }
         }
     }
+
     public Action rotateDown(int target) {
         return new RotateDown(target);
     }

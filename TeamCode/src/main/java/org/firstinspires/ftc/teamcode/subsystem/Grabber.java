@@ -40,11 +40,12 @@ public class Grabber {
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
                 timer.reset();
-                double posErrorTick = Math.abs(grabber.getPosition() - target);
+                double posErrorTick = Math.abs(grabber.getPosition() - target); // tick = angle / max_angle
 
-                // Tuned for speed servo with 4.8V
-                double MAX_TRAVEL = Math.toRadians(300);
-                double SEC_PER_RAD = 0.28 / Math.toRadians(60); //TODO: This is for torque servo
+                // Tuned for axon servo with 6.0V
+                //TODO: Use Rev SPM.
+                double MAX_TRAVEL = Math.toRadians(355); // tick = angle / max_angle
+                double SEC_PER_RAD = 0.09 / Math.toRadians(60);
                 double TIME_FACTOR = 1.0;
                 expectedTime = posErrorTick * MAX_TRAVEL * SEC_PER_RAD * TIME_FACTOR;
 
@@ -124,6 +125,10 @@ public class Grabber {
 
     public Action pitchForward() {
         return new Pitch(PITCH_FORWARD);
+    }
+
+    public Action pitchParallel() {
+        return new Pitch(PITCH_PARALLEL);
     }
 
     public Action pitchUp() {
