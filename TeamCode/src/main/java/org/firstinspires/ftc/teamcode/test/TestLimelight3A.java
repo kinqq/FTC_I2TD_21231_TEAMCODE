@@ -54,8 +54,10 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.subsystem.Grabber;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -91,19 +93,16 @@ public class TestLimelight3A extends LinearOpMode {
     private Limelight3A limelight;
     private ServoImplEx roll;
 
-    List<Double> angleAvg = new ArrayList<>();
-
     @Override
     public void runOpMode() throws InterruptedException
     {
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
         roll = (ServoImplEx) hardwareMap.get(Servo.class, "roll");
-        roll.setPwmRange(new PwmControl.PwmRange(500, 2500));
 
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        telemetry.setMsTransmissionInterval(11);
 
+        limelight.setPollRateHz(100);
         limelight.pipelineSwitch(0);
 
         /*
@@ -124,8 +123,10 @@ public class TestLimelight3A extends LinearOpMode {
             telemetry.addData("Pipeline", "Index: %d, Type: %s",
                     status.getPipelineIndex(), status.getPipelineType());
 
-            LLResult result = limelight.getLatestResult();
+            double[] inputs = {};
+            limelight.updatePythonInputs(inputs);
 
+            LLResult result = limelight.getLatestResult();
             if (result != null) {
                 // Access general information
                 double captureLatency = result.getCaptureLatency();
@@ -134,102 +135,16 @@ public class TestLimelight3A extends LinearOpMode {
                 telemetry.addData("LL Latency", captureLatency + targetingLatency);
                 telemetry.addData("Parse Latency", parseLatency);
 
-                if (result.isValid()) {
-                    telemetry.addData("tx", result.getTx());
-//                    telemetry.addData("txnc", result.getTxNC());
-                    telemetry.addData("ty", result.getTy());
-//                    telemetry.addData("tync", result.getTyNC());
-
-                    // Access color results
-                    List<LLResultTypes.ColorResult> colorResults = result.getColorResults();
-
-                    LLResultTypes.ColorResult cr = colorResults.get(0);
-                    List<List<Double>> targetCorners = cr.getTargetCorners();
-                    List<List<Double>> ogcorners = cr.getTargetCorners();
-                    List<List<Double>> corners = new ArrayList<>();
-
-                    if (targetCorners.size() == 4)
-                        corners = targetCorners;
-                    else if (targetCorners.size() > 4){
-                        // Sort by x
-                        targetCorners.sort(Comparator.comparingDouble(point -> point.get(0)));
-                        corners.add(targetCorners.get(0)); // smallest x
-                        corners.add(targetCorners.get(targetCorners.size() - 1)); // smallest y
-
-                        // Sort by y
-                        targetCorners.sort(Comparator.comparingDouble(point -> point.get(1)));
-                        corners.add(targetCorners.get(0)); // smallest y
-                        corners.add(targetCorners.get(targetCorners.size() - 1)); // smallest y
-                    }
-
-                    if (!corners.isEmpty()) {
-                        corners.sort(Comparator.comparingDouble(point -> point.get(1)));
-
-                        List<Double> point1 = corners.get(0); // smallest y
-                        List<Double> point2 = corners.get(1); // second smallest y
-
-                        double theta;
-                        if (point1.get(0) > point2.get(0)) {
-                            theta = 1;
-                        } else {
-                            theta = -1;
-                        }
-
-                        // Calculate the angle in radians
-                        theta *= Math.atan(Math.abs(point1.get(1) - point2.get(1)) / Math.abs(point1.get(0) - point2.get(0)));
-
-                        // Using distance formula
-                        double dist1 = Math.hypot(point1.get(0) - point2.get(0), point1.get(1) - point2.get(1));
-                        int adjIdx = ogcorners.indexOf(point2);
-                        ++adjIdx;
-                        adjIdx %= 3;
-                        List<Double> adjacentPoint = ogcorners.get(adjIdx);
-                        double dist2 = Math.hypot(point2.get(0) - adjacentPoint.get(0), point2.get(1) - adjacentPoint.get(1));
-
-//                            telemetry.addData("dist1", dist1);
-//                            telemetry.addData("dist2", dist2);
-
-                        if (Math.abs(dist1 - dist2) <= 50) {
-                            theta += Math.PI / 2; // adding 90 degrees in radians
-                        }
-
-                        if (theta < 0) {
-                            theta += Math.PI;
-                        }
-
-                        if (theta >= Math.PI / 2) {
-                            theta -= Math.PI;
-                        }
-
-                        // Converting angle to degrees for better understanding
-                        double angleInDegrees = Math.toDegrees(theta);
-                        telemetry.addData("Angle", angleInDegrees);
-
-                        double TICK = ROLL_TICK_ON_ZERO + ROLL_TICK_PER_DEG * angleInDegrees;
-                        if (!Double.isNaN(angleInDegrees)) {
-                            roll.setPosition(TICK);
-                            angleAvg.add(angleInDegrees);
-                        }
-
-                        if (angleAvg.size() > 50) {
-                            angleAvg.remove(0);
-                        }
-
-                        double avg = 0;
-                        if (!angleAvg.isEmpty()) {
-                            for (double angle : angleAvg) {
-                                avg += angle;
-                            }
-                            avg /= angleAvg.size();
-                        }
-                        telemetry.addData("AngleAVG", avg);
-                        telemetry.addLine(targetCorners.toString());
-                        telemetry.addData("Size", targetCorners.size());
-                        telemetry.addData("ColorY", "X: %.2f, Y: %.2f", cr.getTargetXDegrees(), cr.getTargetYDegrees());
-                        telemetry.addData("ColorN", "X: %.2f, Y: %.2f", cr.getTargetXDegreesNoCrosshair(), cr.getTargetYDegreesNoCrosshair());
-                        telemetry.addData("Pixels", "X: %.2f, Y: %.2f", cr.getTargetXPixels(), cr.getTargetYPixels());
-                    }
+                double[] pythonOutput = result.getPythonOutput();
+                double angle = pythonOutput[0];
+                if (angle != -1 && angle != 0) {
+                    angle -= 90;
+                    angle *= -1;
+                    roll.setPosition(ROLL_TICK_ON_ZERO + angle * ROLL_TICK_PER_DEG);
                 }
+                telemetry.addLine(Arrays.toString(pythonOutput));
+                telemetry.addData("length", pythonOutput.length);
+                telemetry.addData("angle", angle);
             } else {
                 telemetry.addData("Limelight", "No data available");
             }
