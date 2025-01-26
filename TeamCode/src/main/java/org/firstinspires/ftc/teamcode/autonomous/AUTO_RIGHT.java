@@ -7,7 +7,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -52,14 +51,17 @@ public class AUTO_RIGHT extends LinearOpMode {
             telemetry.update();
         }
 
-        Vector2d PRELOAD_SPECIMEN_CLIP = new Vector2d(-3, 34);
-        Vector2d HP_SPECIMEN_POSE = new Vector2d(-37, 54);
-        Vector2d HP_SPECIMEN_CLIP = new Vector2d(-1, 29.4);
-        Vector2d FIRST_SPECIMEN_CLIP = new Vector2d(1, 29.4);
-        Vector2d SECOND_SPECIMEN_CLIP = new Vector2d(3, 29.4);
-        Vector2d THIRD_SPECIMEN_CLIP = new Vector2d(3, 29.4);
+        Vector2d PRELOAD_SPECIMEN_CLIP = new Vector2d(-4, 29.4);
+        Vector2d HP_SPECIMEN_POSE = new Vector2d(-37, 55);
+        Vector2d HP_SPECIMEN_CONTROL = new Vector2d(-14, 45);
+        Vector2d HP_SPECIMEN_CLIP = new Vector2d(-2.5, 29.4);
+        Vector2d CLIP_CONTROL = new Vector2d(-6, 40);
+        Vector2d GRAB_CONTROL = new Vector2d(-8, 40);
+        Vector2d FIRST_SPECIMEN_CLIP = new Vector2d(-1, 29.4);
+        Vector2d SECOND_SPECIMEN_CLIP = new Vector2d(0.5, 29.4);
+        Vector2d THIRD_SPECIMEN_CLIP = new Vector2d(2, 29.4);
         Vector2d PARKING_POSE = new Vector2d(-40, 60);
-        double PARKING_HEADING = Math.toRadians(140);
+        double PARKING_HEADING = Math.toRadians(180);
 
         TrajectoryActionBuilder traj1, traj2, traj3, traj4, traj5, traj6, traj7, traj8, traj9, traj10, traj11, traj12;
 
@@ -70,20 +72,33 @@ public class AUTO_RIGHT extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(-42, 12), Math.toRadians(90))
                 .splineToConstantHeading(new Vector2d(-42, 56), Math.toRadians(90))
                 .splineToConstantHeading(new Vector2d(-42, 25), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(-51, 15), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(-51, 56), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(-51, 25), Math.toRadians(-90))
-                .splineToConstantHeading(new Vector2d(-61, 15), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(-61, 56), Math.toRadians(90));
-        traj3 = traj2.endTrajectory().fresh().strafeToLinearHeading(HP_SPECIMEN_POSE, Math.toRadians(90));
-        traj4 = traj3.endTrajectory().fresh().strafeTo(HP_SPECIMEN_CLIP);
-        traj5 = traj4.endTrajectory().fresh().strafeTo(HP_SPECIMEN_POSE);
-        traj6 = traj5.endTrajectory().fresh().strafeTo(FIRST_SPECIMEN_CLIP);
-        traj7 = traj6.endTrajectory().fresh().strafeTo(HP_SPECIMEN_POSE);
-        traj8 = traj7.endTrajectory().fresh().strafeTo(SECOND_SPECIMEN_CLIP);
-        traj9 = traj8.endTrajectory().fresh().strafeTo(HP_SPECIMEN_POSE);
-        traj10 = traj9.endTrajectory().fresh().strafeTo(THIRD_SPECIMEN_CLIP);
-        traj11 = traj10.endTrajectory().fresh().strafeToLinearHeading(PARKING_POSE, PARKING_HEADING);
+                .splineToConstantHeading(new Vector2d(-52, 15), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-52, 56), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-52, 25), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-62, 15), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(-62, 56), Math.toRadians(90));
+        traj3 = traj2.endTrajectory().fresh()
+                .strafeToConstantHeading(HP_SPECIMEN_CONTROL)
+                .splineToConstantHeading(HP_SPECIMEN_CLIP, Math.toRadians(-75));
+        traj4 = traj3.endTrajectory().fresh()
+                .strafeToConstantHeading(GRAB_CONTROL)
+                .splineToConstantHeading(HP_SPECIMEN_POSE, Math.toRadians(90));
+        traj5 = traj4.endTrajectory().fresh()
+                .strafeToConstantHeading(CLIP_CONTROL)
+                .splineToConstantHeading(FIRST_SPECIMEN_CLIP, Math.toRadians(-75));
+        traj6 = traj5.endTrajectory().fresh()
+                .strafeToConstantHeading(GRAB_CONTROL)
+                .splineToConstantHeading(HP_SPECIMEN_POSE, Math.toRadians(90));
+        traj7 = traj6.endTrajectory().fresh()
+                .strafeToConstantHeading(CLIP_CONTROL)
+                .splineToConstantHeading(SECOND_SPECIMEN_CLIP, Math.toRadians(-75));
+        traj8 = traj7.endTrajectory().fresh()
+                .strafeToConstantHeading(GRAB_CONTROL)
+                .splineToConstantHeading(HP_SPECIMEN_POSE, Math.toRadians(90));
+        traj9 = traj8.endTrajectory().fresh()
+                .strafeToConstantHeading(CLIP_CONTROL)
+                .splineToConstantHeading(THIRD_SPECIMEN_CLIP, Math.toRadians(-75));
+        traj10 = traj9.endTrajectory().fresh().strafeToLinearHeading(PARKING_POSE, PARKING_HEADING);
 
         Actions.runBlocking(
                 new SequentialAction(
@@ -102,15 +117,15 @@ public class AUTO_RIGHT extends LinearOpMode {
                                 elevator.elevateDown(ELE_BOT)
                         ),
                         // Grab HP Spec
-                        traj3.build(),
                         new ParallelAction(
                                 elevator.rotateDown(ROT_GRAB),
                                 grabber.pitchGrab(),
+                                grabber.release(),
                                 grabber.roll(0)
                         ),
                         grabber.grab(),
                         new ParallelAction(
-                                traj4.build(),
+                                traj3.build(),
                                 elevator.elevateUp(ELE_CHAMBER_HIGH),
                                 grabber.pitchBackward(),
                                 grabber.roll(180)
@@ -120,14 +135,14 @@ public class AUTO_RIGHT extends LinearOpMode {
 
                         // Grab 1st Spec
                         new ParallelAction(
-                                traj5.build(),
+                                traj4.build(),
                                 elevator.rotateDown(ROT_GRAB),
                                 grabber.pitchGrab(),
                                 grabber.roll(0)
                         ),
                         grabber.grab(),
                         new ParallelAction(
-                                traj6.build(),
+                                traj5.build(),
                                 elevator.elevateUp(ELE_CHAMBER_HIGH),
                                 grabber.pitchBackward(),
                                 grabber.roll(180)
@@ -137,14 +152,14 @@ public class AUTO_RIGHT extends LinearOpMode {
 
                         // Grab 2nd Spec
                         new ParallelAction(
-                                traj7.build(),
+                                traj6.build(),
                                 elevator.rotateDown(ROT_GRAB),
                                 grabber.pitchGrab(),
                                 grabber.roll(0)
                         ),
                         grabber.grab(),
                         new ParallelAction(
-                                traj8.build(),
+                                traj7.build(),
                                 elevator.elevateUp(ELE_CHAMBER_HIGH),
                                 grabber.pitchBackward(),
                                 grabber.roll(180)
@@ -154,14 +169,14 @@ public class AUTO_RIGHT extends LinearOpMode {
 
                         // Grab 3rd Spec
                         new ParallelAction(
-                                traj9.build(),
+                                traj8.build(),
                                 elevator.rotateDown(ROT_GRAB),
                                 grabber.pitchGrab(),
                                 grabber.roll(0)
                         ),
                         grabber.grab(),
                         new ParallelAction(
-                                traj10.build(),
+                                traj9.build(),
                                 elevator.elevateUp(ELE_CHAMBER_HIGH),
                                 grabber.pitchBackward(),
                                 grabber.roll(180)
@@ -171,10 +186,9 @@ public class AUTO_RIGHT extends LinearOpMode {
 
                         // Park
                         new ParallelAction(
-                                traj11.build(),
+                                traj10.build(),
                                 elevator.elevate(ELE_BOT),
-                                grabber.pitchForward(),
-                                grabber.release()
+                                grabber.pitchForward()
                         )
                 )
         );
