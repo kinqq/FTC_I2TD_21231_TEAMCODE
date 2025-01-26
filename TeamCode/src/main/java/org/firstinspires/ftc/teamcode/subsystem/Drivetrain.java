@@ -34,6 +34,7 @@ public class Drivetrain {
 
         dtMotors = new DcMotorGroup(_frontLeftMotor, _frontRightMotor, _backLeftMotor, _backRightMotor);
         dtMotors.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        dtMotors.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void drive(double strafeSpeed,

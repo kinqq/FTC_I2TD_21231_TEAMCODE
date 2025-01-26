@@ -18,15 +18,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Config
 public class Elevator {
     private final DcMotorEx leftEle, rightEle;
-    private final DcMotorEx leftRot;
+    private final DcMotorEx leftRot, rightRot;
     public boolean isRigging = false;
     private PIDController rotController;
     private PIDFController eleController;
 
+    @Config
     public static class rotPIDF {
-        public static double pUp = 0.006, i = 0, d = 0, f = 0.10, pDown = 0.0015;
+        public static double pUp = 0.005, i = 0, d = 0, f = 0.10, pDown = 0.0015;
     }
 
+    @Config
     public static class elePIDF {
         public static double p = 0.006, i = 0, d = 0, f = 0.00012;
     }
@@ -35,16 +37,21 @@ public class Elevator {
         leftEle = hardwareMap.get(DcMotorEx.class, "leftEle");
         rightEle = hardwareMap.get(DcMotorEx.class, "rightEle");
         leftRot = hardwareMap.get(DcMotorEx.class, "leftRot");
+        rightRot = hardwareMap.get(DcMotorEx.class, "rightRot");
 
         leftEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightRot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         leftEle.setPower(0);
         rightEle.setPower(0);
         leftRot.setPower(0);
+        rightRot.setPower(0);
 
         rightEle.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightRot.setDirection(DcMotorSimple.Direction.REVERSE);
 
         rotController = new PIDController(rotPIDF.pUp, rotPIDF.i, rotPIDF.d);
         eleController = new PIDFController(elePIDF.p, elePIDF.i, elePIDF.d, elePIDF.f);
@@ -62,7 +69,9 @@ public class Elevator {
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
                 leftRot.setPower(-0.8);
+                rightRot.setPower(-0.8);
                 leftRot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                rightRot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 initialized = true;
             }
 
@@ -72,7 +81,9 @@ public class Elevator {
                 return true;
             } else {
                 leftRot.setPower(0);
+                rightRot.setPower(0);
                 leftRot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                rightRot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 return false;
             }
         }
@@ -164,7 +175,9 @@ public class Elevator {
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
                 leftRot.setPower(0.4);
+                rightRot.setPower(0.4);
                 leftRot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                rightRot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 initialized = true;
             }
 
@@ -174,6 +187,7 @@ public class Elevator {
                 return true;
             } else {
                 leftRot.setPower(0);
+                rightRot.setPower(0);
                 return false;
             }
         }
@@ -212,6 +226,7 @@ public class Elevator {
 
     public void initRot() {
         leftRot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRot.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void initEle() {
@@ -249,7 +264,9 @@ public class Elevator {
         double power = pid + ff;
 
         leftRot.setPower(power);
+        rightRot.setPower(power);
         leftRot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightRot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void rigging() {
@@ -260,8 +277,11 @@ public class Elevator {
         rightEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         leftRot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightRot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightRot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftRot.setPower(0);
+        rightRot.setPower(0);
 
         isRigging = true;
     }
@@ -276,6 +296,7 @@ public class Elevator {
         rightEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         leftRot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightRot.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public int getElevatorPosition() {

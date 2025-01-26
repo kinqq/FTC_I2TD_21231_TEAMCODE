@@ -46,6 +46,7 @@ public class TestPIDF extends OpMode {
         double ff = -Math.sin(Math.toRadians(arm_pos / ticks_in_degree)) * f;
         double power = pid + ff;
         arm_motor1.setPower(power);
+        arm_motor2.setPower(power);
 
         telemetry.addData("pos1", arm_pos);
         telemetry.addData("pos2", arm_motor2.getCurrentPosition());

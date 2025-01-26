@@ -10,7 +10,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
@@ -72,8 +71,9 @@ public class DriveControl extends OpMode {
     @Override
     public void start() {
         grabber.grabber.setPosition(GRABBER_CLOSE);
-        grabber.pitch.setPosition(PITCH_FORWARD);
+        grabber.pitch.setPosition(PITCH_SUBMERSIBLE);
         grabber.roll.setPosition(ROLL_TICK_ON_ZERO);
+        grabber.pivot.setPosition(PIVOT_SUBMERSIBLE);
     }
 
     @Override
@@ -101,18 +101,11 @@ public class DriveControl extends OpMode {
         drive.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
 
         if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_DOWN) && elePos == ELE_BOT) {
-            runningActions.add(new ParallelAction(grabber.release(), grabber.pitchForward()));
+            runningActions.add(new ParallelAction(grabber.readySampleGrab(), grabber.release()));
             rotPos = ROT_DOWN;
         }
         if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
             rotPos = ROT_UP;
-        }
-
-        if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
-            runningActions.add(new ParallelAction(grabber.pitchUp()));
-        }
-        if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
-            runningActions.add(new ParallelAction(grabber.pitchForward()));
         }
 
         if (gamepad1.dpad_left) {
@@ -154,40 +147,35 @@ public class DriveControl extends OpMode {
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.B)) {
                 elePos = ELE_BOT;
-                rotPos = ROT_GRAB;
+                rotPos = ROT_SPECIMEN;
                 rollAngle = 0;
-                runningActions.add(new ParallelAction(
-                        grabber.pitchGrab(),
-                        grabber.release()
-                ));
+                runningActions.add(
+                        grabber.readySpecimenGrab()
+                );
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.X)) {
                 elePos = elePos == ELE_CHAMBER_HIGH ? ELE_CHAMBER_HIGH_DROP : ELE_CHAMBER_HIGH;
                 rollAngle = 180;
                 rotPos = ROT_UP;
-                runningActions.add(grabber.pitchBackward());
+                runningActions.add(grabber.readySpecimenClip());
             }
         } else if (eleControlMode == EleControlMode.BASKET) {
             if (driver2.wasJustPressed(GamepadKeys.Button.A)) {
                 elePos = ELE_BOT;
                 rollAngle = 0;
-                runningActions.add(new ParallelAction(
-                        grabber.pitchForward()
-                ));
+                runningActions.add(
+                        grabber.readySampleGrab()
+                );
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.B)) {
                 elePos = ELE_BASKET_LOW;
                 rollAngle = 0;
-                runningActions.add(new ParallelAction(
-                        grabber.pitchUp()
-                ));
+                runningActions.add(grabber.basketReady());
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.X)) {
                 elePos = ELE_BASKET_HIGH;
                 rollAngle = 0;
-                runningActions.add(new ParallelAction(
-                        grabber.pitchUp()
-                ));
+                runningActions.add(grabber.basketReady());
             }
         }
 
@@ -196,14 +184,16 @@ public class DriveControl extends OpMode {
             elevator.rotatePIDF(rotPos);
         }
 
-        if (driver2LeftTrigger.wasJustPressed())
-            runningActions.add(grabber.grab());
-        if (driver2RightTrigger.wasJustPressed()) {
-            if (eleControlMode == EleControlMode.BASKET && (elePos == ELE_BASKET_HIGH || elePos == ELE_BASKET_LOW)) {
-                runningActions.add(new SequentialAction(grabber.pitchBackward(), grabber.release()));
-            } else {
-                runningActions.add(grabber.release());
+        if (driver2LeftTrigger.wasJustPressed()) {
+            if (rotPos == ROT_DOWN) {
+                runningActions.add(grabber.performSampleGrab());
             }
+            else {
+                runningActions.add(grabber.grab());
+            }
+        }
+        if (driver2RightTrigger.wasJustPressed()) {
+            runningActions.add(grabber.release());
         }
 
         if (driver2.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER))

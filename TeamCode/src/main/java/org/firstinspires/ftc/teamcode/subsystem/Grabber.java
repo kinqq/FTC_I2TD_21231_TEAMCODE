@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -14,16 +16,18 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 public class Grabber {
-    public final ServoImplEx grabber, pitch, roll;
+    public final ServoImplEx grabber, pitch, roll, pivot;
 
     public Grabber(HardwareMap hardwareMap) {
         grabber = (ServoImplEx) hardwareMap.get(Servo.class, "grabber");
         pitch = (ServoImplEx) hardwareMap.get(Servo.class, "pitch");
         roll = (ServoImplEx) hardwareMap.get(Servo.class, "roll");
+        pivot = (ServoImplEx) hardwareMap.get(Servo.class, "pivot");
 
         grabber.setPwmRange(new PwmControl.PwmRange(500, 2500));
         pitch.setPwmRange(new PwmControl.PwmRange(500, 2500));
         roll.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        pivot.setPwmRange(new PwmControl.PwmRange(500, 2500));
     }
 
     public class Grab implements Action {
@@ -115,6 +119,35 @@ public class Grabber {
         }
     }
 
+    public class Pivot implements Action {
+        private boolean initialized = false;
+        private final ElapsedTime timer = new ElapsedTime();
+        private double expectedTime;
+        private final double target;
+
+        public Pivot(double target) {
+            this.target = target;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                timer.reset();
+                double posErrorTick = Math.abs(pivot.getPosition() - target);
+
+                double MAX_TRAVEL = Math.toRadians(355);
+                double SEC_PER_RAD = 0.110 / Math.toRadians(60); //TODO: Tune this
+                double TIME_FACTOR = 1.0;
+                expectedTime = posErrorTick * MAX_TRAVEL * SEC_PER_RAD * TIME_FACTOR;
+
+                initialized = true;
+            }
+
+            pivot.setPosition(target);
+            return timer.seconds() <= expectedTime;
+        }
+    }
+
     public Action grab() {
         return new Grab(GRABBER_CLOSE);
     }
@@ -147,12 +180,51 @@ public class Grabber {
         return new Pitch(PITCH_GRAB);
     }
 
+    public Action readySampleGrab() {
+        return new ParallelAction(
+                new Pitch(PITCH_SUBMERSIBLE),
+                new Pivot(PIVOT_SUBMERSIBLE)
+        );
+    }
+
+    public Action performSampleGrab() {
+        return new SequentialAction(
+                new ParallelAction(
+                        new Pitch(PITCH_DOWN),
+                        new Pivot(PIVOT_DOWN)
+                ),
+                new Grab(GRABBER_CLOSE),
+                readySampleGrab()
+        );
+    }
+
+    public Action basketReady() {
+        return new ParallelAction(
+                new Pitch(PITCH_BASKET),
+                new Pivot(PIVOT_BASKET)
+        );
+    }
+
+    public Action readySpecimenGrab() {
+        return new ParallelAction(
+                new Pitch(PITCH_SPECIMEN),
+                new Pivot(PIVOT_SPECIMEN),
+                new Grab(GRABBER_OPEN)
+        );
+    }
+
+    public Action readySpecimenClip() {
+        return new ParallelAction(
+                new Pitch(PITCH_BASKET),
+                new Pivot(PIVOT_BASKET)
+        );
+    }
+
     public Action roll(double degree) {
-        double MIN_DEGREE = -90.0;
+        double MIN_DEGREE = -180.0;
         double MAX_DEGREE = 180.0;
 
         degree = Range.clip(degree, MIN_DEGREE, MAX_DEGREE);
-
 
         // Convert the adjusted degree to ticks
         double TICK = ROLL_TICK_ON_ZERO + ROLL_TICK_PER_DEG * degree;
