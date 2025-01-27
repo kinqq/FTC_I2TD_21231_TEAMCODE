@@ -19,7 +19,6 @@ import org.firstinspires.ftc.teamcode.subsystem.Grabber;
 import org.firstinspires.ftc.teamcode.PinpointDrive;
 
 @Autonomous(group = "Auto")
-@Config
 public class AUTO_LEFT_1_3 extends LinearOpMode {
     @Override
     public void runOpMode() {

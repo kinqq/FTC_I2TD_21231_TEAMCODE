@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.util.HSV;
 import org.firstinspires.ftc.teamcode.util.LED;
 
 @TeleOp(name = "TestColorSensor", group = "Test")
-@Config
 public class TestColorSensor extends LinearOpMode {
     NormalizedColorSensor colorSensor;
     LED led;

@@ -15,7 +15,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 @TeleOp(name = "TestDrive", group = "Test")
-@Config
 public class TestDrive extends OpMode {
     private GamepadEx driver1, driver2;
     private int armPos = ROT_UP;

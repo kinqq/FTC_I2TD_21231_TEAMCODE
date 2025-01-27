@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @TeleOp(name = "OneDriveControl", group = "TeleOp")
-@Config
 public class OneDriveControl extends OpMode {
     private GamepadEx driver1, driver2;
     private FtcDashboard dash = FtcDashboard.getInstance();

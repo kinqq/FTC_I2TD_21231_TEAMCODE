@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @TeleOp(name = "DriveControl", group = "TeleOp")
-@Config
 public class DriveControl extends OpMode {
     private GamepadEx driver1, driver2;
     private FtcDashboard dash = FtcDashboard.getInstance();

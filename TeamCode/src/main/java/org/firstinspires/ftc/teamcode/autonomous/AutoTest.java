@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.subsystem.Grabber;
 import org.firstinspires.ftc.teamcode.PinpointDrive;
 
 @Autonomous(group = "Auto")
-@Config
 public class AutoTest extends LinearOpMode {
     @Override
     public void runOpMode() {

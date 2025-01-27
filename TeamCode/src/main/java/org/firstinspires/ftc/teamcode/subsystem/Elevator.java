@@ -15,7 +15,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Config
 public class Elevator {
     private final DcMotorEx leftEle, rightEle;
     private final DcMotorEx leftRot, rightRot;

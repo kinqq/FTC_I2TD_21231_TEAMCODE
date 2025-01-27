@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import static org.firstinspires.ftc.teamcode.test.TestMap.*;
 
 @Autonomous(group = "AutoWAIT")
-@Config
 public class AutoWAIT extends LinearOpMode {
 
     @Override
