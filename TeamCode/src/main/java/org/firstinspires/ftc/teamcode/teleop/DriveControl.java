@@ -145,17 +145,29 @@ public class DriveControl extends OpMode {
                 runningActions.add(grabber.grab());
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.B)) {
+//                elePos = ELE_BOT;
+//                rotPos = ROT_SPECIMEN;
+//                rollAngle = 0;
+//                runningActions.add(
+//                        grabber.readySpecimenGrab()
+//                );
+
                 elePos = ELE_BOT;
-                rotPos = ROT_SPECIMEN;
+                rotPos = ROT_UP;
                 rollAngle = 0;
                 runningActions.add(
                         grabber.readySpecimenGrab()
                 );
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.X)) {
-                elePos = elePos == ELE_CHAMBER_HIGH ? ELE_CHAMBER_HIGH_DROP : ELE_CHAMBER_HIGH;
+//                elePos = elePos == ELE_CHAMBER_HIGH ? ELE_CHAMBER_HIGH_DROP : ELE_CHAMBER_HIGH;
+//                rollAngle = 180;
+//                rotPos = ROT_UP;
+//                runningActions.add(grabber.readySpecimenClip());
+
+                elePos = ELE_CLIP;
                 rollAngle = 180;
-                rotPos = ROT_UP;
+                rotPos = ROT_CLIP;
                 runningActions.add(grabber.readySpecimenClip());
             }
         } else if (eleControlMode == EleControlMode.BASKET) {

@@ -201,7 +201,8 @@ public class Grabber {
     public Action basketReady() {
         return new ParallelAction(
                 new Pitch(PITCH_BASKET),
-                new Pivot(PIVOT_BASKET)
+                new Pivot(PIVOT_BASKET),
+                roll(0)
         );
     }
 
@@ -209,14 +210,16 @@ public class Grabber {
         return new ParallelAction(
                 new Pitch(PITCH_SPECIMEN),
                 new Pivot(PIVOT_SPECIMEN),
-                new Grab(GRABBER_OPEN)
+                new Grab(GRABBER_OPEN),
+                roll(0)
         );
     }
 
     public Action readySpecimenClip() {
         return new ParallelAction(
-                new Pitch(PITCH_BASKET),
-                new Pivot(PIVOT_BASKET)
+                new Pitch(PITCH_CLIP),
+                new Pivot(PIVOT_CLIP),
+                roll(180)
         );
     }
 

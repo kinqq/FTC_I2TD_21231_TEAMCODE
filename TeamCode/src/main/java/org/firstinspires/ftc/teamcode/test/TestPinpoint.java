@@ -63,7 +63,7 @@ For support, contact tech@gobilda.com
 -Ethan Doak
  */
 
-@TeleOp(name="Test Pinpoint", group="Test")
+@TeleOp(name="TestPinpoint", group="Test")
 //@Disabled
 
 public class TestPinpoint extends LinearOpMode {
@@ -89,7 +89,7 @@ public class TestPinpoint extends LinearOpMode {
         the tracking point the Y (strafe) odometry pod is. forward of center is a positive number,
         backwards is a negative number.
          */
-        odo.setOffsets(-1.8253699838065023, -2.0703880227832605); //these are tuned for 3110-0002-0001 Product Insight #1
+        odo.setOffsets(-3.45, -3.65); //these are tuned for 3110-0002-0001 Product Insight #1
 
         /*
         Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
@@ -106,7 +106,7 @@ public class TestPinpoint extends LinearOpMode {
         increase when you move the robot forward. And the Y (strafe) pod should increase when
         you move the robot to the left.
          */
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
 
         /*
@@ -132,7 +132,7 @@ public class TestPinpoint extends LinearOpMode {
         waitForStart();
         resetRuntime();
 
-        IMU.Parameters param = new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT, RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD));
+        IMU.Parameters param = new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.FORWARD, RevHubOrientationOnRobot.UsbFacingDirection.LEFT));
         imu.initialize(param);
 
         // run until the end of the match (driver presses STOP)

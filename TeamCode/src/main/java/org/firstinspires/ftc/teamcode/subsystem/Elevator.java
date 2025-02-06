@@ -172,7 +172,8 @@ public class Elevator {
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            if (!initialized) {
+            double pos = leftRot.getCurrentPosition();
+            if (!initialized && Math.abs(pos - target) > 10) {
                 leftRot.setPower(0.4);
                 rightRot.setPower(0.4);
                 leftRot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -180,13 +181,12 @@ public class Elevator {
                 initialized = true;
             }
 
-            double pos = leftRot.getCurrentPosition();
             packet.put("liftPos", pos);
             if (pos + 5 < target) {
                 return true;
             } else {
-                leftRot.setPower(0);
-                rightRot.setPower(0);
+                leftRot.setPower(-0.1);
+                rightRot.setPower(-0.1);
                 return false;
             }
         }
@@ -268,6 +268,60 @@ public class Elevator {
         rightRot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
+    public class RotatePIDF implements Action{
+        private boolean initialized = false;
+        private int target;
+
+        public RotatePIDF(int target) {
+            this.target = target;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                leftRot.setTargetPosition(target);
+                rightRot.setTargetPosition(target);
+                leftRot.setPower(1);
+                rightRot.setPower(1);
+                leftRot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                rightRot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+
+            return Math.abs(leftRot.getCurrentPosition() - target) > 5;
+        }
+    }
+
+    public class ElevatePIDF implements Action{
+        private boolean initialized = false;
+        private int target;
+
+        public ElevatePIDF(int target) {
+            this.target = target;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                leftEle.setTargetPosition(target);
+                rightEle.setTargetPosition(target);
+                leftEle.setPower(1);
+                rightEle.setPower(1);
+                leftEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                rightEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+
+            return Math.abs(leftEle.getCurrentPosition() - target) > 5;
+        }
+    }
+
+    public Action rotatePIDFAction(int target) {
+        return new RotatePIDF(target);
+    }
+
+    public Action elevatePIDFAction(int target) {
+        return new ElevatePIDF(target);
+    }
+
     public void rigging() {
         leftEle.setPower(-1);
         rightEle.setPower(-1);
@@ -304,5 +358,16 @@ public class Elevator {
 
     public int getRotationPosition() {
         return leftRot.getCurrentPosition();
+    }
+
+    public void setRotationPosition(int pos) {
+        leftRot.setTargetPosition(pos);
+        rightRot.setTargetPosition(pos);
+
+        leftRot.setPower(0.5);
+        rightRot.setPower(0.5);
+
+        leftRot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightRot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 }
