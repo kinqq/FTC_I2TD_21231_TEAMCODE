@@ -15,22 +15,24 @@ public class Constants {
 
     public static double PITCH_FORWARD = 0.98;
     public static double PITCH_PARALLEL = 0.75;
-    public static double PITCH_UP = 0.65;
+    public static double PITCH_UP = 0.6;
     public static double PITCH_BACKWARD = 0.38;
     public static double PITCH_GRAB = 0.75;
-    public static double PITCH_CLIP = 0.88;
+    public static double PITCH_CLIP = 0.84;
     public static double PITCH_SPECIMEN = 0.35;
     public static double PITCH_SUBMERSIBLE = 0.2;
     public static double PITCH_DOWN = 0.25;
+    public static double PITCH_BASKET_READY = 0.45;
     public static double PITCH_BASKET = 0.63;
 
     public static double ROLL_TICK_ON_ZERO = 0.5;
-    public static double ROLL_TICK_PER_DEG = 0.105 / 180;
+    public static double ROLL_TICK_PER_DEG = 0.1 / 180;
 
     public static double PIVOT_SPECIMEN = 0.05;
     public static double PIVOT_SUBMERSIBLE = 0.4;
     public static double PIVOT_DOWN = 0.5;
     public static double PIVOT_BASKET = 0.4;
+    public static double PIVOT_BASKET_READY = 0.49;
     public static double PIVOT_CLIP = 0.75;
 
     // Elevator position

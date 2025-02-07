@@ -26,13 +26,18 @@ public class AUTO_LEFT_0_4 extends LinearOpMode {
         Elevator elevator = new Elevator(hardwareMap);
         Grabber grabber = new Grabber(hardwareMap);
 
+        double xOffset = 0, yOffset = 0, hOffset = 0;
+
         PinpointDrive drive = new PinpointDrive(hardwareMap, initialPose);
 
         elevator.initEle();
         elevator.initRot();
 
+        elevator.setRotationPosition(ROT_CLIP);
+
         grabber.grabber.setPosition(GRABBER_CLOSE);
-        grabber.pitch.setPosition(PITCH_BACKWARD);
+        grabber.pitch.setPosition(PITCH_BASKET_READY);
+        grabber.pivot.setPosition(PIVOT_CLIP);
         grabber.roll.setPosition(ROLL_TICK_ON_ZERO);
 
         // Wait until start and set up parameters
@@ -46,21 +51,31 @@ public class AUTO_LEFT_0_4 extends LinearOpMode {
                 grabber.pitch.setPosition(PITCH_BACKWARD);
             }
 
+            if (gamepad1.dpad_left) xOffset -= 0.05;
+            if (gamepad1.dpad_right) xOffset += 0.05;
+            if (gamepad1.dpad_down) yOffset -= 0.05;
+            if (gamepad1.dpad_up) yOffset += 0.05;
+            if (gamepad1.b) hOffset -= 0.05;
+            if (gamepad1.a) hOffset += 0.05;
+
             telemetry.addLine("-------Initialized-------");
+            telemetry.addData("xOffset", xOffset + "in");
+            telemetry.addData("yOffset", yOffset + "in");
+            telemetry.addData("hOffset", hOffset + "deg");
             telemetry.addLine(">>>> Press ▶ to start. <<<<");
             telemetry.update();
         }
 
-        Vector2d FIRST_SAMPLE_POSE = new Vector2d(49, 39.5);
+        Vector2d FIRST_SAMPLE_POSE = new Vector2d(48, 38.5);
         double FIRST_SAMPLE_HEADING = Math.toRadians(270);
-        Vector2d BASKET_POSE = new Vector2d(59.5, 59.5);
+        Vector2d BASKET_POSE = new Vector2d(57, 57);
         double BASKET_HEADING = Math.toRadians(-135);
-        Vector2d SECOND_SAMPLE_POSE = new Vector2d(58.6, 39.5);
+        Vector2d SECOND_SAMPLE_POSE = new Vector2d(58.5, 38.5);
         double SECOND_SAMPLE_HEADING = Math.toRadians(270);
-        Vector2d THIRD_SAMPLE_POSE = new Vector2d(57, 35);
+        Vector2d THIRD_SAMPLE_POSE = new Vector2d(58, 35);
         double THIRD_SAMPLE_HEADING = Math.toRadians(-45);
         Vector2d SUBMERSIBLE_POSE = new Vector2d(22, 10);
-        double SUBMERSIBLE_TANGENT = Math.toRadians(180);
+        double SUBMERSIBLE_TANGENT = Math.toRadians(-45);
 
         TrajectoryActionBuilder traj1, traj2, traj3, traj4, traj5, traj6, traj7, traj8, traj9;
 
@@ -71,109 +86,104 @@ public class AUTO_LEFT_0_4 extends LinearOpMode {
         traj5 = traj4.endTrajectory().fresh().strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
         traj6 = traj5.endTrajectory().fresh().strafeToLinearHeading(THIRD_SAMPLE_POSE, THIRD_SAMPLE_HEADING);
         traj7 = traj6.endTrajectory().fresh().strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
-        traj8 = traj7.endTrajectory().fresh().splineTo(SUBMERSIBLE_POSE, SUBMERSIBLE_TANGENT);
-        traj9 = traj8.endTrajectory().fresh().setTangent(0).strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
+        traj8 = traj7.endTrajectory().splineToLinearHeading(new Pose2d(22 + xOffset, 10 + yOffset, Math.toRadians(180)), Math.toRadians(180));
+        traj9 = traj8.endTrajectory().fresh().setTangent(Math.toRadians(0)).splineToLinearHeading(new Pose2d(58, 58, Math.toRadians(-135)), Math.toRadians(45));
 
         Actions.runBlocking(new SequentialAction(
                 // Go to basket
                 new ParallelAction(
-                        traj1.build(),
-                        elevator.rotateUp(ROT_UP),
-                        grabber.pitchUp(),
-                        new SequentialAction(
-                                new SleepAction(0.3),
-                                elevator.elevateUp(ELE_BASKET_HIGH)
-                        )
+                    traj1.build(),
+                    elevator.rotatePIDFAction(ROT_UP),
+                    grabber.basketReady(),
+                    new SequentialAction(
+                        new SleepAction(0.2),
+                        elevator.elevatePIDFAction(ELE_BASKET_HIGH)
+                    )
                 ),
                 // Release preload sample
-                new SequentialAction(
-                        grabber.pitchBackward(),
-                        grabber.release()
-                ),
+                grabber.basketDeposit(),
+
                 // Go to first sample
                 new ParallelAction(
-                        elevator.elevateDown(ELE_BOT),
-                        grabber.pitchForward(),
                         traj2.build(),
+                        elevator.elevatePIDFAction(ELE_BOT),
+                        grabber.readySampleGrab()
+                ),
+                elevator.rotateDown(ROT_DOWN),
+                // Grab first sample and go to basket
+                grabber.performSampleGrab(),
+                new ParallelAction(
+                        traj3.build(),
+                        elevator.rotatePIDFAction(ROT_UP),
+                        grabber.basketReady(),
+                        new SequentialAction(
+                                new SleepAction(0.8),
+                                elevator.elevatePIDFAction(ELE_BASKET_HIGH)
+                        )
+                ),
+                // Release first sample
+                grabber.basketDeposit(),
+                // Go to second sample
+                new ParallelAction(
+                        traj4.build(),
+                        grabber.readySampleGrab(),
+                        elevator.elevatePIDFAction(ELE_BOT)
+                ),
+                elevator.rotateDown(ROT_DOWN),
+                grabber.performSampleGrab(),
+                new ParallelAction(
+                        traj5.build(),
+                        elevator.rotatePIDFAction(ROT_UP),
+                        grabber.basketReady(),
+                        new SequentialAction(
+                                new SleepAction(0.8),
+                                elevator.elevatePIDFAction(ELE_BASKET_HIGH)
+                        )
+                ),
+                // Release second sample
+                grabber.basketDeposit(),
+                // Go to third sample
+                new ParallelAction(
+                        grabber.readySampleGrab(),
+                        grabber.roll(-45),
+                        elevator.elevatePIDFAction(ELE_BOT),
+                        traj6.build()
+                ),
+                elevator.rotateDown(ROT_DOWN),
+                grabber.performSampleGrab(),
+                new ParallelAction(
+                        traj7.build(),
+                        elevator.rotatePIDFAction(ROT_UP),
+                        grabber.basketReady(),
+                        new SequentialAction(
+                                new SleepAction(0.8),
+                                elevator.elevatePIDFAction(ELE_BASKET_HIGH)
+                        )
+                ),
+                // Release third sample
+                grabber.basketDeposit(),
+                // Go submersible
+                new ParallelAction(
+                        traj8.build(),
+                        grabber.readySampleGrab(),
+                        grabber.roll(hOffset),
+                        elevator.elevatePIDFAction(ELE_BOT),
                         new SequentialAction(
                                 new SleepAction(1),
                                 elevator.rotateDown(ROT_DOWN)
                         )
                 ),
-                // Grab first sample and go to basket
-                grabber.grab(),
-                elevator.rotateUp(ROT_UP),
+                grabber.performSampleGrab(),
                 new ParallelAction(
-                        traj3.build(),
-                        elevator.rotateUp(ROT_UP),
-                        grabber.pitchUp(),
+                        traj9.build(),
+                        elevator.rotatePIDFAction(ROT_UP),
+                        grabber.basketReady(),
                         new SequentialAction(
-                                new SleepAction(0.5),
-                                elevator.elevateUp(ELE_BASKET_HIGH)
+                                new SleepAction(0.8),
+                                elevator.elevatePIDFAction(ELE_BASKET_HIGH)
                         )
                 ),
-                // Release first sample
-                new SequentialAction(
-                        grabber.pitchBackward(),
-                        grabber.release()
-                ),
-                // Go to second sample
-                new ParallelAction(
-                        grabber.pitchForward(),
-                        grabber.roll(0),
-                        elevator.elevateDown(ELE_BOT),
-                        traj4.build()
-                ),
-                elevator.rotateDown(ROT_DOWN),
-                grabber.grab(),
-                elevator.rotateUp(ROT_UP),
-                new ParallelAction(
-                        traj5.build(),
-                        elevator.rotateUp(ROT_UP),
-                        grabber.pitchUp(),
-                        grabber.roll(0),
-                        new SequentialAction(
-                                new SleepAction(0.5),
-                                elevator.elevateUp(ELE_BASKET_HIGH)
-                        )
-                ),
-                // Release second sample
-                new SequentialAction(
-                        grabber.pitchBackward(),
-                        grabber.release()
-                ),
-                // Go to third sample
-                new ParallelAction(
-                        grabber.pitchForward(),
-                        elevator.elevate(ELE_BOT),
-                        grabber.roll(90),
-                        traj6.build()
-                ),
-                elevator.rotateDown(ROT_DOWN),
-                grabber.grab(),
-                elevator.rotateUp(ROT_UP),
-                new ParallelAction(
-                        traj7.build(),
-                        elevator.rotateUp(ROT_UP),
-                        grabber.pitchUp(),
-                        grabber.roll(0),
-                        new SequentialAction(
-                                new SleepAction(1),
-                                elevator.elevate(ELE_BASKET_HIGH)
-                        )
-                ),
-                // Release third sample
-                new SequentialAction(
-                        grabber.pitchBackward(),
-                        grabber.release()
-                ),
-                // Go park
-                new ParallelAction(
-                        grabber.pitchBackward(),
-                        elevator.elevateDown(400),
-                        traj8.build()
-                ),
-                elevator.rotateDown(170)
+                grabber.basketDeposit()
         ));
 
         telemetry.addData("Path", "Execution complete");

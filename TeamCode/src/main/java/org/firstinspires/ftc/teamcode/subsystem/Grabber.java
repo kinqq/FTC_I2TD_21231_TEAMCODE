@@ -172,10 +172,6 @@ public class Grabber {
         return new Pitch(PITCH_BACKWARD);
     }
 
-    public Action pitchClip() {
-        return new Pitch(PITCH_CLIP);
-    }
-
     public Action pitchGrab() {
         return new Pitch(PITCH_GRAB);
     }
@@ -200,9 +196,20 @@ public class Grabber {
 
     public Action basketReady() {
         return new ParallelAction(
-                new Pitch(PITCH_BASKET),
-                new Pivot(PIVOT_BASKET),
+                new Pitch(PITCH_BASKET_READY),
+                new Pivot(PIVOT_BASKET_READY),
                 roll(0)
+        );
+    }
+
+    public Action basketDeposit() {
+        return new SequentialAction(
+                new ParallelAction(
+                        new Pitch(PITCH_BASKET),
+                        new Pivot(PIVOT_BASKET)
+                ),
+                release(),
+                basketReady()
         );
     }
 

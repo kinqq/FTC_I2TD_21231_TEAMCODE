@@ -174,10 +174,10 @@ public class Elevator {
         public boolean run(@NonNull TelemetryPacket packet) {
             double pos = leftRot.getCurrentPosition();
             if (!initialized && Math.abs(pos - target) > 10) {
+                leftRot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                rightRot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 leftRot.setPower(0.4);
                 rightRot.setPower(0.4);
-                leftRot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                rightRot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 initialized = true;
             }
 
@@ -281,13 +281,13 @@ public class Elevator {
             if (!initialized) {
                 leftRot.setTargetPosition(target);
                 rightRot.setTargetPosition(target);
-                leftRot.setPower(1);
-                rightRot.setPower(1);
+                leftRot.setPower(0.7);
+                rightRot.setPower(0.7);
                 leftRot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 rightRot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
 
-            return Math.abs(leftRot.getCurrentPosition() - target) > 5;
+            return Math.abs(leftRot.getCurrentPosition() - target) > 10 ;
         }
     }
 
@@ -310,7 +310,7 @@ public class Elevator {
                 rightEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
 
-            return Math.abs(leftEle.getCurrentPosition() - target) > 5;
+            return Math.abs(leftEle.getCurrentPosition() - target) > 10;
         }
     }
 

@@ -204,7 +204,10 @@ public class DriveControl extends OpMode {
             }
         }
         if (driver2RightTrigger.wasJustPressed()) {
-            runningActions.add(grabber.release());
+            if (elePos == ELE_BASKET_LOW || elePos == ELE_BASKET_HIGH)
+                runningActions.add(grabber.basketDeposit());
+            else
+                runningActions.add(grabber.release());
         }
 
         if (driver2.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER))

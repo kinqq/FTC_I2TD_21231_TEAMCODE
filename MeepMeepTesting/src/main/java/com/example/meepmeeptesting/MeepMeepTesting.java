@@ -28,28 +28,28 @@ public class MeepMeepTesting {
                 .build();
 
         Alliance alliance = Alliance.RED;
-        Position position = Position.RIGHT;
+        Position position = Position.LEFT;
 
         if (position == Position.LEFT && alliance == Alliance.RED) {
             myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(39, 62, Math.toRadians(-180)))
-                    .strafeToLinearHeading(new Vector2d(59, 59), Math.toRadians(-135))
+                    .strafeToLinearHeading(new Vector2d(58, 58), Math.toRadians(-135))
                     .waitSeconds(1)
                     .strafeToLinearHeading(new Vector2d(49, 39.5), Math.toRadians(270))
                     .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(59, 59), Math.toRadians(-135))
+                    .strafeToLinearHeading(new Vector2d(58, 58), Math.toRadians(-135))
                     .waitSeconds(1)
                     .strafeToLinearHeading(new Vector2d(58.6, 39.5), Math.toRadians(270))
                     .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(59, 59), Math.toRadians(-135))
+                    .strafeToLinearHeading(new Vector2d(58, 58), Math.toRadians(-135))
                     .waitSeconds(1)
                     .strafeToLinearHeading(new Vector2d(57, 35), Math.toRadians(-45))
                     .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(59, 59), Math.toRadians(-135))
+                    .strafeToLinearHeading(new Vector2d(57, 57), Math.toRadians(-135))
                     .waitSeconds(1)
-                    .splineTo(new Vector2d(22, 10), Math.toRadians(180)) // 16.92
+                    .splineToLinearHeading(new Pose2d(22, 10, Math.toRadians(180)), Math.toRadians(180)) // 16.92
                     .waitSeconds(1)
                     .setTangent(Math.toRadians(0))
-                    .splineTo(new Vector2d(59, 59), Math.toRadians(45))
+                    .splineToLinearHeading(new Pose2d(57, 57, Math.toRadians(-135)), Math.toRadians(45))
 
                     .build());
         }
