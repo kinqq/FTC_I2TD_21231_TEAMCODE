@@ -109,8 +109,6 @@ public class DriveControl extends OpMode {
 
         if (gamepad1.dpad_left) {
             rotPos = ROT_HANG_DOWN;
-        }
-        if (gamepad1.dpad_right) {
             elePos = ELE_HANG;
         }
 

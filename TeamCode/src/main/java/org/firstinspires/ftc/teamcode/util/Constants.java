@@ -20,10 +20,10 @@ public class Constants {
     public static double PITCH_GRAB = 0.75;
     public static double PITCH_CLIP = 0.84;
     public static double PITCH_SPECIMEN = 0.35;
-    public static double PITCH_SUBMERSIBLE = 0.2;
-    public static double PITCH_DOWN = 0.25;
-    public static double PITCH_BASKET_READY = 0.45;
-    public static double PITCH_BASKET = 0.63;
+    public static double PITCH_SUBMERSIBLE = 0.19;
+    public static double PITCH_DOWN = 0.28;
+    public static double PITCH_BASKET_READY = 0.47;
+    public static double PITCH_BASKET = 0.67;
 
     public static double ROLL_TICK_ON_ZERO = 0.5;
     public static double ROLL_TICK_PER_DEG = 0.1 / 180;
@@ -31,8 +31,8 @@ public class Constants {
     public static double PIVOT_SPECIMEN = 0.05;
     public static double PIVOT_SUBMERSIBLE = 0.4;
     public static double PIVOT_DOWN = 0.5;
-    public static double PIVOT_BASKET = 0.4;
-    public static double PIVOT_BASKET_READY = 0.49;
+    public static double PIVOT_BASKET = 0.41;
+    public static double PIVOT_BASKET_READY = 0.47;
     public static double PIVOT_CLIP = 0.75;
 
     // Elevator position
@@ -45,13 +45,13 @@ public class Constants {
     public static int ELE_BASKET_LOW = 1500;
     public static int ELE_BASKET_HIGH = 2400;
 
-    public static int ELE_HANG = 990;
+    public static int ELE_HANG = 900;
     public static int ELE_CLIP = 850;
 
     public static int ROT_UP = -10; // Giving negative to maintain position (giving a constant negative power)
     public static int ROT_DOWN = 640;
     public static int ROT_GRAB = 440;
-    public static int ROT_HANG_DOWN = 200;
+    public static int ROT_HANG_DOWN = 170;
     public static int ROT_CLIP = 240;
     public static int ROT_SPECIMEN = 200;
 

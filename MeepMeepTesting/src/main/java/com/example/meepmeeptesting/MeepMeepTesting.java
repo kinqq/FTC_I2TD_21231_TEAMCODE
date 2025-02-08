@@ -46,10 +46,12 @@ public class MeepMeepTesting {
                     .waitSeconds(1)
                     .strafeToLinearHeading(new Vector2d(57, 57), Math.toRadians(-135))
                     .waitSeconds(1)
-                    .splineToLinearHeading(new Pose2d(22, 10, Math.toRadians(180)), Math.toRadians(180)) // 16.92
+                    .splineTo(new Vector2d(28, 10), Math.toRadians(180))
+                    .splineTo(new Vector2d(22, 10), Math.toRadians(180)) // 16.92
                     .waitSeconds(1)
-                    .setTangent(Math.toRadians(0))
-                    .splineToLinearHeading(new Pose2d(57, 57, Math.toRadians(-135)), Math.toRadians(45))
+                    .setTangent(0)
+                    .splineTo(new Vector2d(28, 10), Math.toRadians(0))
+                    .splineTo(new Vector2d(57, 57), Math.toRadians(45))
 
                     .build());
         }

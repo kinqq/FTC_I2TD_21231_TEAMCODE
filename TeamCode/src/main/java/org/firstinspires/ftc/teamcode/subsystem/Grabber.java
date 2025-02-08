@@ -78,8 +78,8 @@ public class Grabber {
                 double posErrorTick = Math.abs(pitch.getPosition() - target);
 
                 double MAX_TRAVEL = Math.toRadians(300);
-                double SEC_PER_RAD = 0.25 / Math.toRadians(60);
-                double TIME_FACTOR = 1.0;
+                double SEC_PER_RAD = 0.110 / Math.toRadians(60);
+                double TIME_FACTOR = 1.6;
                 expectedTime = posErrorTick * MAX_TRAVEL * SEC_PER_RAD * TIME_FACTOR;
 
                 initialized = true;
@@ -137,7 +137,7 @@ public class Grabber {
 
                 double MAX_TRAVEL = Math.toRadians(355);
                 double SEC_PER_RAD = 0.110 / Math.toRadians(60); //TODO: Tune this
-                double TIME_FACTOR = 1.0;
+                double TIME_FACTOR = 1.8;
                 expectedTime = posErrorTick * MAX_TRAVEL * SEC_PER_RAD * TIME_FACTOR;
 
                 initialized = true;

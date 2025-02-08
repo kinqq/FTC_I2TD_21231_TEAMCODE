@@ -27,9 +27,9 @@ public class Drivetrain {
         _backLeftMotor.setDirection(DcMotorEx.Direction.REVERSE);
 
         odo = hwMap.get(GoBildaPinpointDriver.class, "odo");
-        odo.setOffsets(1.5, -1.45);
+        odo.setOffsets(-3.45, -3.65);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
 //        odo.resetPosAndIMU();
 
         dtMotors = new DcMotorGroup(_frontLeftMotor, _frontRightMotor, _backLeftMotor, _backRightMotor);

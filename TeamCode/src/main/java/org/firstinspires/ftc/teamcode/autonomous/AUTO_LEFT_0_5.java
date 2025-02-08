@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import static org.firstinspires.ftc.teamcode.util.Constants.*;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -19,7 +18,7 @@ import org.firstinspires.ftc.teamcode.subsystem.Grabber;
 import org.firstinspires.ftc.teamcode.PinpointDrive;
 
 @Autonomous(group = "Auto")
-public class AUTO_LEFT_0_4 extends LinearOpMode {
+public class AUTO_LEFT_0_5 extends LinearOpMode {
     @Override
     public void runOpMode() {
         Pose2d initialPose = new Pose2d(39, 62, Math.toRadians(-180));
@@ -36,7 +35,7 @@ public class AUTO_LEFT_0_4 extends LinearOpMode {
         elevator.setRotationPosition(ROT_CLIP);
 
         grabber.grabber.setPosition(GRABBER_CLOSE);
-        grabber.pitch.setPosition(PITCH_BASKET_READY);
+        grabber.pitch.setPosition(PITCH_BACKWARD);
         grabber.pivot.setPosition(PIVOT_CLIP);
         grabber.roll.setPosition(ROLL_TICK_ON_ZERO);
 
@@ -44,19 +43,17 @@ public class AUTO_LEFT_0_4 extends LinearOpMode {
         while (!opModeIsActive() && !isStopRequested()) {
             if (gamepad2.left_trigger > 0.25) {
                 grabber.grabber.setPosition(GRABBER_CLOSE);
-                grabber.pitch.setPosition(PITCH_BACKWARD);
             }
             if (gamepad2.right_trigger > 0.25) {
                 grabber.grabber.setPosition(GRABBER_OPEN);
-                grabber.pitch.setPosition(PITCH_BACKWARD);
             }
 
-            if (gamepad1.dpad_left) xOffset -= 0.05;
-            if (gamepad1.dpad_right) xOffset += 0.05;
-            if (gamepad1.dpad_down) yOffset -= 0.05;
-            if (gamepad1.dpad_up) yOffset += 0.05;
-            if (gamepad1.b) hOffset -= 0.05;
-            if (gamepad1.a) hOffset += 0.05;
+            if (gamepad1.dpad_left) xOffset -= 0.0004;
+            if (gamepad1.dpad_right) xOffset += 0.0004;
+            if (gamepad1.dpad_down) yOffset -= 0.0004;
+            if (gamepad1.dpad_up) yOffset += 0.0004;
+            if (gamepad1.b) hOffset -= 0.001;
+            if (gamepad1.a) hOffset += 0.001;
 
             telemetry.addLine("-------Initialized-------");
             telemetry.addData("xOffset", xOffset + "in");
@@ -66,16 +63,18 @@ public class AUTO_LEFT_0_4 extends LinearOpMode {
             telemetry.update();
         }
 
-        Vector2d FIRST_SAMPLE_POSE = new Vector2d(48, 38.5);
+        Vector2d FIRST_SAMPLE_POSE = new Vector2d(47.5, 38.5);
         double FIRST_SAMPLE_HEADING = Math.toRadians(270);
         Vector2d BASKET_POSE = new Vector2d(57, 57);
         double BASKET_HEADING = Math.toRadians(-135);
-        Vector2d SECOND_SAMPLE_POSE = new Vector2d(58.5, 38.5);
+        double BASKET_TANGENT = Math.toRadians(45);
+        Vector2d SECOND_SAMPLE_POSE = new Vector2d(58, 38.5);
         double SECOND_SAMPLE_HEADING = Math.toRadians(270);
-        Vector2d THIRD_SAMPLE_POSE = new Vector2d(58, 35);
+        Vector2d THIRD_SAMPLE_POSE = new Vector2d(57.6, 35);
         double THIRD_SAMPLE_HEADING = Math.toRadians(-45);
+        Vector2d SUBMERSIBLE_CONTROL_POSE = new Vector2d(28, 10);
         Vector2d SUBMERSIBLE_POSE = new Vector2d(22, 10);
-        double SUBMERSIBLE_TANGENT = Math.toRadians(-45);
+        double SUBMERSIBLE_TANGENT = Math.toRadians(180);
 
         TrajectoryActionBuilder traj1, traj2, traj3, traj4, traj5, traj6, traj7, traj8, traj9;
 
@@ -86,8 +85,11 @@ public class AUTO_LEFT_0_4 extends LinearOpMode {
         traj5 = traj4.endTrajectory().fresh().strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
         traj6 = traj5.endTrajectory().fresh().strafeToLinearHeading(THIRD_SAMPLE_POSE, THIRD_SAMPLE_HEADING);
         traj7 = traj6.endTrajectory().fresh().strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
-        traj8 = traj7.endTrajectory().splineToLinearHeading(new Pose2d(22 + xOffset, 10 + yOffset, Math.toRadians(180)), Math.toRadians(180));
-        traj9 = traj8.endTrajectory().fresh().setTangent(Math.toRadians(0)).splineToLinearHeading(new Pose2d(58, 58, Math.toRadians(-135)), Math.toRadians(45));
+        traj8 = traj7.endTrajectory().fresh()
+                .splineToLinearHeading(new Pose2d(22 + xOffset, 10, Math.toRadians(180)), Math.toRadians(180));
+        traj9 = traj8.endTrajectory().fresh()
+                .setTangent(Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(58, 58, Math.toRadians(-135)), Math.toRadians(45));
 
         Actions.runBlocking(new SequentialAction(
                 // Go to basket
@@ -97,7 +99,7 @@ public class AUTO_LEFT_0_4 extends LinearOpMode {
                     grabber.basketReady(),
                     new SequentialAction(
                         new SleepAction(0.2),
-                        elevator.elevatePIDFAction(ELE_BASKET_HIGH)
+                        elevator.elevatePIDFAction(ELE_BASKET_HIGH - 100)
                     )
                 ),
                 // Release preload sample
@@ -110,6 +112,7 @@ public class AUTO_LEFT_0_4 extends LinearOpMode {
                         grabber.readySampleGrab()
                 ),
                 elevator.rotateDown(ROT_DOWN),
+                new SleepAction(0.3),
                 // Grab first sample and go to basket
                 grabber.performSampleGrab(),
                 new ParallelAction(
@@ -117,8 +120,8 @@ public class AUTO_LEFT_0_4 extends LinearOpMode {
                         elevator.rotatePIDFAction(ROT_UP),
                         grabber.basketReady(),
                         new SequentialAction(
-                                new SleepAction(0.8),
-                                elevator.elevatePIDFAction(ELE_BASKET_HIGH)
+                                new SleepAction(0.6),
+                                elevator.elevatePIDFAction(ELE_BASKET_HIGH - 100)
                         )
                 ),
                 // Release first sample
@@ -130,14 +133,15 @@ public class AUTO_LEFT_0_4 extends LinearOpMode {
                         elevator.elevatePIDFAction(ELE_BOT)
                 ),
                 elevator.rotateDown(ROT_DOWN),
+                new SleepAction(0.3),
                 grabber.performSampleGrab(),
                 new ParallelAction(
                         traj5.build(),
                         elevator.rotatePIDFAction(ROT_UP),
                         grabber.basketReady(),
                         new SequentialAction(
-                                new SleepAction(0.8),
-                                elevator.elevatePIDFAction(ELE_BASKET_HIGH)
+                                new SleepAction(0.6),
+                                elevator.elevatePIDFAction(ELE_BASKET_HIGH - 100)
                         )
                 ),
                 // Release second sample
@@ -156,8 +160,8 @@ public class AUTO_LEFT_0_4 extends LinearOpMode {
                         elevator.rotatePIDFAction(ROT_UP),
                         grabber.basketReady(),
                         new SequentialAction(
-                                new SleepAction(0.8),
-                                elevator.elevatePIDFAction(ELE_BASKET_HIGH)
+                                new SleepAction(0.6),
+                                elevator.elevatePIDFAction(ELE_BASKET_HIGH - 100)
                         )
                 ),
                 // Release third sample
@@ -169,18 +173,19 @@ public class AUTO_LEFT_0_4 extends LinearOpMode {
                         grabber.roll(hOffset),
                         elevator.elevatePIDFAction(ELE_BOT),
                         new SequentialAction(
-                                new SleepAction(1),
+                                new SleepAction(1.7),
                                 elevator.rotateDown(ROT_DOWN)
                         )
                 ),
+                elevator.elevatePIDFAction(ELE_BOT + (int)(yOffset * 72)),
                 grabber.performSampleGrab(),
                 new ParallelAction(
                         traj9.build(),
                         elevator.rotatePIDFAction(ROT_UP),
                         grabber.basketReady(),
                         new SequentialAction(
-                                new SleepAction(0.8),
-                                elevator.elevatePIDFAction(ELE_BASKET_HIGH)
+                                new SleepAction(0.6),
+                                elevator.elevatePIDFAction(ELE_BASKET_HIGH - 100)
                         )
                 ),
                 grabber.basketDeposit()
