@@ -28,7 +28,7 @@ public class MeepMeepTesting {
                 .build();
 
         Alliance alliance = Alliance.RED;
-        Position position = Position.LEFT;
+        Position position = Position.RIGHT;
 
         if (position == Position.LEFT && alliance == Alliance.RED) {
             myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(39, 62, Math.toRadians(-180)))
@@ -56,49 +56,63 @@ public class MeepMeepTesting {
                     .build());
         }
         if (position == Position.RIGHT && alliance == Alliance.RED) {
+            Vector2d PRELOAD_SPECIMEN_CLIP = new Vector2d(8, 28);
+            Vector2d HP_SPECIMEN_POSE = new Vector2d(-37, 62.5);
+            Vector2d HP_SPECIMEN_CLIP_CONTROL = new Vector2d(-5, 45);
+            Vector2d HP_SPECIMEN_CLIP = new Vector2d(5, 27);
+            Vector2d GRAB_CONTROL = new Vector2d(-8, 40);
+            Vector2d FIRST_SPECIMEN_CLIP_CONTROL = new Vector2d(-9, 45);
+            Vector2d FIRST_SPECIMEN_CLIP = new Vector2d(2, 27);
+            Vector2d SECOND_SPECIMEN_CLIP_CONTROL = new Vector2d(-10, 45);
+            Vector2d SECOND_SPECIMEN_CLIP = new Vector2d(-1, 27);
+            Vector2d THIRD_SPECIMEN_CLIP_CONTROL = new Vector2d(-12, 45);
+            Vector2d THIRD_SPECIMEN_CLIP = new Vector2d(-4, 27);
+            Vector2d PARKING_POSE = new Vector2d(-40, 60);
+            double PARKING_HEADING = Math.toRadians(180);
+
             myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-8, 63, Math.toRadians(-90)))
-                    .strafeTo(new Vector2d(-0, 27.5))
+                    .strafeTo(PRELOAD_SPECIMEN_CLIP)
                     .waitSeconds(0.5)
                     .setTangent(Math.toRadians(90))
-                    .splineToConstantHeading(new Vector2d(-33, 36), Math.toRadians(-90))
-                    .splineToConstantHeading(new Vector2d(-33, 12), Math.toRadians(-90))
-                    .splineToConstantHeading(new Vector2d(-40, 12), Math.toRadians(90))
+                    .splineToConstantHeading(new Vector2d(-36.5, 36), Math.toRadians(-90))
+                    .splineToConstantHeading(new Vector2d(-36.5, 16), Math.toRadians(-90))
+                    .splineToConstantHeading(new Vector2d(-45, 12), Math.toRadians(90))
+//                    .waitSeconds(0)
+                    .strafeTo(new Vector2d(-45, 52))
                     .waitSeconds(0)
-                    .strafeTo(new Vector2d(-40, 56))
+                    .splineToConstantHeading(new Vector2d(-45, 25), Math.toRadians(-90))
+                    .splineToConstantHeading(new Vector2d(-54, 15), Math.toRadians(90))
+//                    .waitSeconds(0)
+                    .strafeTo(new Vector2d(-54, 52))
                     .waitSeconds(0)
-                    .splineToConstantHeading(new Vector2d(-40, 25), Math.toRadians(-90))
-                    .splineToConstantHeading(new Vector2d(-48, 15), Math.toRadians(90))
-                    .waitSeconds(0)
-                    .strafeTo(new Vector2d(-48, 56))
-                    .waitSeconds(0)
-                    .splineToConstantHeading(new Vector2d(-48, 25), Math.toRadians(-90))
-                    .splineToConstantHeading(new Vector2d(-57, 15), Math.toRadians(90))
-                    .waitSeconds(0)
-                    .strafeTo(new Vector2d(-57, 62))
+                    .splineToConstantHeading(new Vector2d(-54, 25), Math.toRadians(-90))
+                    .splineToConstantHeading(new Vector2d(-62.5, 15), Math.toRadians(90))
+//                    .waitSeconds(0)
+                    .strafeTo(new Vector2d(-62.5, 62))
 
                     .waitSeconds(0.5)
-                    .strafeToConstantHeading(new Vector2d(-10, 48))
-                    .splineToConstantHeading(new Vector2d(-2.5, 33), Math.toRadians(-75))
+                    .strafeToConstantHeading(HP_SPECIMEN_CLIP_CONTROL)
+                    .splineToConstantHeading(HP_SPECIMEN_CLIP, Math.toRadians(-90))
                     .waitSeconds(0.5)
-                    .strafeToConstantHeading(new Vector2d(-8, 40))
-                    .splineToConstantHeading(new Vector2d(-37, 62), Math.toRadians(90))
+                    .strafeToConstantHeading(GRAB_CONTROL)
+                    .splineToConstantHeading(HP_SPECIMEN_POSE, Math.toRadians(90))
                     .waitSeconds(0.5)
-                    .strafeToConstantHeading(new Vector2d(-8.5, 48))
-                    .splineToConstantHeading(new Vector2d(-1, 33), Math.toRadians(-75))
+                    .strafeToConstantHeading(FIRST_SPECIMEN_CLIP_CONTROL)
+                    .splineToConstantHeading(FIRST_SPECIMEN_CLIP, Math.toRadians(-90))
                     .waitSeconds(0.5)
-                    .strafeToConstantHeading(new Vector2d(-8, 40))
-                    .splineToConstantHeading(new Vector2d(-37, 62), Math.toRadians(90))
+                    .strafeToConstantHeading(GRAB_CONTROL)
+                    .splineToConstantHeading(HP_SPECIMEN_POSE, Math.toRadians(90))
                     .waitSeconds(0.5)
-                    .strafeToConstantHeading(new Vector2d(-7, 48))
-                    .splineToConstantHeading(new Vector2d(0.5, 33), Math.toRadians(-75))
+                    .strafeToConstantHeading(SECOND_SPECIMEN_CLIP_CONTROL)
+                    .splineToConstantHeading(SECOND_SPECIMEN_CLIP, Math.toRadians(-90))
                     .waitSeconds(0.5)
-                    .strafeToConstantHeading(new Vector2d(-8, 40))
-                    .splineToConstantHeading(new Vector2d(-37, 62), Math.toRadians(90))
+                    .strafeToConstantHeading(GRAB_CONTROL)
+                    .splineToConstantHeading(HP_SPECIMEN_POSE, Math.toRadians(90))
                     .waitSeconds(0.5)
-                    .strafeToConstantHeading(new Vector2d(-5.5, 48))
-                    .splineToConstantHeading(new Vector2d(2, 33), Math.toRadians(-75))
+                    .strafeToConstantHeading(THIRD_SPECIMEN_CLIP_CONTROL)
+                    .splineToConstantHeading(THIRD_SPECIMEN_CLIP, Math.toRadians(-90))
                     .waitSeconds(0.5)
-                    .strafeToLinearHeading(new Vector2d(-40, 60), Math.toRadians(180))
+                    .strafeToLinearHeading(PARKING_POSE, PARKING_HEADING)
                     .build());
         }
         if (position == Position.RIGHT && alliance == Alliance.BLUE) {

@@ -56,15 +56,15 @@ public class AUTO_RIGHT extends LinearOpMode {
 
         Vector2d PRELOAD_SPECIMEN_CLIP = new Vector2d(8, 28);
         Vector2d HP_SPECIMEN_POSE = new Vector2d(-37, 62.5);
-        Vector2d HP_SPECIMEN_CLIP_CONTROL = new Vector2d(-5, 50);
-        Vector2d HP_SPECIMEN_CLIP = new Vector2d(3.5, 26.5);
+        Vector2d HP_SPECIMEN_CLIP_CONTROL = new Vector2d(-5, 45);
+        Vector2d HP_SPECIMEN_CLIP = new Vector2d(5, 27);
         Vector2d GRAB_CONTROL = new Vector2d(-8, 40);
-        Vector2d FIRST_SPECIMEN_CLIP_CONTROL = new Vector2d(-6, 50);
-        Vector2d FIRST_SPECIMEN_CLIP = new Vector2d(-1, 26.5);
-        Vector2d SECOND_SPECIMEN_CLIP_CONTROL = new Vector2d(-7, 48);
-        Vector2d SECOND_SPECIMEN_CLIP = new Vector2d(-4, 26.5);
-        Vector2d THIRD_SPECIMEN_CLIP_CONTROL = new Vector2d(-5.5, 48);
-        Vector2d THIRD_SPECIMEN_CLIP = new Vector2d(-5.5, 28);
+        Vector2d FIRST_SPECIMEN_CLIP_CONTROL = new Vector2d(-9, 45);
+        Vector2d FIRST_SPECIMEN_CLIP = new Vector2d(2, 27);
+        Vector2d SECOND_SPECIMEN_CLIP_CONTROL = new Vector2d(-10, 45);
+        Vector2d SECOND_SPECIMEN_CLIP = new Vector2d(-1, 27);
+        Vector2d THIRD_SPECIMEN_CLIP_CONTROL = new Vector2d(-12, 45);
+        Vector2d THIRD_SPECIMEN_CLIP = new Vector2d(-4, 27);
         Vector2d PARKING_POSE = new Vector2d(-40, 60);
         double PARKING_HEADING = Math.toRadians(180);
 
@@ -75,40 +75,38 @@ public class AUTO_RIGHT extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(-36.5, 36), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(-36.5, 16), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(-45, 12), Math.toRadians(90))
-                .waitSeconds(0)
                 .strafeTo(new Vector2d(-45, 52))
                 .waitSeconds(0)
                 .splineToConstantHeading(new Vector2d(-45, 25), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(-54, 15), Math.toRadians(90))
-                .waitSeconds(0)
                 .strafeTo(new Vector2d(-54, 52))
                 .waitSeconds(0)
                 .splineToConstantHeading(new Vector2d(-54, 25), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(-62.5, 15), Math.toRadians(90))
-                .waitSeconds(0)
                 .strafeTo(new Vector2d(-62.5, 62));
         traj3 = traj2.endTrajectory().fresh()
                 .strafeToConstantHeading(HP_SPECIMEN_CLIP_CONTROL)
-                .splineToConstantHeading(HP_SPECIMEN_CLIP, Math.toRadians(-75));
+                .splineToConstantHeading(HP_SPECIMEN_CLIP, Math.toRadians(-90));
         traj4 = traj3.endTrajectory().fresh()
                 .strafeToConstantHeading(GRAB_CONTROL)
                 .splineToConstantHeading(HP_SPECIMEN_POSE, Math.toRadians(90));
         traj5 = traj4.endTrajectory().fresh()
                 .strafeToConstantHeading(FIRST_SPECIMEN_CLIP_CONTROL)
-                .splineToConstantHeading(FIRST_SPECIMEN_CLIP, Math.toRadians(-75));
+                .splineToConstantHeading(FIRST_SPECIMEN_CLIP, Math.toRadians(-90));
         traj6 = traj5.endTrajectory().fresh()
                 .strafeToConstantHeading(GRAB_CONTROL)
                 .splineToConstantHeading(HP_SPECIMEN_POSE, Math.toRadians(90));
         traj7 = traj6.endTrajectory().fresh()
                 .strafeToConstantHeading(SECOND_SPECIMEN_CLIP_CONTROL)
-                .splineToConstantHeading(SECOND_SPECIMEN_CLIP, Math.toRadians(-75));
+                .splineToConstantHeading(SECOND_SPECIMEN_CLIP, Math.toRadians(-90));
         traj8 = traj7.endTrajectory().fresh()
                 .strafeToConstantHeading(GRAB_CONTROL)
                 .splineToConstantHeading(HP_SPECIMEN_POSE, Math.toRadians(90));
         traj9 = traj8.endTrajectory().fresh()
                 .strafeToConstantHeading(THIRD_SPECIMEN_CLIP_CONTROL)
-                .splineToConstantHeading(THIRD_SPECIMEN_CLIP, Math.toRadians(-75));
-        traj10 = traj9.endTrajectory().fresh().strafeToLinearHeading(PARKING_POSE, PARKING_HEADING);
+                .splineToConstantHeading(THIRD_SPECIMEN_CLIP, Math.toRadians(-90));
+        traj10 = traj9.endTrajectory().fresh()
+                .strafeToLinearHeading(PARKING_POSE, PARKING_HEADING);
 
         Actions.runBlocking(
                 new SequentialAction(
