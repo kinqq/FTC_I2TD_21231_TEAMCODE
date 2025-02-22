@@ -28,7 +28,7 @@ public class MeepMeepTesting {
                 .build();
 
         Alliance alliance = Alliance.RED;
-        Position position = Position.LEFT;
+        Position position = Position.RIGHT;
 
         if (position == Position.LEFT && alliance == Alliance.RED) {
             myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(39, 62, Math.toRadians(-180)))
@@ -60,8 +60,8 @@ public class MeepMeepTesting {
                     .strafeTo(new Vector2d(-0, 27.5))
                     .waitSeconds(0.5)
                     .setTangent(Math.toRadians(90))
-                    .splineToConstantHeading(new Vector2d(-33, 36), Math.toRadians(-90))
-                    .splineToConstantHeading(new Vector2d(-33, 12), Math.toRadians(-90))
+                    .splineToConstantHeading(new Vector2d(-30, 36), Math.toRadians(-90))
+                    .splineToConstantHeading(new Vector2d(-30, 16), Math.toRadians(-90))
                     .splineToConstantHeading(new Vector2d(-40, 12), Math.toRadians(90))
                     .waitSeconds(0)
                     .strafeTo(new Vector2d(-40, 56))

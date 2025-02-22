@@ -24,12 +24,12 @@ public class Elevator {
 
     @Config
     public static class rotPIDF {
-        public static double pUp = 0.005, i = 0, d = 0, f = 0.10, pDown = 0.0015;
+        public static double pUp = 0.0035, i = 0, d = 0.00007, f = 0.05, pDown = 0.003;
     }
 
     @Config
     public static class elePIDF {
-        public static double p = 0.006, i = 0, d = 0, f = 0.00012;
+        public static double p = 0.007, i = 0, d = 0.00001, f = 0.00018;
     }
 
     public Elevator(HardwareMap hardwareMap) {
@@ -176,8 +176,8 @@ public class Elevator {
             if (!initialized && Math.abs(pos - target) > 10) {
                 leftRot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 rightRot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                leftRot.setPower(0.3);
-                rightRot.setPower(0.3);
+                leftRot.setPower(0.5);
+                rightRot.setPower(0.5);
                 initialized = true;
             }
 
@@ -281,8 +281,8 @@ public class Elevator {
             if (!initialized) {
                 leftRot.setTargetPosition(target);
                 rightRot.setTargetPosition(target);
-                leftRot.setPower(0.7);
-                rightRot.setPower(0.7);
+                leftRot.setPower(1);
+                rightRot.setPower(1);
                 leftRot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 rightRot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
@@ -294,6 +294,7 @@ public class Elevator {
     public class ElevatePIDF implements Action{
         private boolean initialized = false;
         private int target;
+        private ElapsedTime timer = new ElapsedTime();
 
         public ElevatePIDF(int target) {
             this.target = target;
@@ -308,9 +309,10 @@ public class Elevator {
                 rightEle.setPower(1);
                 leftEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 rightEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                timer.reset();
             }
 
-            return Math.abs(leftEle.getCurrentPosition() - target) > 10;
+            return Math.abs(leftEle.getCurrentPosition() - target) > 10 && timer.seconds() < 4.0;
         }
     }
 
