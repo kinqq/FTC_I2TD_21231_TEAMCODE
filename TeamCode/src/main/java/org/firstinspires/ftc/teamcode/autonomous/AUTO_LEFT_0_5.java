@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.subsystem.Elevator;
 import org.firstinspires.ftc.teamcode.subsystem.Grabber;
-import org.firstinspires.ftc.teamcode.PinpointDrive;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Autonomous(group = "Auto")
 public class AUTO_LEFT_0_5 extends LinearOpMode {
@@ -26,7 +26,7 @@ public class AUTO_LEFT_0_5 extends LinearOpMode {
 
         double xOffset = 0, yOffset = 0, hOffset = 0;
 
-        PinpointDrive drive = new PinpointDrive(hardwareMap, initialPose);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         elevator.initEle();
         elevator.initRot();

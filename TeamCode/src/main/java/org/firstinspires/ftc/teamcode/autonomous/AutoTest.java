@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.subsystem.Elevator;
 import org.firstinspires.ftc.teamcode.subsystem.Grabber;
-import org.firstinspires.ftc.teamcode.PinpointDrive;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Autonomous(group = "Auto")
 public class AutoTest extends LinearOpMode {
@@ -26,7 +26,7 @@ public class AutoTest extends LinearOpMode {
         Grabber grabber = new Grabber(hardwareMap);
         Pose2d initialPose = new Pose2d(-8, 63, Math.toRadians(-90));
 
-        PinpointDrive drive = new PinpointDrive(hardwareMap, initialPose);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         elevator.initEle();
         elevator.initRot();
