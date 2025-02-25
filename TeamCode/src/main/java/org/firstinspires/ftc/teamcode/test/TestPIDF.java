@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Config
 @TeleOp(name = "TestPIDF", group = "Test")
@@ -27,6 +28,7 @@ public class TestPIDF extends OpMode {
         arm_motor1 = hardwareMap.get(DcMotorEx.class, "leftRot");
         arm_motor2 = hardwareMap.get(DcMotorEx.class, "rightRot");
 
+        arm_motor2.setDirection(DcMotorSimple.Direction.REVERSE);
         arm_motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm_motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 

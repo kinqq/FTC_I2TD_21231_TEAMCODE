@@ -17,6 +17,7 @@ import com.qualcomm.robotcore.util.Range;
 
 public class Grabber {
     public final ServoImplEx grabber, pitch, roll, pivot;
+    private int elePos;
 
     public Grabber(HardwareMap hardwareMap) {
         grabber = (ServoImplEx) hardwareMap.get(Servo.class, "grabber");
@@ -49,7 +50,7 @@ public class Grabber {
                 // Tuned for axon servo with 6.0V
                 //TODO: Use Rev SPM.
                 double MAX_TRAVEL = Math.toRadians(355); // tick = angle / max_angle
-                double SEC_PER_RAD = 0.09 / Math.toRadians(60);
+                double SEC_PER_RAD = 0.11 / Math.toRadians(60);
                 double TIME_FACTOR = 1.0;
                 expectedTime = posErrorTick * MAX_TRAVEL * SEC_PER_RAD * TIME_FACTOR;
 
@@ -79,7 +80,7 @@ public class Grabber {
 
                 double MAX_TRAVEL = Math.toRadians(300);
                 double SEC_PER_RAD = 0.110 / Math.toRadians(60);
-                double TIME_FACTOR = 1.6;
+                double TIME_FACTOR = 1.0;
                 expectedTime = posErrorTick * MAX_TRAVEL * SEC_PER_RAD * TIME_FACTOR;
 
                 initialized = true;
@@ -137,7 +138,7 @@ public class Grabber {
 
                 double MAX_TRAVEL = Math.toRadians(355);
                 double SEC_PER_RAD = 0.110 / Math.toRadians(60); //TODO: Tune this
-                double TIME_FACTOR = 1.8;
+                double TIME_FACTOR = 1.0;
                 expectedTime = posErrorTick * MAX_TRAVEL * SEC_PER_RAD * TIME_FACTOR;
 
                 initialized = true;
@@ -186,8 +187,8 @@ public class Grabber {
     public Action performSampleGrab() {
         return new SequentialAction(
                 new ParallelAction(
-                        new Pitch(PITCH_DOWN),
-                        new Pivot(PIVOT_DOWN)
+                        new Pitch(PITCH_DOWN + 0.07 * elePos / 1450),
+                        new Pivot(PIVOT_DOWN + 0.07 * elePos / 1450)
                 ),
                 new Grab(GRABBER_CLOSE),
                 readySampleGrab()
@@ -197,8 +198,7 @@ public class Grabber {
     public Action basketReady() {
         return new ParallelAction(
                 new Pitch(PITCH_BASKET_READY),
-                new Pivot(PIVOT_BASKET_READY),
-                roll(0)
+                new Pivot(PIVOT_BASKET_READY)
         );
     }
 
@@ -209,7 +209,8 @@ public class Grabber {
                         new Pivot(PIVOT_BASKET)
                 ),
                 release(),
-                basketReady()
+                new Pitch(PITCH_BASKET_READY),
+                new Pivot(PIVOT_BASKET_READY)
         );
     }
 
@@ -242,7 +243,7 @@ public class Grabber {
         return new Roll(TICK);
     }
 
-    public Action rollTo(double tick) {
-        return new Roll(tick);
+    public void updateElePos(int elePos) {
+        this.elePos = elePos;
     }
 }
