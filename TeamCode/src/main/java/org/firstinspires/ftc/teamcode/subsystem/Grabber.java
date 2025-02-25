@@ -50,7 +50,7 @@ public class Grabber {
                 // Tuned for axon servo with 6.0V
                 //TODO: Use Rev SPM.
                 double MAX_TRAVEL = Math.toRadians(355); // tick = angle / max_angle
-                double SEC_PER_RAD = 0.09 / Math.toRadians(60);
+                double SEC_PER_RAD = 0.11 / Math.toRadians(60);
                 double TIME_FACTOR = 1.0;
                 expectedTime = posErrorTick * MAX_TRAVEL * SEC_PER_RAD * TIME_FACTOR;
 
@@ -179,8 +179,8 @@ public class Grabber {
 
     public Action readySampleGrab() {
         return new ParallelAction(
-                new Pitch(PITCH_SUBMERSIBLE + 0.07 * elePos / 1450),
-                new Pivot(PIVOT_SUBMERSIBLE + 0.03 * elePos / 1450)
+                new Pitch(PITCH_SUBMERSIBLE),
+                new Pivot(PIVOT_SUBMERSIBLE)
         );
     }
 
@@ -188,7 +188,7 @@ public class Grabber {
         return new SequentialAction(
                 new ParallelAction(
                         new Pitch(PITCH_DOWN + 0.07 * elePos / 1450),
-                        new Pivot(PIVOT_DOWN + 0.03 * elePos / 1450)
+                        new Pivot(PIVOT_DOWN + 0.07 * elePos / 1450)
                 ),
                 new Grab(GRABBER_CLOSE),
                 readySampleGrab()

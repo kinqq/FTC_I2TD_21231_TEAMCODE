@@ -176,17 +176,17 @@ public class Elevator {
             if (!initialized && Math.abs(pos - target) > 10) {
                 leftRot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 rightRot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                leftRot.setPower(0.5);
-                rightRot.setPower(0.5);
+                leftRot.setPower(0.3);
+                rightRot.setPower(0.3);
                 initialized = true;
             }
 
             packet.put("liftPos", pos);
-            if (pos + 5 < target) {
+            if (pos + 10 < target) {
                 return true;
             } else {
-//                leftRot.setPower(-0.1);
-//                rightRot.setPower(-0.1);
+                leftRot.setPower(0);
+                rightRot.setPower(0);
                 return false;
             }
         }

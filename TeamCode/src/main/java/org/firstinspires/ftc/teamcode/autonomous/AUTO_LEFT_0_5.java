@@ -62,14 +62,14 @@ public class AUTO_LEFT_0_5 extends LinearOpMode {
             telemetry.update();
         }
 
-        Vector2d FIRST_SAMPLE_POSE = new Vector2d(47.7, 38.5);
+        Vector2d FIRST_SAMPLE_POSE = new Vector2d(48.2, 38.5);
         double FIRST_SAMPLE_HEADING = Math.toRadians(270);
         Vector2d BASKET_POSE = new Vector2d(56.5, 56.5);
         double BASKET_HEADING = Math.toRadians(-135);
         double BASKET_TANGENT = Math.toRadians(45);
-        Vector2d SECOND_SAMPLE_POSE = new Vector2d(58.3, 38.5);
+        Vector2d SECOND_SAMPLE_POSE = new Vector2d(57.9, 38.5);
         double SECOND_SAMPLE_HEADING = Math.toRadians(270);
-        Vector2d THIRD_SAMPLE_POSE = new Vector2d(57.6, 35);
+        Vector2d THIRD_SAMPLE_POSE = new Vector2d(58.1, 35);
         double THIRD_SAMPLE_HEADING = Math.toRadians(-45);
         Vector2d SUBMERSIBLE_CONTROL_POSE = new Vector2d(28, 10);
         Vector2d SUBMERSIBLE_POSE = new Vector2d(22, 10);
@@ -85,7 +85,7 @@ public class AUTO_LEFT_0_5 extends LinearOpMode {
         traj6 = traj5.endTrajectory().fresh().strafeToLinearHeading(THIRD_SAMPLE_POSE, THIRD_SAMPLE_HEADING);
         traj7 = traj6.endTrajectory().fresh().strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
         traj8 = traj7.endTrajectory().fresh()
-                .splineToLinearHeading(new Pose2d(23.5 + xOffset, 10, Math.toRadians(180)), Math.toRadians(180));
+                .splineToLinearHeading(new Pose2d(23.5, 10 + xOffset, Math.toRadians(180)), Math.toRadians(180));
         traj9 = traj8.endTrajectory().fresh()
                 .setTangent(Math.toRadians(0))
                 .splineToLinearHeading(new Pose2d(56.5, 56.5, Math.toRadians(-135)), Math.toRadians(45));
@@ -178,6 +178,7 @@ public class AUTO_LEFT_0_5 extends LinearOpMode {
                 ),
                 elevator.elevatePIDFAction(ELE_BOT + (int)(yOffset * 72)),
                 grabber.performSampleGrab(),
+                elevator.elevatePIDFAction(ELE_BOT),
                 new ParallelAction(
                         traj9.build(),
                         elevator.rotatePIDFAction(ROT_UP),

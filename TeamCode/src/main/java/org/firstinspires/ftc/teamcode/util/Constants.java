@@ -10,8 +10,8 @@ public class Constants {
     }
 
     // Grabber servo position
-    public static double GRABBER_CLOSE = 0.48;
-    public static double GRABBER_OPEN = 0.8;
+    public static double GRABBER_CLOSE = 0.34;
+    public static double GRABBER_OPEN = 0.08;
 
     public static double PITCH_FORWARD = 0.98;
     public static double PITCH_PARALLEL = 0.75;
@@ -21,7 +21,7 @@ public class Constants {
     public static double PITCH_CLIP = 0.84;
     public static double PITCH_SPECIMEN = 0.35;
     public static double PITCH_SUBMERSIBLE = 0.21;
-    public static double PITCH_DOWN = 0.27; // --> 0.3
+    public static double PITCH_DOWN = 0.28; // --> 0.3
     public static double PITCH_BASKET_READY = 0.6;
     public static double PITCH_BASKET = 0.71;
 
@@ -29,8 +29,8 @@ public class Constants {
     public static double ROLL_TICK_PER_DEG = 0.1 / 180;
 
     public static double PIVOT_SPECIMEN = 0.05;
-    public static double PIVOT_SUBMERSIBLE = 0.4;
-    public static double PIVOT_DOWN = 0.48; // --> 0.53
+    public static double PIVOT_SUBMERSIBLE = 0.38;
+    public static double PIVOT_DOWN = 0.46; // --> 0.53
     public static double PIVOT_BASKET = 0.43;
     public static double PIVOT_BASKET_READY = 0.45;
     public static double PIVOT_CLIP = 0.68;

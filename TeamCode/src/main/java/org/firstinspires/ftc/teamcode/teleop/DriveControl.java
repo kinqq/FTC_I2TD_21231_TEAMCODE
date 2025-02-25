@@ -38,6 +38,8 @@ public class DriveControl extends OpMode {
     private double maxSpeed = NORMAL_MODE;
     private double oldTime = 0;
 
+    private int imuCnt = 0;
+
     TriggerReader driver2LeftTrigger, driver2RightTrigger;
 
     @Override
@@ -95,13 +97,20 @@ public class DriveControl extends OpMode {
         rotPos += (int) (-driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) * 10 + driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) * 10);
         elePos += (driver1.getButton(GamepadKeys.Button.B) ? -10 : 0) + (driver1.getButton(GamepadKeys.Button.A) ? 10 : 0);
 
-        if (driver1.wasJustPressed(GamepadKeys.Button.START)) drive.resetImu();
+        if (driver1.wasJustPressed(GamepadKeys.Button.START)) {
+            drive.resetImu();
+            imuCnt++;
+        }
         if (driver2.wasJustPressed(GamepadKeys.Button.START)) elevator.initEle();
         if (driver1.wasJustPressed(GamepadKeys.Button.BACK)) drive.toggleFieldCentricDrive();
         if (driver2.wasJustPressed(GamepadKeys.Button.BACK)) elevator.initRot();
 
         drive.setMaxPower(maxSpeed);
         drive.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+
+        if (driver1.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
+            drive.toggleHeadingLock();
+        }
 
         if (driver2.wasJustPressed(GamepadKeys.Button.DPAD_DOWN) && elePos == ELE_BOT) {
             runningActions.add(new ParallelAction(grabber.readySampleGrab(), grabber.release()));
@@ -139,7 +148,6 @@ public class DriveControl extends OpMode {
                 elePos = ELE_CHAMBER_HIGH;
             elePos += (int) (driver2.getLeftY() * 45.0);
             elePos = Range.clip(elePos, 0, 1450);
-            grabber.readySampleGrab();
         } else if (eleControlMode == EleControlMode.CHAMBER) {
             if (driver2.wasJustPressed(GamepadKeys.Button.A)) {
                 elePos = ELE_BOT;
@@ -154,7 +162,7 @@ public class DriveControl extends OpMode {
                 runningActions.add(grabber.readySpecimenGrab());
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.X)) {
-                elePos = ELE_CLIP;
+                elePos = ELE_CLIP + 80;
                 rollAngle = 180;
                 rotPos = ROT_CLIP;
                 runningActions.add(grabber.readySpecimenClip());
@@ -202,7 +210,7 @@ public class DriveControl extends OpMode {
         if (driver2.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER))
             rollAngle -= 30;
 
-        rollAngle = Range.clip(rollAngle, -180, 180);
+        rollAngle = (rollAngle + 180) % 360 - 180;
         grabber.roll.setPosition(ROLL_TICK_ON_ZERO + ROLL_TICK_PER_DEG * rollAngle);
         grabber.updateElePos(elePos);
 
@@ -222,8 +230,12 @@ public class DriveControl extends OpMode {
         double frequency = 1 / loopTime;
         oldTime = newTime;
 
+        telemetry.addData("Target Heading", drive.targetHeading);
+        telemetry.addData("IMU", imuCnt);
         telemetry.addLine("-------DRIVE CONTROL-------");
         telemetry.addData("CONTROL MODE", eleControlMode);
+        telemetry.addData("FIELD CENTRIC", drive.isFieldCentricDriveEnabled());
+        telemetry.addData("HEADING LOCK", drive.isHeadingLockEnabled());
         telemetry.addData("Frequency (Hz)", frequency);
 
         telemetry.addLine("-------MOTOR POSITION-------");
