@@ -202,12 +202,15 @@ public class Grabber {
         );
     }
 
+    public Action basketDepositReady() {
+        return new ParallelAction(
+                new Pitch(PITCH_BASKET),
+                new Pivot(PIVOT_BASKET)
+        );
+    }
+
     public Action basketDeposit() {
         return new SequentialAction(
-                new ParallelAction(
-                        new Pitch(PITCH_BASKET),
-                        new Pivot(PIVOT_BASKET)
-                ),
                 release(),
                 new Pitch(PITCH_BASKET_READY),
                 new Pivot(PIVOT_BASKET_READY)

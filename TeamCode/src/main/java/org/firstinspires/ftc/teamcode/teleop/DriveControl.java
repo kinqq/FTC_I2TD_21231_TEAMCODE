@@ -205,6 +205,11 @@ public class DriveControl extends OpMode {
                 runningActions.add(grabber.release());
         }
 
+        // Manual override just in case
+        if ((elePos == ELE_BASKET_LOW || elePos == ELE_BASKET_HIGH) && Math.abs(elevator.getElevatorPosition() - elePos) < 15) {
+            runningActions.add(grabber.basketDepositReady());
+        }
+
         if (driver2.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER))
             rollAngle += 30;
         if (driver2.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER))

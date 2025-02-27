@@ -136,7 +136,7 @@ public class TestLimelight3A extends LinearOpMode {
                 telemetry.addData("Parse Latency", parseLatency);
 
                 double[] pythonOutput = result.getPythonOutput();
-                double angle = pythonOutput[0];
+                double angle = pythonOutput[3];
                 if (angle != -1 && angle != 0) {
                     angle -= 90;
                     angle *= -1;

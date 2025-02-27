@@ -65,14 +65,14 @@ public class AUTO_LEFT_0_5 extends LinearOpMode {
         Vector2d FIRST_SAMPLE_POSE = new Vector2d(48.2, 38.5);
         double FIRST_SAMPLE_HEADING = Math.toRadians(270);
         Vector2d BASKET_POSE = new Vector2d(56.5, 56.5);
+        Pose2d BASKET_POSE_SPLINE = new Pose2d(56.5, 56.5, Math.toRadians(-135));
         double BASKET_HEADING = Math.toRadians(-135);
         double BASKET_TANGENT = Math.toRadians(45);
         Vector2d SECOND_SAMPLE_POSE = new Vector2d(57.9, 38.5);
         double SECOND_SAMPLE_HEADING = Math.toRadians(270);
         Vector2d THIRD_SAMPLE_POSE = new Vector2d(58.1, 35);
         double THIRD_SAMPLE_HEADING = Math.toRadians(-45);
-        Vector2d SUBMERSIBLE_CONTROL_POSE = new Vector2d(28, 10);
-        Vector2d SUBMERSIBLE_POSE = new Vector2d(22, 10);
+        Pose2d SUBMERSIBLE_POSE = new Pose2d(23.5, 4, Math.toRadians(180));
         double SUBMERSIBLE_TANGENT = Math.toRadians(180);
 
         TrajectoryActionBuilder traj1, traj2, traj3, traj4, traj5, traj6, traj7, traj8, traj9;
@@ -85,10 +85,11 @@ public class AUTO_LEFT_0_5 extends LinearOpMode {
         traj6 = traj5.endTrajectory().fresh().strafeToLinearHeading(THIRD_SAMPLE_POSE, THIRD_SAMPLE_HEADING);
         traj7 = traj6.endTrajectory().fresh().strafeToLinearHeading(BASKET_POSE, BASKET_HEADING);
         traj8 = traj7.endTrajectory().fresh()
-                .splineToLinearHeading(new Pose2d(23.5, 10 + xOffset, Math.toRadians(180)), Math.toRadians(180));
+                .setTangent(BASKET_HEADING)
+                .splineToLinearHeading(SUBMERSIBLE_POSE, SUBMERSIBLE_TANGENT);
         traj9 = traj8.endTrajectory().fresh()
-                .setTangent(Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(56.5, 56.5, Math.toRadians(-135)), Math.toRadians(45));
+                .setTangent(0)
+                .splineToLinearHeading(BASKET_POSE_SPLINE, BASKET_TANGENT);
 
         Actions.runBlocking(new SequentialAction(
                 // Go to basket

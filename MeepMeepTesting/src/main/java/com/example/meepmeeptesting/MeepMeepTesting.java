@@ -28,7 +28,7 @@ public class MeepMeepTesting {
                 .build();
 
         Alliance alliance = Alliance.RED;
-        Position position = Position.RIGHT;
+        Position position = Position.LEFT;
 
         if (position == Position.LEFT && alliance == Alliance.RED) {
             myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(39, 62, Math.toRadians(-180)))
@@ -44,14 +44,13 @@ public class MeepMeepTesting {
                     .waitSeconds(1)
                     .strafeToLinearHeading(new Vector2d(57, 35), Math.toRadians(-45))
                     .waitSeconds(1)
-                    .strafeToLinearHeading(new Vector2d(57, 57), Math.toRadians(-135))
+                    .strafeToLinearHeading(new Vector2d(58, 58), Math.toRadians(-135))
                     .waitSeconds(1)
-                    .splineTo(new Vector2d(28, 10), Math.toRadians(180))
-                    .splineTo(new Vector2d(22, 10), Math.toRadians(180)) // 16.92
+                    .setTangent(Math.toRadians(-135))
+                    .splineToLinearHeading(new Pose2d(22, 0, Math.toRadians(180)), Math.toRadians(180)) // 16.92
                     .waitSeconds(1)
                     .setTangent(0)
-                    .splineTo(new Vector2d(28, 10), Math.toRadians(0))
-                    .splineTo(new Vector2d(57, 57), Math.toRadians(45))
+                    .splineTo(new Vector2d(58, 58), Math.toRadians(45))
 
                     .build());
         }
@@ -74,6 +73,7 @@ public class MeepMeepTesting {
                     .strafeTo(PRELOAD_SPECIMEN_CLIP)
                     .waitSeconds(0.5)
                     .setTangent(Math.toRadians(90))
+<<<<<<< Updated upstream
                     .splineToConstantHeading(new Vector2d(-30, 36), Math.toRadians(-90))
                     .splineToConstantHeading(new Vector2d(-30, 16), Math.toRadians(-90))
                     .splineToConstantHeading(new Vector2d(-40, 12), Math.toRadians(90))
@@ -86,6 +86,21 @@ public class MeepMeepTesting {
                     .splineToConstantHeading(new Vector2d(-54, 25), Math.toRadians(-90))
                     .splineToConstantHeading(new Vector2d(-62.5, 15), Math.toRadians(90))
 //                    .waitSeconds(0)
+=======
+                    .splineToConstantHeading(new Vector2d(-32, 36), Math.toRadians(-90))
+                    .splineToConstantHeading(new Vector2d(-32, 16), Math.toRadians(-90))
+                    .splineToConstantHeading(new Vector2d(-45, 12), Math.toRadians(90))
+//                    .waitSeconds(0)
+                    .strafeTo(new Vector2d(-45, 52))
+//                    .waitSeconds(0)
+                    .splineToConstantHeading(new Vector2d(-45, 25), Math.toRadians(-90))
+                    .splineToConstantHeading(new Vector2d(-55, 15), Math.toRadians(90))
+//                    .waitSeconds(0)
+                    .strafeTo(new Vector2d(-55, 52))
+//                    .waitSeconds(0)
+                    .splineToConstantHeading(new Vector2d(-55, 25), Math.toRadians(-90))
+                    .splineToConstantHeading(new Vector2d(-62.5, 15), Math.toRadians(90))
+>>>>>>> Stashed changes
                     .strafeTo(new Vector2d(-62.5, 62))
 
                     .waitSeconds(0.5)

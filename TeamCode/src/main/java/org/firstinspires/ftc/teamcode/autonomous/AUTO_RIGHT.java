@@ -3,13 +3,19 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import static org.firstinspires.ftc.teamcode.util.Constants.*;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Arclength;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Pose2dDual;
+import com.acmerobotics.roadrunner.PosePath;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -73,17 +79,20 @@ public class AUTO_RIGHT extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(-32, 36), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(-32, 16), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(-45, 12), Math.toRadians(90))
+<<<<<<< Updated upstream
+=======
+//                    .waitSeconds(0)
+>>>>>>> Stashed changes
                 .strafeTo(new Vector2d(-45, 52))
-                .waitSeconds(0)
+//                    .waitSeconds(0)
                 .splineToConstantHeading(new Vector2d(-45, 25), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(-55, 15), Math.toRadians(90))
-                .waitSeconds(0)
-                .strafeTo(new Vector2d(-55, 62.8));
-
-//                .waitSeconds(0)
-//                .splineToConstantHeading(new Vector2d(-54, 25), Math.toRadians(-90))
-//                .splineToConstantHeading(new Vector2d(-62.5, 15), Math.toRadians(90))
-//                .strafeTo(new Vector2d(-62.5, 62));
+//                    .waitSeconds(0)
+                .strafeTo(new Vector2d(-55, 52))
+//                    .waitSeconds(0)
+                .splineToConstantHeading(new Vector2d(-55, 25), Math.toRadians(-90))
+                .splineToConstantHeading(new Vector2d(-62.5, 15), Math.toRadians(90))
+                .strafeTo(new Vector2d(-62.5, 62));
         traj3 = traj2.endTrajectory().fresh()
                 .strafeToConstantHeading(HP_SPECIMEN_CLIP_CONTROL)
                 .splineToConstantHeading(HP_SPECIMEN_CLIP, Math.toRadians(-90));

@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
 import org.firstinspires.ftc.teamcode.util.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -65,6 +66,29 @@ public final class TuningOpModes {
 
     private static PinpointView makePinpointView(PinpointLocalizer pl) {
         return new PinpointView() {
+            @Override
+            public int getPerpEncoderVelocity() {
+                return (int) pl.driver.getVelocity().getX(DistanceUnit.INCH);
+            }
+
+            @Override
+            public int getParEncoderVelocity() {
+                return (int) pl.driver.getVelocity().getY(DistanceUnit.INCH);
+            }
+
+            @NonNull
+            @Override
+            public DcMotorSimple.Direction getPerpDirection() {
+                return pl.initialPerpDirection.equals(GoBildaPinpointDriver.EncoderDirection.FORWARD) ? DcMotorSimple.Direction.FORWARD : DcMotorSimple.Direction.REVERSE;
+            }
+
+            @NonNull
+            @Override
+            public DcMotorSimple.Direction getParDirection() {
+                return pl.initialParDirection.equals(GoBildaPinpointDriver.EncoderDirection.FORWARD) ? DcMotorSimple.Direction.FORWARD : DcMotorSimple.Direction.REVERSE;
+            }
+
+
             GoBildaPinpointDriver.EncoderDirection parDirection = pl.initialParDirection;
             GoBildaPinpointDriver.EncoderDirection perpDirection = pl.initialPerpDirection;
 

@@ -53,14 +53,8 @@ public class Constants {
     public static int ROT_GRAB = 440;
     public static int ROT_HANG_DOWN = 170;
     public static int ROT_CLIP = 240;
-    public static int ROT_SPECIMEN = 200;
 
     // Drivetrain motor speed
-    public static double SAFE_MODE = 0.7;
     public static double PRECISION_MODE = 0.3;
     public static double NORMAL_MODE = 1.0;
-
-    // Autonomous configs...
-    public static double angleCoeff = 0.5; //angleCorrectionCoefficient
-    public static double powerCoeff = 1;
 }

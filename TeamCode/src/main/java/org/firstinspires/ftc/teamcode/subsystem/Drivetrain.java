@@ -52,7 +52,8 @@ public class Drivetrain {
     }
 
     private double smoothControl(double value) {
-        return 0.5 * Math.tan(1.107 * value);
+//        return 0.5 * Math.tan(1.107 * value);
+        return 0.3 * Math.tan(1.2792 * value);
     }
 
     public void drive(double strafeSpeed,
