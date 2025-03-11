@@ -268,6 +268,24 @@ public class Elevator {
         rightRot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
+    public void elevateTo(int target) {
+        leftEle.setTargetPosition(target);
+        rightEle.setTargetPosition(target);
+        leftEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftEle.setPower(1);
+        rightEle.setPower(1);
+    }
+
+    public void rotateTo(int target) {
+        leftRot.setTargetPosition(target);
+        rightRot.setTargetPosition(target);
+        leftRot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightRot.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftRot.setPower(1);
+        rightRot.setPower(1);
+    }
+
     public class RotatePIDF implements Action{
         private boolean initialized = false;
         private int target;

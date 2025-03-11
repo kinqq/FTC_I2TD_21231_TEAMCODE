@@ -79,10 +79,7 @@ public class AUTO_RIGHT extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(-32, 36), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(-32, 16), Math.toRadians(-90))
                 .splineToConstantHeading(new Vector2d(-45, 12), Math.toRadians(90))
-<<<<<<< Updated upstream
-=======
 //                    .waitSeconds(0)
->>>>>>> Stashed changes
                 .strafeTo(new Vector2d(-45, 52))
 //                    .waitSeconds(0)
                 .splineToConstantHeading(new Vector2d(-45, 25), Math.toRadians(-90))

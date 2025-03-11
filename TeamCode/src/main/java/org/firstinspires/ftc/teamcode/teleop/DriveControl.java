@@ -40,6 +40,23 @@ public class DriveControl extends OpMode {
 
     private int imuCnt = 0;
 
+    private enum RiggingState {
+        READY,
+        INIT_ELE,
+        INIT_ROT,
+        FIRST_CLIMB,
+        FIRST_TRANSFER,
+        SECOND_EXT,
+        SECOND_HANG,
+        SECOND_HOOK,
+        SECOND_TOUCH,
+        SECOND_CLIMB_READY,
+        SECOND_CLIMB,
+        FINISHED,
+    }
+
+    RiggingState riggingState = RiggingState.READY;
+
     TriggerReader driver2LeftTrigger, driver2RightTrigger;
 
     @Override
@@ -120,17 +137,85 @@ public class DriveControl extends OpMode {
             rotPos = ROT_UP;
         }
 
-        if (gamepad1.dpad_left) {
-            rotPos = ROT_HANG_DOWN;
-            elePos = ELE_HANG;
-        }
-
-        if (gamepad1.dpad_down) {
-            elevator.rigging();
-        }
-
-        if (gamepad1.dpad_up) {
-            elevator.stopRigging();
+        switch (riggingState) {
+            case READY:
+                elevator.isRigging = false;
+                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
+                    riggingState = RiggingState.INIT_ELE;
+                    elePos = ELE_HANG + 50;
+                    elevator.isRigging = true;
+                }
+                break;
+            case INIT_ELE:
+                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
+                    riggingState = RiggingState.INIT_ROT;
+                    rotPos = ROT_HANG_DOWN + 15;
+                }
+                break;
+            case INIT_ROT:
+                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
+                    riggingState = RiggingState.FIRST_CLIMB;
+                    elePos = 180;
+                    rotPos = 350;
+                }
+                break;
+            case FIRST_CLIMB:
+                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
+                    riggingState = RiggingState.FIRST_TRANSFER;
+                    rotPos = 170;
+                }
+                break;
+            case FIRST_TRANSFER:
+                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
+                    riggingState = RiggingState.SECOND_EXT;
+                    elePos = 1800;
+                    rotPos = 0;
+                }
+                break;
+            case SECOND_EXT:
+                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
+                    riggingState = RiggingState.SECOND_HANG;
+                    rotPos = 350;
+                }
+                break;
+            case SECOND_HANG:
+                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
+                    riggingState = RiggingState.SECOND_HOOK;
+                    elePos = 1500;
+                    rotPos = 480;
+                }
+                break;
+            case SECOND_HOOK:
+                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
+                    riggingState = RiggingState.SECOND_TOUCH;
+                    elePos = 1700;
+                    rotPos = ROT_DOWN;
+                }
+                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
+                    riggingState = RiggingState.SECOND_EXT;
+                    elePos = 1800;
+                    rotPos = 0;
+                }
+                break;
+            case SECOND_TOUCH:
+                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
+                    riggingState = RiggingState.SECOND_CLIMB_READY;
+                    elePos = 1450;
+                }
+                break;
+            case SECOND_CLIMB_READY:
+                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
+                    riggingState = RiggingState.SECOND_CLIMB;
+                    elePos = ELE_BOT;
+                    rotPos = ROT_UP;
+                }
+                break;
+            case SECOND_CLIMB:
+                if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT))
+                    riggingState = RiggingState.FINISHED;
+                break;
+            default:
+                riggingState = RiggingState.READY;
         }
 
         if (driver2.wasJustPressed(GamepadKeys.Button.Y)) {
@@ -139,7 +224,7 @@ public class DriveControl extends OpMode {
             if (eleControlMode == EleControlMode.BASKET) gamepad2.rumble(800);
         }
 
-        if (rotPos == ROT_DOWN) {
+        if (rotPos == ROT_DOWN && !elevator.isRigging) {
             if (driver2.wasJustPressed(GamepadKeys.Button.A))
                 elePos = ELE_BOT;
             if (driver2.wasJustPressed(GamepadKeys.Button.B))
@@ -147,7 +232,7 @@ public class DriveControl extends OpMode {
             if (driver2.wasJustPressed(GamepadKeys.Button.X))
                 elePos = ELE_CHAMBER_HIGH;
             elePos += (int) (driver2.getLeftY() * 45.0);
-            elePos = Range.clip(elePos, 0, 1450);
+            elePos = Range.clip(elePos, 0, 1400);
         } else if (eleControlMode == EleControlMode.CHAMBER) {
             if (driver2.wasJustPressed(GamepadKeys.Button.A)) {
                 elePos = ELE_BOT;
@@ -185,9 +270,16 @@ public class DriveControl extends OpMode {
             }
         }
 
-        if (!elevator.isRigging) {
+        if (riggingState == RiggingState.FINISHED) {
+            elevator.stopRigging();
+        }
+        else if (!elevator.isRigging) {
             elevator.elevatePIDF(elePos);
             elevator.rotatePIDF(rotPos);
+        }
+        else {
+            elevator.elevateTo(elePos);
+            elevator.rotateTo(rotPos);
         }
 
         if (driver2LeftTrigger.wasJustPressed()) {
@@ -237,6 +329,7 @@ public class DriveControl extends OpMode {
 
         telemetry.addData("Target Heading", drive.targetHeading);
         telemetry.addData("IMU", imuCnt);
+        telemetry.addData("RiggingState", riggingState);
         telemetry.addLine("-------DRIVE CONTROL-------");
         telemetry.addData("CONTROL MODE", eleControlMode);
         telemetry.addData("FIELD CENTRIC", drive.isFieldCentricDriveEnabled());
