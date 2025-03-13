@@ -96,6 +96,8 @@ public class DriveControl extends OpMode {
         grabber.pitch.setPosition(PITCH_SUBMERSIBLE);
         grabber.roll.setPosition(ROLL_TICK_ON_ZERO);
         grabber.pivot.setPosition(PIVOT_SUBMERSIBLE);
+
+        drive.resetTargetHeading();
     }
 
     @Override
@@ -194,7 +196,6 @@ public class DriveControl extends OpMode {
                 if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
                     riggingState = RiggingState.SECOND_EXT;
                     elePos = 1800;
-                    rotPos = 0;
                 }
                 break;
             case SECOND_TOUCH:
@@ -218,6 +219,10 @@ public class DriveControl extends OpMode {
                 riggingState = RiggingState.READY;
         }
 
+        if (elevator.isRigging && drive.isHeadingLockEnabled()) {
+            drive.toggleHeadingLock();
+        }
+
         if (driver2.wasJustPressed(GamepadKeys.Button.Y)) {
             toggleEleControlMode();
             if (eleControlMode == EleControlMode.CHAMBER) gamepad2.rumble(400);
@@ -231,7 +236,7 @@ public class DriveControl extends OpMode {
                 elePos = ELE_CHAMBER_LOW;
             if (driver2.wasJustPressed(GamepadKeys.Button.X))
                 elePos = ELE_CHAMBER_HIGH;
-            elePos += (int) (driver2.getLeftY() * 45.0);
+            elePos += (int) (driver2.getLeftY() * 60.0);
             elePos = Range.clip(elePos, 0, 1400);
         } else if (eleControlMode == EleControlMode.CHAMBER) {
             if (driver2.wasJustPressed(GamepadKeys.Button.A)) {
@@ -247,7 +252,7 @@ public class DriveControl extends OpMode {
                 runningActions.add(grabber.readySpecimenGrab());
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.X)) {
-                elePos = ELE_CLIP + 80;
+                elePos = ELE_CLIP + 30;
                 rollAngle = 180;
                 rotPos = ROT_CLIP;
                 runningActions.add(grabber.readySpecimenClip());
@@ -332,6 +337,8 @@ public class DriveControl extends OpMode {
         telemetry.addData("Target Heading", drive.targetHeading);
         telemetry.addData("IMU", imuCnt);
         telemetry.addData("RiggingState", riggingState);
+        telemetry.addData("Roll Angle", rollAngle);
+        telemetry.addData("Roll Tick", grabber.roll.getPosition());
         telemetry.addLine("-------DRIVE CONTROL-------");
         telemetry.addData("CONTROL MODE", eleControlMode);
         telemetry.addData("FIELD CENTRIC", drive.isFieldCentricDriveEnabled());

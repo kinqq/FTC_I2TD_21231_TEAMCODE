@@ -25,10 +25,10 @@ public class Grabber {
         roll = (ServoImplEx) hardwareMap.get(Servo.class, "roll");
         pivot = (ServoImplEx) hardwareMap.get(Servo.class, "pivot");
 
-        grabber.setPwmRange(new PwmControl.PwmRange(500, 2500));
-        pitch.setPwmRange(new PwmControl.PwmRange(500, 2500));
-        roll.setPwmRange(new PwmControl.PwmRange(500, 2500));
-        pivot.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        grabber.setPwmRange(new PwmControl.PwmRange(600, 2400));
+        pitch.setPwmRange(new PwmControl.PwmRange(600, 2400));
+        roll.setPwmRange(new PwmControl.PwmRange(600, 2400));
+        pivot.setPwmRange(new PwmControl.PwmRange(600, 2400));
     }
 
     public class Grab implements Action {
@@ -51,7 +51,7 @@ public class Grabber {
                 //TODO: Use Rev SPM.
                 double MAX_TRAVEL = Math.toRadians(355); // tick = angle / max_angle
                 double SEC_PER_RAD = 0.11 / Math.toRadians(60);
-                double TIME_FACTOR = 1.0;
+                double TIME_FACTOR = 1.4;
                 expectedTime = posErrorTick * MAX_TRAVEL * SEC_PER_RAD * TIME_FACTOR;
 
                 initialized = true;
@@ -187,8 +187,8 @@ public class Grabber {
     public Action performSampleGrab() {
         return new SequentialAction(
                 new ParallelAction(
-                        new Pitch(PITCH_DOWN + 0.07 * elePos / 1450),
-                        new Pivot(PIVOT_DOWN + 0.07 * elePos / 1450)
+                        new Pitch(PITCH_DOWN + 0.03 * elePos / 500),
+                        new Pivot(PIVOT_DOWN + 0.03 * elePos / 500)
                 ),
                 new Grab(GRABBER_CLOSE),
                 readySampleGrab()
@@ -198,7 +198,8 @@ public class Grabber {
     public Action basketReady() {
         return new ParallelAction(
                 new Pitch(PITCH_BASKET_READY),
-                new Pivot(PIVOT_BASKET_READY)
+                new Pivot(PIVOT_BASKET_READY),
+                roll(180)
         );
     }
 

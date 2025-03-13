@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.ftc.GoBildaPinpointDriverRR;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -10,7 +11,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.util.DcMotorGroup;
-import org.firstinspires.ftc.teamcode.util.GoBildaPinpointDriver;
 
 public class Drivetrain {
     @Config
@@ -20,7 +20,7 @@ public class Drivetrain {
 
     private DcMotorEx _frontLeftMotor, _frontRightMotor, _backLeftMotor, _backRightMotor;
     private DcMotorGroup dtMotors;
-    static public GoBildaPinpointDriver odo;
+    static public GoBildaPinpointDriverRR odo;
     private double maxPower;
     private boolean isFieldCentricDriveEnabled = true;
     private boolean isHeadingLockEnabled = true;
@@ -37,10 +37,10 @@ public class Drivetrain {
         _frontLeftMotor.setDirection(DcMotorEx.Direction.REVERSE);
         _backLeftMotor.setDirection(DcMotorEx.Direction.REVERSE);
 
-        odo = hwMap.get(GoBildaPinpointDriver.class, "odo");
+        odo = hwMap.get(GoBildaPinpointDriverRR.class, "odo");
         odo.setOffsets(-3.45, -3.65);
-        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        odo.setEncoderResolution(GoBildaPinpointDriverRR.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        odo.setEncoderDirections(GoBildaPinpointDriverRR.EncoderDirection.REVERSED, GoBildaPinpointDriverRR.EncoderDirection.REVERSED);
 //        odo.resetPosAndIMU();
 
         dtMotors = new DcMotorGroup(_frontLeftMotor, _frontRightMotor, _backLeftMotor, _backRightMotor);
@@ -48,7 +48,6 @@ public class Drivetrain {
         dtMotors.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         headingPIDFController = new PIDFController(headingPIDF.p, headingPIDF.i, headingPIDF.d, headingPIDF.f);
-        targetHeading = -odo.getHeading();
     }
 
     private double smoothControl(double value) {
@@ -97,11 +96,16 @@ public class Drivetrain {
 
     public void toggleHeadingLock() {
         isHeadingLockEnabled = !isHeadingLockEnabled;
-        targetHeading = -odo.getHeading();
+        resetTargetHeading();
     }
 
     public void resetImu() {
         odo.resetPosAndIMU();
+        targetHeading = 0;
+    }
+
+    public void resetTargetHeading() {
+        targetHeading = -odo.getHeading();
     }
 
     public void setMaxPower(double maxPower) {

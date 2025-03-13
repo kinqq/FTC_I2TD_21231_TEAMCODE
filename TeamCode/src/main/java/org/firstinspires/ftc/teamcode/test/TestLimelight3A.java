@@ -88,7 +88,7 @@ import java.util.Set;
  *   and the ip address the Limelight device assigned the Control Hub and which is displayed in small text
  *   below the name of the Limelight on the top level configuration screen.
  */
-@TeleOp(name = "Sensor: Limelight3A", group = "Test")
+@TeleOp(name = "TestLimelight", group = "Test")
 public class TestLimelight3A extends LinearOpMode {
     private Limelight3A limelight;
     private ServoImplEx roll;
@@ -136,10 +136,8 @@ public class TestLimelight3A extends LinearOpMode {
                 telemetry.addData("Parse Latency", parseLatency);
 
                 double[] pythonOutput = result.getPythonOutput();
-                double angle = pythonOutput[3];
+                double angle = -pythonOutput[3];
                 if (angle != -1 && angle != 0) {
-                    angle -= 90;
-                    angle *= -1;
                     roll.setPosition(ROLL_TICK_ON_ZERO + angle * ROLL_TICK_PER_DEG);
                 }
                 telemetry.addLine(Arrays.toString(pythonOutput));
