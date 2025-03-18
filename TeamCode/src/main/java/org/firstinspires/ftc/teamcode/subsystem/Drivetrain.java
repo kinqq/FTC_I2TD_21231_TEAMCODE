@@ -23,7 +23,7 @@ public class Drivetrain {
     static public GoBildaPinpointDriverRR odo;
     private double maxPower;
     private boolean isFieldCentricDriveEnabled = true;
-    private boolean isHeadingLockEnabled = true;
+    private boolean isHeadingLockEnabled = false;
     public double targetHeading;
     private boolean isTurning = false;
     private PIDFController headingPIDFController;
@@ -51,8 +51,13 @@ public class Drivetrain {
     }
 
     private double smoothControl(double value) {
-//        return 0.5 * Math.tan(1.107 * value);
         return 0.3 * Math.tan(1.2792 * value);
+    }
+
+    public void turnOff() {
+        dtMotors.setPower(0);
+        dtMotors.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        dtMotors.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void drive(double strafeSpeed,
@@ -92,6 +97,8 @@ public class Drivetrain {
         _frontRightMotor.setPower((ySpeed - xSpeed - turnSpeed) / max * maxPower);
         _backLeftMotor.setPower((ySpeed - xSpeed + turnSpeed) / max * maxPower);
         _backRightMotor.setPower((ySpeed + xSpeed - turnSpeed) / max * maxPower);
+
+        dtMotors.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void toggleHeadingLock() {
@@ -101,6 +108,7 @@ public class Drivetrain {
 
     public void resetImu() {
         odo.resetPosAndIMU();
+        odo.setPosition(new Pose2D(DistanceUnit.MM, 0, 0, AngleUnit.DEGREES, Math.toRadians(0)));
         targetHeading = 0;
     }
 

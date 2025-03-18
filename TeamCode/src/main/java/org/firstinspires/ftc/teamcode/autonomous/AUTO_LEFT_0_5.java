@@ -62,18 +62,18 @@ public class AUTO_LEFT_0_5 extends LinearOpMode {
             telemetry.update();
         }
 
-        Vector2d FIRST_SAMPLE_POSE = new Vector2d(47.9, 38.5);
+        Vector2d FIRST_SAMPLE_POSE = new Vector2d(47.3, 38.5);
         double FIRST_SAMPLE_HEADING = Math.toRadians(270);
-        Vector2d BASKET_POSE = new Vector2d(56.5, 56.5);
+        Vector2d BASKET_POSE = new Vector2d(57, 57);
         Pose2d BASKET_POSE_SPLINE = new Pose2d(56.5, 56.5, Math.toRadians(-135));
         double BASKET_HEADING = Math.toRadians(-135);
         double BASKET_TANGENT = Math.toRadians(45);
 //        Vector2d SECOND_SAMPLE_POSE = new Vector2d(57.9, 38.5);
-        Vector2d SECOND_SAMPLE_POSE = new Vector2d(59, 38.5);
+        Vector2d SECOND_SAMPLE_POSE = new Vector2d(57.5, 38.5);
         double SECOND_SAMPLE_HEADING = Math.toRadians(270);
-        Vector2d THIRD_SAMPLE_POSE = new Vector2d(57.9, 35);
+        Vector2d THIRD_SAMPLE_POSE = new Vector2d(58.2, 35);
         double THIRD_SAMPLE_HEADING = Math.toRadians(-45);
-        Pose2d SUBMERSIBLE_POSE = new Pose2d(23.5, 0, Math.toRadians(180));
+        Pose2d SUBMERSIBLE_POSE = new Pose2d(23, 0 - xOffset, Math.toRadians(180));
         double SUBMERSIBLE_TANGENT = Math.toRadians(180);
 
         TrajectoryActionBuilder traj1, traj2, traj3, traj4, traj5, traj6, traj7, traj8, traj9;
@@ -101,7 +101,6 @@ public class AUTO_LEFT_0_5 extends LinearOpMode {
                     new SequentialAction(
                         new SleepAction(0.2),
                         elevator.elevate(ELE_BASKET_HIGH),
-                            grabber.basketDepositReady(),
                         grabber.basketDepositReady()
                     )
                 ),
@@ -115,7 +114,7 @@ public class AUTO_LEFT_0_5 extends LinearOpMode {
                         grabber.readySampleGrab()
                 ),
                 elevator.rotateDown(ROT_DOWN),
-                new SleepAction(0.3),
+                new SleepAction(0.2),
                 // Grab first sample and go to basket
                 grabber.performSampleGrab(),
                 new ParallelAction(
@@ -137,7 +136,7 @@ public class AUTO_LEFT_0_5 extends LinearOpMode {
                         elevator.elevate(ELE_BOT)
                 ),
                 elevator.rotateDown(ROT_DOWN),
-                new SleepAction(0.3),
+                new SleepAction(0.2),
                 grabber.performSampleGrab(),
                 new ParallelAction(
                         traj5.build(),
@@ -183,7 +182,7 @@ public class AUTO_LEFT_0_5 extends LinearOpMode {
                                 elevator.rotateDown(ROT_DOWN)
                         )
                 ),
-                elevator.elevate(ELE_BOT + (int)(yOffset * 72)),
+                elevator.elevate(ELE_BOT + (int)(yOffset * 83)),
                 grabber.performSampleGrab(),
                 elevator.elevate(ELE_BOT),
                 new ParallelAction(

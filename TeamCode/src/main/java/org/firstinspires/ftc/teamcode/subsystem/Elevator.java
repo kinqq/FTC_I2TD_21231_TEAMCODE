@@ -27,7 +27,7 @@ public class Elevator {
 
     @Config
     public static class elePIDF {
-        public static double p = 0.007, i = 0, d = 0.00001, f = 0.00018;
+        public static double p = 0.0075, i = 0, d = 0.0001, f = 0.00007;
     }
 
     public Elevator(HardwareMap hardwareMap) {
@@ -68,8 +68,8 @@ public class Elevator {
             if (!initialized && Math.abs(pos - target) > 10) {
                 leftRot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 rightRot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                leftRot.setPower(0.3);
-                rightRot.setPower(0.3);
+                leftRot.setPower(0.4);
+                rightRot.setPower(0.4);
                 initialized = true;
             }
 
@@ -180,25 +180,55 @@ public class Elevator {
     public class Elevate implements Action{
         private boolean initialized = false;
         private int target;
+        private int initialPosition;
         private ElapsedTime timer = new ElapsedTime();
 
         public Elevate(int target) {
             this.target = target;
+            this.initialPosition = leftEle.getCurrentPosition();
         }
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                leftEle.setTargetPosition(target);
-                rightEle.setTargetPosition(target);
-                leftEle.setPower(1);
-                rightEle.setPower(1);
-                leftEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                rightEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                leftEle.setTargetPosition(target);
+//                rightEle.setTargetPosition(target);
+//                leftEle.setPower(1);
+//                rightEle.setPower(1);
+//                leftEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                rightEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 timer.reset();
             }
 
-            return Math.abs(leftEle.getCurrentPosition() - target) > 10 && timer.seconds() < 4.0;
+            int currentPosition = leftEle.getCurrentPosition();
+            double pid = eleController.calculate(currentPosition, target);
+
+            leftEle.setPower(pid);
+            rightEle.setPower(pid);
+
+            leftEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            rightEle.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            packet.put("target", target);
+            packet.put("encoder", currentPosition);
+
+            int error = Math.abs(currentPosition - target);
+            if (error > 35 && timer.seconds() < 2.0) {
+                return true;
+            }
+
+            leftEle.setTargetPosition(target);
+            rightEle.setTargetPosition(target);
+            leftEle.setPower(0.2);
+            rightEle.setPower(0.2);
+            leftEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightEle.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                leftEle.setPower(0);
+//                rightEle.setPower(0);
+//                leftEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//                rightEle.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+            return false;
         }
     }
 
@@ -213,6 +243,8 @@ public class Elevator {
     public void stopRigging() {
         leftEle.setPower(0);
         rightEle.setPower(0);
+        leftRot.setPower(0);
+        rightRot.setPower(0);
 
         leftEle.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightEle.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

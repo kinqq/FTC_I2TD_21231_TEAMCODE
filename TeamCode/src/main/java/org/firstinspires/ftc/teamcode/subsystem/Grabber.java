@@ -8,6 +8,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -157,24 +158,19 @@ public class Grabber {
         return new Grab(GRABBER_OPEN);
     }
 
-    public Action pitchForward() {
-        return new Pitch(PITCH_FORWARD);
-    }
-
-    public Action pitchParallel() {
-        return new Pitch(PITCH_PARALLEL);
+    public Action sweep() {
+        return new ParallelAction(
+            new Pitch(0.8),
+            new Pivot(0.74),
+            roll(0)
+        );
     }
 
     public Action pitchUp() {
-        return new Pitch(PITCH_UP);
-    }
-
-    public Action pitchBackward() {
-        return new Pitch(PITCH_BACKWARD);
-    }
-
-    public Action pitchGrab() {
-        return new Pitch(PITCH_GRAB);
+        return new ParallelAction(
+            new Pitch(PITCH_UP),
+            new Pivot(0.8)
+        );
     }
 
     public Action readySampleGrab() {
@@ -220,8 +216,8 @@ public class Grabber {
 
     public Action readySpecimenGrab() {
         return new ParallelAction(
-                new Pitch(PITCH_SPECIMEN),
-                new Pivot(PIVOT_SPECIMEN),
+                new Pitch(0.8),
+                new Pivot(0.9),
                 new Grab(GRABBER_OPEN),
                 roll(0)
         );
@@ -229,9 +225,24 @@ public class Grabber {
 
     public Action readySpecimenClip() {
         return new ParallelAction(
-                new Pitch(PITCH_CLIP),
-                new Pivot(PIVOT_CLIP),
+                new Pitch(0.6),
+                new Pivot(0.5),
                 roll(180)
+        );
+    }
+
+    public Action readySpecimenClipFront() {
+        return new ParallelAction(
+            new Pitch(PITCH_CLIP),
+            new Pivot(PIVOT_CLIP),
+            roll(180)
+        );
+    }
+
+    public Action performSpecimenClip() {
+        return new ParallelAction(
+            new Pitch(0.55),
+            new Pivot(0.3)
         );
     }
 

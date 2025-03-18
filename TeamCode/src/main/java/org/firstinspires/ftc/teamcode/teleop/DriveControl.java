@@ -17,6 +17,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -37,6 +38,10 @@ public class DriveControl extends OpMode {
     private EleControlMode eleControlMode = EleControlMode.BASKET;
     private double maxSpeed = NORMAL_MODE;
     private double oldTime = 0;
+    private boolean isClipped = true;
+    private ElapsedTime timer = new ElapsedTime();
+    private ElapsedTime timer2 = new ElapsedTime();
+    private ElapsedTime timer3 = new ElapsedTime();
 
     private int imuCnt = 0;
 
@@ -98,6 +103,9 @@ public class DriveControl extends OpMode {
         grabber.pivot.setPosition(PIVOT_SUBMERSIBLE);
 
         drive.resetTargetHeading();
+        timer.reset();
+        timer2.reset();
+        timer3.reset();
     }
 
     @Override
@@ -125,7 +133,9 @@ public class DriveControl extends OpMode {
         if (driver2.wasJustPressed(GamepadKeys.Button.BACK)) elevator.initRot();
 
         drive.setMaxPower(maxSpeed);
-        drive.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+        if (!elevator.isRigging)
+            drive.drive(gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x);
+        else drive.turnOff();
 
         if (driver1.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
             drive.toggleHeadingLock();
@@ -144,7 +154,7 @@ public class DriveControl extends OpMode {
                 elevator.isRigging = false;
                 if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
                     riggingState = RiggingState.INIT_ELE;
-                    elePos = ELE_HANG + 50;
+                    elePos = ELE_HANG + 80;
                     elevator.isRigging = true;
                 }
                 break;
@@ -170,7 +180,7 @@ public class DriveControl extends OpMode {
             case FIRST_TRANSFER:
                 if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
                     riggingState = RiggingState.SECOND_EXT;
-                    elePos = 1800;
+                    elePos = 1900;
                     rotPos = 0;
                 }
                 break;
@@ -184,18 +194,18 @@ public class DriveControl extends OpMode {
                 if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
                     riggingState = RiggingState.SECOND_HOOK;
                     elePos = 1500;
-                    rotPos = 480;
                 }
                 break;
             case SECOND_HOOK:
                 if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
                     riggingState = RiggingState.SECOND_TOUCH;
                     elePos = 1700;
-                    rotPos = ROT_DOWN;
+                    rotPos = ROT_DOWN + 60;
                 }
                 if (driver1.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
                     riggingState = RiggingState.SECOND_EXT;
-                    elePos = 1800;
+                    elePos = 1900;
+                    rotPos = 0;
                 }
                 break;
             case SECOND_TOUCH:
@@ -219,6 +229,7 @@ public class DriveControl extends OpMode {
                 riggingState = RiggingState.READY;
         }
 
+        // turn of heading lock while climbing
         if (elevator.isRigging && drive.isHeadingLockEnabled()) {
             drive.toggleHeadingLock();
         }
@@ -236,41 +247,63 @@ public class DriveControl extends OpMode {
                 elePos = ELE_CHAMBER_LOW;
             if (driver2.wasJustPressed(GamepadKeys.Button.X))
                 elePos = ELE_CHAMBER_HIGH;
-            elePos += (int) (driver2.getLeftY() * 60.0);
-            elePos = Range.clip(elePos, 0, 1400);
+            elePos += (int) (driver2.getLeftY() * 50.0);
+            elePos = Range.clip(elePos, 0, 1300);
+
+            if (timer2.seconds() > 0.4) {
+                grabber.pitch.setPosition(PITCH_SUBMERSIBLE + 0.03 / 500 * elePos);
+                grabber.pivot.setPosition(PIVOT_SUBMERSIBLE + 0.03 / 500 * elePos);
+            }
         } else if (eleControlMode == EleControlMode.CHAMBER) {
             if (driver2.wasJustPressed(GamepadKeys.Button.A)) {
                 elePos = ELE_BOT;
                 rotPos = ROT_UP;
                 rollAngle = 0;
-                runningActions.add(grabber.grab());
+                runningActions.add(grabber.readySpecimenGrab());
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.B)) {
                 elePos = ELE_BOT;
-                rotPos = ROT_UP;
+                rotPos = 180;
                 rollAngle = 0;
                 runningActions.add(grabber.readySpecimenGrab());
+                isClipped = false;
             }
-            if (driver2.wasJustPressed(GamepadKeys.Button.X)) {
-                elePos = ELE_CLIP + 30;
+            if (driver2.wasJustPressed(GamepadKeys.Button.X) && timer.seconds() > 0.3) {
+                if (elePos == ELE_BOT)
+                    runningActions.add(grabber.readySpecimenClip());
+                else {
+                    if (isClipped) {
+                        runningActions.add(grabber.readySpecimenClip());
+                        isClipped = false;
+                    }
+                    else {
+                        runningActions.add(grabber.performSpecimenClip());
+                        isClipped = true;
+                    }
+                }
+                elePos = 130;
+                rotPos = ROT_UP;
                 rollAngle = 180;
-                rotPos = ROT_CLIP;
-                runningActions.add(grabber.readySpecimenClip());
+                timer.reset();
             }
         } else if (eleControlMode == EleControlMode.BASKET) {
             if (driver2.wasJustPressed(GamepadKeys.Button.A)) {
                 elePos = ELE_BOT;
                 rollAngle = 0;
-                runningActions.add(grabber.readySampleGrab());
+
+                if (rotPos == ROT_DOWN) runningActions.add(grabber.basketReady());
+                else runningActions.add(grabber.readySampleGrab());
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.B)) {
                 elePos = ELE_BASKET_LOW;
                 rollAngle = 90;
+                timer3.reset();
                 runningActions.add(grabber.basketReady());
             }
             if (driver2.wasJustPressed(GamepadKeys.Button.X)) {
                 elePos = ELE_BASKET_HIGH;
                 rollAngle = 90;
+                timer3.reset();
                 runningActions.add(grabber.basketReady());
             }
         }
@@ -291,6 +324,7 @@ public class DriveControl extends OpMode {
         // GRABBER
         if (driver2LeftTrigger.wasJustPressed()) {
             if (rotPos == ROT_DOWN) {
+                timer2.reset();
                 runningActions.add(grabber.performSampleGrab());
             }
             else {
@@ -304,7 +338,7 @@ public class DriveControl extends OpMode {
                 runningActions.add(grabber.release());
         }
 
-        if ((elePos == ELE_BASKET_LOW || elePos == ELE_BASKET_HIGH) && Math.abs(elevator.getElevatorPosition() - elePos) < 15) {
+        if ((elePos == ELE_BASKET_LOW || elePos == ELE_BASKET_HIGH) && timer3.seconds() > 1.0) {
             runningActions.add(grabber.basketDepositReady());
         }
 
@@ -315,6 +349,7 @@ public class DriveControl extends OpMode {
             rollAngle -= 30;
 
         rollAngle = (rollAngle + 180) % 360 - 180;
+        rollAngle = Range.clip(rollAngle, -180, 180);
         grabber.roll.setPosition(ROLL_TICK_ON_ZERO + ROLL_TICK_PER_DEG * rollAngle);
         grabber.updateElePos(elePos);
 
